@@ -50,14 +50,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
-  children,
-  params,
+export default async function RootLayout({ 
+  children, 
+  params 
 }: {
-  children: React.ReactNode;
-  params: { locale: string }; // ✅ no Promise
-}) {
-  const { locale }: any = params;
+  children: any,
+  params: any
+}) {  // ✅ use LayoutProps
+  const { locale } = params;
 
   // ✅ Safe fallback locale
   const safeLocale = routing.locales.includes(locale)
