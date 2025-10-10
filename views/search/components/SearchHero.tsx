@@ -9,7 +9,7 @@ import { motion } from "framer-motion"
 export default function SearchHero() {
 
     const firstText = "Find the perfect";
-    const secondText = "Thai tutor in seconds";
+    const secondText = "online tutor in seconds";
 
     const container = (delay = 0) => ({
     hidden: { opacity: 0 },

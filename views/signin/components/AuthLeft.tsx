@@ -58,7 +58,7 @@ export default function AuthLeft() {
                 <div className="text-center text-4xl xl:text-5xl font-bold flex flex-col gap-y-4">
                     <div className="text-white">Find the perfect</div>
                     <div className="bg-gradient-to-r from-[#E0C9FD] to-[#CCA3FF] bg-clip-text text-transparent">
-                        Thai tutor in seconds
+                        online tutor in seconds
                     </div>
                 </div>
 
