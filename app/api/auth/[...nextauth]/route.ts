@@ -97,11 +97,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // Move id and role under session.user
       session.user = {
         ...session.user,
-        id: token.id,
-        role: token.role,
+        id: typeof token.id === "string" ? token.id : String(token.id ?? ""),
       };
-    
-      // Keep the tokens at top level
+      // Store extra properties outside 'user' to satisfy type constraints
+      (session as any).role = typeof token.role === "string" ? token.role : String(token.role ?? "");
       (session as any).access_token = token.access_token;
       (session as any).refresh_token = token.refresh_token;
       (session as any).error = token.error;
