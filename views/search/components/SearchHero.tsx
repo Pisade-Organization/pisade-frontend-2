@@ -49,7 +49,7 @@ export default function SearchHero() {
             {/* PEOPLE */}
             <div className="absolute left-14 top-[43%]">
                 <Image
-                    src="/images/search/people.svg"
+                    src="/icons/common/people.svg"
                     alt="people"
                     width={80}
                     height={80}
@@ -60,7 +60,7 @@ export default function SearchHero() {
             <div className="absolute -left-[50px] -bottom-8">
                 <Image
                     className="blur-sm"
-                    src="/images/search/chart-growth.svg"
+                    src="/icons/common/chart-growth.svg"
                     alt="star"
                     width={140}
                     height={140}
@@ -72,7 +72,7 @@ export default function SearchHero() {
                 {/* Make this relative + shrink-wrap to image size */}
                 <div className="relative inline-block">
                     <Image
-                    src="/images/search/eclipse.svg"
+                    src="/icons/common/eclipse.svg"
                     alt="ellipse"
                     width={1007}
                     height={381}
@@ -81,7 +81,7 @@ export default function SearchHero() {
                     {/* Folder relative to ellipse */}
                     <div className="absolute -right-4 top-2">
                     <Image
-                        src="/images/search/folder.svg"
+                        src="/icons/common/folder.svg"
                         alt="folder"
                         width={164}
                         height={164}
@@ -97,7 +97,7 @@ export default function SearchHero() {
                 {/* Make this relative + shrink-wrap to image size */}
                 <div className="relative inline-block">
                     <Image
-                    src="/images/search/eclipse-2.svg"
+                    src="/icons/common/eclipse-2.svg"
                     alt="ellipse"
                     width={1007}
                     height={229}
@@ -105,7 +105,7 @@ export default function SearchHero() {
 
                     <div className="absolute -left-14 top-2">
                         <Image
-                        src="/images/search/book.svg"
+                        src="/icons/common/book.svg"
                         alt="book"
                         width={150}
                         height={150}
@@ -114,7 +114,7 @@ export default function SearchHero() {
 
                     <div className="absolute -bottom-1 left-28">
                         <Image
-                        src="/images/search/target.svg"
+                        src="/icons/common/target.svg"
                         alt="book"
                         width={80}
                         height={80}
@@ -127,7 +127,7 @@ export default function SearchHero() {
             <div className="absolute right-24 -bottom-9">
                 <Image
                     className="blur-[8px] rotate-[15deg]"
-                    src="/images/search/star.svg"
+                    src="/icons/common/star.svg"
                     alt="star"
                     width={212}
                     height={212}
@@ -156,7 +156,7 @@ export default function SearchHero() {
 
                         <div className="absolute -right-16 top-[1.35rem]">
                         <Image
-                            src="/images/search/star.svg"
+                            src="/icons/common/star.svg"
                             alt="star"
                             width={40}
                             height={40}
@@ -180,7 +180,7 @@ export default function SearchHero() {
 
                         <div className="absolute -bottom-8 -left-40">
                         <Image
-                            src="/images/search/star.svg"
+                            src="/icons/common/star.svg"
                             alt="star"
                             width={20}
                             height={20}
