@@ -1,11 +1,11 @@
-import GoogleProvider from "next-auth/providers/google";
+// import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import dayjs from "dayjs";
 
 export const authOptions = {
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt" as const },
   secret: process.env.NEXTAUTH_SECRET,
 
   providers: [
