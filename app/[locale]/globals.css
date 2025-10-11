@@ -47,6 +47,43 @@
   pointer-events: none; /* make sure it doesn’t block clicks */
 }
 
+/* 🌈 Pisade-style scrollbar (no arrows, thin violet) */
+.dropdown-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* ✅ Hide those annoying arrows (Windows) */
+.dropdown-scroll::-webkit-scrollbar-button,
+.dropdown-scroll::-webkit-scrollbar-button:start:decrement,
+.dropdown-scroll::-webkit-scrollbar-button:end:increment,
+.dropdown-scroll::-webkit-scrollbar-button:single-button,
+.dropdown-scroll::-webkit-scrollbar-button:double-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+.dropdown-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropdown-scroll::-webkit-scrollbar-thumb {
+  background-color: #a855f7;
+  border-radius: 9999px;
+}
+
+.dropdown-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #9333ea;
+}
+
+/* Firefox support */
+.dropdown-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #a855f7 transparent;
+}
+
 
 @layer base {
   :root {
@@ -103,8 +140,6 @@
     --chart-5: 340 75% 55%;
   }
 }
-
-
 
 @layer base {
   * {
