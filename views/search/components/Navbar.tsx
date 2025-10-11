@@ -2,8 +2,14 @@
 
 import Image from "next/image"
 import { ChevronDown } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function SearchNavbar() {
+    const router = useRouter();
+
+    const onSigninClick = () => {
+        router.push('/signin')
+    }
     return (
         <nav className="w-full flex justify-between items-center py-4 px-20 border-b border-[#F5F5F533] ">
 
@@ -38,7 +44,7 @@ export default function SearchNavbar() {
                 <button
                     className="w-[76px] h-[45px] rounded-lg cursor-pointer flex items-center justify-center p-[1px]"
                     style={{
-                        background: "linear-gradient(110.21deg, rgba(255, 255, 255, 0.7) 2.78%, rgba(255, 250, 203, 0.534754) 58.48%, rgba(255, 57, 57, 0.07) 72.66%, rgba(255, 255, 255, 0.595) 100%);",
+                        background: "linear-gradient(110.21deg, rgba(255, 255, 255, 0.7) 2.78%, rgba(255, 250, 203, 0.534754) 58.48%, rgba(255, 57, 57, 0.07) 72.66%, rgba(255, 255, 255, 0.595) 100%)",
                     }}
                 >
                     <div className="bg-black rounded-lg py-[10px] h-full w-full px-3 bg-gradient-to-r from-white/5 to-white/25">
@@ -54,7 +60,7 @@ export default function SearchNavbar() {
                 </div>
 
                 {/* Sign in */}
-                <div className="cursor-pointer bg-electric-violet-500 py-3 px-4 rounded-lg">
+                <div onClick={onSigninClick} className="cursor-pointer bg-electric-violet-500 py-3 px-4 rounded-lg">
                     Sign In
                 </div>
 

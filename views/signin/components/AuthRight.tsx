@@ -2,7 +2,12 @@ import AuthHeader from "./AuthHeader"
 import AuthForm from "./AuthForm"
 import AuthTermsNotice from "./AuthTermsNotice"
 
-export default function AuthRight() {
+interface AuthRightProps {
+    setIsEmailSent: (value: boolean) => void;
+    setEmailTo: (email: string) => void;
+}
+
+export default function AuthRight({ setIsEmailSent, setEmailTo }: AuthRightProps) {
     return (
         <div className="border py-8 lg:py-0 w-full h-full flex flex-col justify-center items-center">
             <div className="w-full h-full flex flex-col justify-center items-center gap-y-10 flex-1">
@@ -12,7 +17,7 @@ export default function AuthRight() {
                 <AuthHeader />
 
                 {/* LOGIN FORM */}
-                <AuthForm />
+                <AuthForm setEmailTo={setEmailTo} setIsEmailSent={setIsEmailSent} />
                 
             </div>
             <div className="w-full flex justify-center pb-6 lg:hidden">
