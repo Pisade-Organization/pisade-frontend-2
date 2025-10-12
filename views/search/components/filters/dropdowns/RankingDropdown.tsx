@@ -13,6 +13,12 @@ import { cn } from "@/lib/utils";
 
 const RANKINGS = [
   {
+    id: "show_all",
+    name: "Show all in this ranking",
+    description: "",
+    icon: "",
+  },
+  {
     id: "starter",
     name: "Starter",
     description: "Building hours and getting initial ratings.",
@@ -21,13 +27,15 @@ const RANKINGS = [
   {
     id: "pro",
     name: "Pro",
-    description: "High ratings, reliable. Lower commission and better visibility.",
+    description:
+      "High ratings, reliable. Lower commission and better visibility.",
     icon: "images/search/tutor-ranking/pro",
   },
   {
     id: "master",
     name: "Master",
-    description: "Top ratings, high volume. Lowest commission and maximum search boost.",
+    description:
+      "Top ratings, high volume. Lowest commission and maximum search boost.",
     icon: "images/search/tutor-ranking/master",
   },
 ];
@@ -47,15 +55,14 @@ export function RankingDropdown() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // measure content for bottom sheet auto height
+  // measure content for sheet auto height
   useLayoutEffect(() => {
     if (open && contentRef.current) {
-      const h = contentRef.current.scrollHeight;
-      setContentHeight(h);
+      setContentHeight(contentRef.current.scrollHeight);
     }
   }, [open]);
 
-  const isSelected = selected !== "Show all in this ranking";
+  const isShowAll = selected === "Show all in this ranking";
   const dropdownWidth = 311;
   const dropdownHeight = 400;
 
@@ -64,14 +71,27 @@ export function RankingDropdown() {
       onClick={() => isMobile && setOpen(true)}
       className={cn(
         "flex w-full items-center justify-between rounded-[12px] border px-4 py-2 text-left shadow-sm hover:border-neutral-300 transition-all focus:outline-none h-[44px] lg:h-[60px]",
-        isSelected
+        !isShowAll
           ? "border-electric-violet-200 bg-electric-violet-50"
           : "border-electric-violet-50 bg-white"
       )}
     >
-      <div className="flex flex-col text-start">
+      <div className="flex flex-col text-start w-full">
         <AnimatePresence mode="wait">
-          {selected.toLowerCase().includes("show all") ? (
+          {isMobile ? (
+            // 📱 MOBILE — no floating label
+            <motion.span
+              key="mobile"
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.2 }}
+              className="text-[15px] text-neutral-800 font-normal truncate"
+            >
+              {isShowAll ? "Tutor Ranking" : selected}
+            </motion.span>
+          ) : isShowAll ? (
+            // 💻 DESKTOP — default
             <motion.span
               key="default"
               initial={{ opacity: 0, y: 4 }}
@@ -83,6 +103,7 @@ export function RankingDropdown() {
               Tutor Ranking
             </motion.span>
           ) : (
+            // 💻 DESKTOP — floating label + selected
             <motion.div
               key="selected"
               initial={{ opacity: 0 }}
@@ -115,10 +136,9 @@ export function RankingDropdown() {
     </button>
   );
 
-  // ✅ MOBILE MODE → bottom sheet
+  // ✅ MOBILE MODE
   if (isMobile) {
     const sheetHeight = Math.min(contentHeight + 60, dropdownHeight);
-
     return (
       <>
         {TriggerButton}
@@ -147,28 +167,24 @@ export function RankingDropdown() {
                     <X className="w-5 h-5 text-gray-500" />
                   </button>
                 </div>
-                <div ref={contentRef} className="flex flex-col">
-                  {RANKINGS.map((ranking, index) => {
-                    const isFirst = index === 0;
-                    const isLast = index === RANKINGS.length - 1;
 
-                    return (
-                      <button
-                        key={ranking.id}
-                        onClick={() => {
-                          setSelected(ranking.name);
-                          setOpen(false);
-                        }}
-                        className={cn(
-                          "h-full flex items-start w-full border-b px-4 py-3 text-left transition",
-                          isFirst && "rounded-t-[12px]",
-                          isLast && "rounded-b-[12px] border-b-0",
-                          selected === ranking.name
-                            ? "bg-electric-violet-50 text-electric-violet-600"
-                            : "text-neutral-700 hover:bg-neutral-50"
-                        )}
-                      >
-                        <div className="flex items-start gap-3 w-full">
+                <div ref={contentRef} className="flex flex-col overflow-y-auto dropdown-scroll">
+                  {RANKINGS.map((ranking) => (
+                    <button
+                      key={ranking.id}
+                      onClick={() => {
+                        setSelected(ranking.name);
+                        setOpen(false);
+                      }}
+                      className={cn(
+                        "flex items-start w-full border-b px-4 py-3 text-left transition",
+                        selected === ranking.name
+                          ? "bg-electric-violet-50 text-electric-violet-600"
+                          : "text-neutral-700 hover:bg-neutral-50"
+                      )}
+                    >
+                      <div className="flex items-start gap-3 w-full">
+                        {ranking.icon && (
                           <div className="flex-shrink-0 mt-1">
                             <Image
                               src={`/${ranking.icon}.svg`}
@@ -177,25 +193,27 @@ export function RankingDropdown() {
                               height={40}
                             />
                           </div>
-                          <div className="flex flex-col text-left">
-                            <span
-                              className={cn(
-                                "font-semibold text-sm",
-                                selected === ranking.name
-                                  ? "text-electric-violet-600"
-                                  : "text-neutral-900"
-                              )}
-                            >
-                              {ranking.name}
-                            </span>
+                        )}
+                        <div className="flex flex-col text-left">
+                          <span
+                            className={cn(
+                              "font-semibold text-sm",
+                              selected === ranking.name
+                                ? "text-electric-violet-600"
+                                : "text-neutral-900"
+                            )}
+                          >
+                            {ranking.name}
+                          </span>
+                          {ranking.description && (
                             <span className="text-xs text-neutral-500 mt-1 leading-relaxed">
                               {ranking.description}
                             </span>
-                          </div>
+                          )}
                         </div>
-                      </button>
-                    );
-                  })}
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </motion.div>
             </>
@@ -205,7 +223,7 @@ export function RankingDropdown() {
     );
   }
 
-  // 💻 DESKTOP MODE → Radix dropdown
+  // 💻 DESKTOP MODE
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>{TriggerButton}</DropdownMenuTrigger>
@@ -219,33 +237,35 @@ export function RankingDropdown() {
             className="border-none bg-transparent shadow-none p-0"
           >
             <motion.div
-              style={{ width: "311px", maxHeight: "400px" }}
+              style={{
+                width: `${dropdownWidth}px`,
+                maxHeight: `${dropdownHeight}px`,
+              }}
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.15 }}
             >
-              <div className="bg-white rounded-[12px] border border-neutral-200 shadow-md">
-                {RANKINGS.map((ranking, index) => {
-                  const isFirst = index === 0;
-                  const isLast = index === RANKINGS.length - 1;
-                  return (
-                    <button
-                      key={ranking.id}
-                      onClick={() => {
-                        setSelected(ranking.name);
-                        setOpen(false);
-                      }}
-                      className={cn(
-                        "h-full flex items-start w-full border-b px-4 py-3 text-left transition",
-                        isFirst && "rounded-t-[12px]",
-                        isLast && "rounded-b-[12px] border-b-0",
-                        selected === ranking.name
-                          ? "bg-electric-violet-50 text-electric-violet-600"
-                          : "text-neutral-700 hover:bg-neutral-50"
-                      )}
-                    >
-                      <div className="flex items-start gap-3 w-full">
+              <div
+                className="bg-white rounded-[12px] border border-neutral-200 shadow-md overflow-y-auto dropdown-scroll"
+                style={{ maxHeight: `${dropdownHeight}px` }}
+              >
+                {RANKINGS.map((ranking) => (
+                  <button
+                    key={ranking.id}
+                    onClick={() => {
+                      setSelected(ranking.name);
+                      setOpen(false);
+                    }}
+                    className={cn(
+                      "flex items-start w-full border-b px-4 py-3 text-left transition",
+                      selected === ranking.name
+                        ? "bg-electric-violet-50 text-electric-violet-600"
+                        : "text-neutral-700 hover:bg-neutral-50"
+                    )}
+                  >
+                    <div className="flex items-start gap-3 w-full">
+                      {ranking.icon && (
                         <div className="flex-shrink-0 mt-1">
                           <Image
                             src={`/${ranking.icon}.svg`}
@@ -254,26 +274,46 @@ export function RankingDropdown() {
                             height={40}
                           />
                         </div>
-                        <div className="flex flex-col text-left">
-                          <span
-                            className={cn(
-                              "font-semibold text-sm",
-                              selected === ranking.name
-                                ? "text-electric-violet-600"
-                                : "text-neutral-900"
-                            )}
-                          >
-                            {ranking.name}
-                          </span>
+                      )}
+                      <div className="flex flex-col text-left">
+                        <span
+                          className={cn(
+                            "font-semibold text-sm",
+                            selected === ranking.name
+                              ? "text-electric-violet-600"
+                              : "text-neutral-900"
+                          )}
+                        >
+                          {ranking.name}
+                        </span>
+                        {ranking.description && (
                           <span className="text-xs text-neutral-500 mt-1 leading-relaxed">
                             {ranking.description}
                           </span>
-                        </div>
+                        )}
                       </div>
-                    </button>
-                  );
-                })}
+                    </div>
+                  </button>
+                ))}
               </div>
+
+              {/* ✅ Purple scrollbar */}
+              <style jsx>{`
+                .dropdown-scroll::-webkit-scrollbar {
+                  width: 6px;
+                }
+                .dropdown-scroll::-webkit-scrollbar-thumb {
+                  background-color: #a855f7;
+                  border-radius: 9999px;
+                }
+                .dropdown-scroll::-webkit-scrollbar-thumb:hover {
+                  background-color: #9333ea;
+                }
+                .dropdown-scroll {
+                  scrollbar-width: thin;
+                  scrollbar-color: #a855f7 transparent;
+                }
+              `}</style>
             </motion.div>
           </DropdownMenuContent>
         )}
