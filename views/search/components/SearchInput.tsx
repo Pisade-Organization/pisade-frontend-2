@@ -3,7 +3,7 @@ import { Search } from "lucide-react"
 export default function SearchInput() {
     return (
         <div
-            className="search-input-outline relative max-w-[700px] w-full h-[60px] flex justify-start items-center px-5 gap-x-3 rounded-lg"
+            className="hidden lg:flex search-input-outline relative max-w-[700px] w-full h-[60px] justify-start items-center px-5 gap-x-3 rounded-lg"
             style={{
             background:
                 "linear-gradient(90.6deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.24) 100%)",

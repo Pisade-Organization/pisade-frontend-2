@@ -50,7 +50,7 @@ export function BaseDropdown({
           <button
             ref={triggerRef}
             className={cn(
-              "flex w-full items-center justify-between rounded-[12px] border px-4 py-2 text-left shadow-sm hover:border-neutral-300 transition-all focus:outline-none h-[60px]",
+              "flex w-full items-center justify-between rounded-[12px] border px-4 py-2 text-left shadow-sm hover:border-neutral-300 transition-all focus:outline-none h-[44px] lg:h-[60px]",
               isSelected 
                 ? "border-electric-violet-200 bg-electric-violet-50" 
                 : "border-electric-violet-50 bg-white",
@@ -128,7 +128,7 @@ export function BaseDropdown({
             transition={{ duration: 0.15 }}
           >
             <div 
-              className={`rounded-[12px] border border-neutral-200 shadow-md w-full 
+              className={`bg-white rounded-[12px] border border-neutral-200 shadow-md w-full 
                 ${enableScrolling ? '' : 'dropdown-scroll'}
                 `}
               style={{
@@ -141,43 +141,43 @@ export function BaseDropdown({
               <style jsx>{`
                 ${enableScrolling ? `
                   /* 🔮 Minimal purple scrollbar (WebKit browsers) */
-                  div::-webkit-scrollbar {
+                  .dropdown-scroll::-webkit-scrollbar {
                       width: 6px;
                   }
 
-                  div::-webkit-scrollbar-track {
+                  .dropdown-scroll::-webkit-scrollbar-track {
                       background: transparent;
                   }
 
-                  ::-webkit-scrollbar-button {
+                  .dropdown-scroll::-webkit-scrollbar-button {
                     display: none; /* 🚫 hides the top/bottom arrows */
                     width: 0;
                     height: 0;
                   }
 
-                  div::-webkit-scrollbar-thumb {
+                  .dropdown-scroll::-webkit-scrollbar-thumb {
                       background-color: #a855f7; /* electric-violet-500 */
                       border-radius: 9999px;
                   }
 
-                  div::-webkit-scrollbar-thumb:hover {
+                  .dropdown-scroll::-webkit-scrollbar-thumb:hover {
                       background-color: #9333ea; /* electric-violet-600 */
                   }
 
                   /* 🔮 Firefox support */
-                  * {
+                  .dropdown-scroll {
                       scrollbar-width: thin;
                       scrollbar-color: #a855f7 transparent;
                   }
                 ` : `
                   /* Hide scrollbar completely when scrolling is disabled */
-                  div::-webkit-scrollbar {
+                  .dropdown-scroll::-webkit-scrollbar {
                       display: none;
                       width: 0;
                       height: 0;
                   }
 
-                  div {
+                  .dropdown-scroll {
                       -ms-overflow-style: none;
                       scrollbar-width: none;
                   }
