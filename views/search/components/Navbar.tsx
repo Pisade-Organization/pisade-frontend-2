@@ -9,6 +9,9 @@ import MobileMenu from "./MobileMenu/MobileMenu"
 export default function SearchNavbar() {
     const router = useRouter();
 
+    const onLogoClick = () => {
+        router.push('/')
+    }
     const onSigninClick = () => {
         router.push('/signin')
     }
@@ -17,30 +20,14 @@ export default function SearchNavbar() {
 
             <div className="flex justify-between items-center gap-x-12">
                 <Image
+                    onClick={onLogoClick}
                     src="/logos/pisade.svg"
                     alt="Pisade Logo"
                     width={109}
                     height={36}
                     priority
+                    className="cursor-pointer"
                 />
-
-                <div className="hidden lg:flex justify-between gap-x-9 text-white text-body-2 items-center">
-                    <div className="cursor-pointer">
-                        Home
-                    </div>
-
-                    <div className="cursor-pointer opacity-80">
-                        Find tutors
-                    </div>
-
-                    <div className="cursor-pointer opacity-80">
-                        Become a tutor
-                    </div>
-                    
-                    <div className="cursor-pointer opacity-80">
-                        Plans
-                    </div>
-                </div>
 
             </div>
 
