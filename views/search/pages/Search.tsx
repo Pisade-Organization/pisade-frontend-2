@@ -43,7 +43,8 @@ export default function SearchPage() {
             <SearchHero />
             <FilterPanel mode={mode} setMode={setMode} />
             
-            <div className="px-20 py-11">
+            {/* TUTOR CARDS */}
+            <div className="lg:block px-4 lg:px-20">
                 <div className="mb-6">
                     <h2 className="text-2xl font-bold mb-2">Available Tutors</h2>
                     <p className="text-gray-600">{tutors.length} tutors found</p>

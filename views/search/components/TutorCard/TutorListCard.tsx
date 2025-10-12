@@ -39,7 +39,7 @@ export default function TutorListCard({
             />
 
             {/* RIGHT OF AVATAR */}
-            <div className="w-full flex flex-col justify-start items-center gap-y-3">
+            <div className="hidden lg:flex w-full flex-col justify-start items-center gap-y-3">
 
                 {/* TOP 1/4 */}
                 <div className="w-full flex flex-col justify-start items-center gap-y-2">
@@ -71,6 +71,8 @@ export default function TutorListCard({
 
             </div>
             
+
+            {/* MOBILE */}
 
 
         </div>

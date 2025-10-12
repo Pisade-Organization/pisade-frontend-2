@@ -9,7 +9,7 @@ export default function FilterGrid({ children }: FilterGridProps) {
     <div className="w-full">
       {/* 📱 Mobile/Tablet — horizontal scroll */}
       <div
-        className="w-full flex items-center gap-2 overflow-x-auto pb-2 -mb-2 lg:hidden scroll-smooth no-scrollbar px-4"
+        className="w-full flex items-center gap-2 overflow-x-auto lg:hidden scroll-smooth no-scrollbar"
       >
         {children}
       </div>

@@ -47,6 +47,16 @@ export function RankingDropdown() {
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState(0);
 
+  // 🧱 New: dynamic width
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const [triggerWidth, setTriggerWidth] = useState<number | undefined>(undefined);
+
+  useLayoutEffect(() => {
+    if (triggerRef.current) {
+      setTriggerWidth(triggerRef.current.offsetWidth);
+    }
+  }, [open]);
+
   // detect mobile
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 1024);
@@ -63,11 +73,11 @@ export function RankingDropdown() {
   }, [open]);
 
   const isShowAll = selected === "Show all in this ranking";
-  const dropdownWidth = 311;
   const dropdownHeight = 400;
 
   const TriggerButton = (
     <button
+      ref={triggerRef}
       onClick={() => isMobile && setOpen(true)}
       className={cn(
         "flex w-full items-center justify-between rounded-[12px] border px-4 py-2 text-left shadow-sm hover:border-neutral-300 transition-all focus:outline-none h-[44px] lg:h-[60px]",
@@ -238,7 +248,7 @@ export function RankingDropdown() {
           >
             <motion.div
               style={{
-                width: `${dropdownWidth}px`,
+                width: triggerWidth ? `${triggerWidth}px` : "auto",
                 maxHeight: `${dropdownHeight}px`,
               }}
               initial={{ opacity: 0, y: -4 }}
