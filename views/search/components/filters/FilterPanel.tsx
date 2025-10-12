@@ -11,9 +11,14 @@ import { LanguageDropdown } from "./dropdowns/LanguageDropdown"
 import { EducationLevelDropdown } from "./dropdowns/EducationLevelDropdown"
 // import { AvailabilityDropdown } from "./dropdowns/AvailabilityDropdown/AvailabilityDropdown"
 
-export default function FilterPanel() {
-    const [mode, setMode] = useState<'list' | 'grid'>('list')
+type Mode = 'list' | 'grid';
 
+interface FilterPanelProps {
+    mode: Mode;
+    setMode: React.Dispatch<React.SetStateAction<Mode>>;
+}
+
+export default function FilterPanel({ mode, setMode }: FilterPanelProps) {
     return (
         <div className="w-full pt-8 pb-10 px-4 lg:px-20
             flex flex-col justify-center items-center gap-y-4
@@ -33,5 +38,5 @@ export default function FilterPanel() {
                 
             </FilterGrid>
         </div>
-    )
+    );
 }
