@@ -29,7 +29,7 @@ export default function SearchPage() {
 
     if (loading) {
         return (
-            <div>
+            <div className="">
                 <SearchHero />
                 <FilterPanel mode={mode} setMode={setMode} />
                 <div className="flex justify-center items-center h-64">
@@ -40,12 +40,12 @@ export default function SearchPage() {
     }
 
     return (
-        <div>
+        <div className="">
             <SearchHero />
             <FilterPanel mode={mode} setMode={setMode} />
             
             {/* TUTOR CARDS */}
-            <div className="lg:block px-4 lg:px-20">
+            <div className="lg:block px-4 lg:px-20 lg:py-11 pb-24 lg:pb-0">
                 <div className="mb-6">
                     <h2 className="text-2xl font-bold mb-2">Available Tutors</h2>
                     <p className="text-gray-600">{tutors.length} tutors found</p>

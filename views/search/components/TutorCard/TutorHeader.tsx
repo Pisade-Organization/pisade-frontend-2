@@ -9,7 +9,7 @@ export default function TutorHeader({
     subject: string,
 }) {
     return (
-        <div className="flex flex-col justify-between items-center gap-y-1">
+        <div className="w-full flex flex-col justify-center items-start gap-y-1">
             {/* NAME + FLAG */}
             <div className="flex justify-center items-center gap-x-3">
                 {/* FULL NAME */}
