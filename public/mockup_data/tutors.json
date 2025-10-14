@@ -28,7 +28,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": true
+        "isActive": true,
+        "tutorRanking": "PRO"
       },
       {
         "id": "tutor_002",
@@ -50,7 +51,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": false
+        "isActive": false,
+        "tutorRanking": "MASTER"
       },
       {
         "id": "tutor_003",
@@ -72,7 +74,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": true
+        "isActive": true,
+        "tutorRanking": "MASTER"
       },
       {
         "id": "tutor_004",
@@ -94,7 +97,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": false
+        "isActive": false,
+        "tutorRanking": "PRO"
       },
       {
         "id": "tutor_005",
@@ -116,7 +120,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": true
+        "isActive": true,
+        "tutorRanking": "PRO"
       },
       {
         "id": "tutor_006",
@@ -138,7 +143,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": false
+        "isActive": false,
+        "tutorRanking": "MASTER"
       },
       {
         "id": "tutor_007",
@@ -160,7 +166,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": true
+        "isActive": true,
+        "tutorRanking": "MASTER"
       },
       {
         "id": "tutor_008",
@@ -182,7 +189,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": true
+        "isActive": true,
+        "tutorRanking": "MASTER"
       },
       {
         "id": "tutor_009",
@@ -204,7 +212,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": false
+        "isActive": false,
+        "tutorRanking": "PRO"
       },
       {
         "id": "tutor_010",
@@ -226,7 +235,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": true
+        "isActive": true,
+        "tutorRanking": "STARTER"
       },
       {
         "id": "tutor_011",
@@ -248,7 +258,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": false
+        "isActive": false,
+        "tutorRanking": "MASTER"
       },
       {
         "id": "tutor_012",
@@ -270,7 +281,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": true
+        "isActive": true,
+        "tutorRanking": "PRO"
       },
       {
         "id": "tutor_013",
@@ -292,7 +304,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": false
+        "isActive": false,
+        "tutorRanking": "PRO"
       },
       {
         "id": "tutor_014",
@@ -314,7 +327,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": true
+        "isActive": true,
+        "tutorRanking": "PRO"
       },
       {
         "id": "tutor_015",
@@ -336,7 +350,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": false
+        "isActive": false,
+        "tutorRanking": "MASTER"
       },
       {
         "id": "tutor_016",
@@ -358,7 +373,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": true
+        "isActive": true,
+        "tutorRanking": "PRO"
       },
       {
         "id": "tutor_017",
@@ -380,7 +396,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": false
+        "isActive": false,
+        "tutorRanking": "PRO"
       },
       {
         "id": "tutor_018",
@@ -402,7 +419,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": true
+        "isActive": true,
+        "tutorRanking": "STARTER"
       },
       {
         "id": "tutor_019",
@@ -424,7 +442,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": false
+        "isActive": false,
+        "tutorRanking": "MASTER"
       },
       {
         "id": "tutor_020",
@@ -446,7 +465,8 @@
         },
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
-        "isActive": true
+        "isActive": true,
+        "tutorRanking": "PRO"
       }
     ],
     "total": 20,

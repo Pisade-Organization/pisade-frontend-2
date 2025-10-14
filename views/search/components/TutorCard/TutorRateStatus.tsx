@@ -12,12 +12,12 @@ export default function TutorRateStatus({
 
             <div className="flex justify-center items-center gap-1">
 
-                <div className="text-headline-4 text-neutral-900">
+                <div className="text-title-1 lg:text-headline-4 text-neutral-900">
                     ฿{baseRate}
                 </div>
 
-                <div className="text-body-2 text-neutral-600">
-                    /50min
+                <div className="text-body-3 lg:text-body-2 text-neutral-600">
+                    /50m
                 </div>
 
             </div>

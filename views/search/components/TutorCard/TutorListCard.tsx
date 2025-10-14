@@ -26,16 +26,19 @@ export default function TutorListCard({
   }: TutorCardProps) { 
     return (
         <div className="
-        w-full bg-white border border-neutral-50 lg:border-none p-4 lg:p-0
-        flex flex-col lg:flex-row lg:gap-x-5 gap-y-4 lg:gap-y-0 
+        cursor-pointer w-full bg-white border border-neutral-50 lg:border-none p-4 lg:p-0
+        flex flex-col lg:flex-row lg:gap-x-5 gap-y-4 lg:gap-y-0 rounded-[15px] lg:rounded-none
         px-
         ">
             
             {/* DESKTOP */}
+
+            {/* AVATAR */}
             <TutorAvatar
                 fullName={fullName}
                 avatarUrl={avatarUrl}
                 isActive={isActive}
+                className={"hidden lg:block"}
             />
 
             {/* RIGHT OF AVATAR */}
@@ -73,6 +76,48 @@ export default function TutorListCard({
             
 
             {/* MOBILE */}
+
+            {/* TUTOR AVATAR + HEADER */}
+            <div className="lg:hidden w-full flex justify-start items-center gap-x-4">
+                <TutorAvatar
+                    fullName={fullName}
+                    avatarUrl={avatarUrl}
+                    isActive={isActive}
+                />
+
+                <div className="flex flex-col justify-center items-start gap-y-1">
+                    <TutorHeader fullName={fullName} flagUrl={flagUrl} subject={subject}/>
+                    <TutorRateStatus 
+                        baseRate={baseRate}
+                        isActive={isActive}
+                    />
+                </div>
+            </div>
+
+            {/* DIVIDER */}
+            <div className="lg:hidden w-full border border-neutral-50"></div>
+
+            {/* STATS + SPECIALTIES + BIO + LANGUAGES */}
+            <div className="lg:hidden w-full flex flex-col justify-center items-start gap-y-2">
+                <TutorStats 
+                    avgRating={avgRating}
+                    studentsCount={studentsCount}
+                    lessonsCount={lessonsCount}
+                />
+
+                <SpecialtyBadges specialties={specialties} />
+
+                <TutorBio bio={bio} />
+
+                <TutorLanguages languages={languages} />
+            
+            </div>
+
+            {/* DIVIDER */}
+            <div className="lg:hidden w-full border border-neutral-50"></div>
+
+            {/* ACTION BUTTONS */}
+            <TutorActionButtons className={'lg:hidden'} />
 
 
         </div>

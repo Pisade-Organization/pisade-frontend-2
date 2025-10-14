@@ -1,10 +1,15 @@
+import { cn } from "@/lib/utils"
 import { Calendar } from "lucide-react"
 import { Heart } from "lucide-react"
 import { MessageCircle } from "lucide-react"
 
-export default function TutorActionButtons() {
+export default function TutorActionButtons({
+    className
+}: { 
+    className?: string
+}) {
     return (
-        <div className="flex justify-center items-center gap-x-2">
+        <div className={cn("w-full flex justify-between lg:justify-end items-center gap-x-2" , className)}>
             
             <div className="flex justify-center items-center gap-x-1">
                 <Calendar size={44} className="p-[10px] text-neutral-700"/>

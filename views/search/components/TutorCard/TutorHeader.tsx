@@ -13,7 +13,7 @@ export default function TutorHeader({
             {/* NAME + FLAG */}
             <div className="flex justify-center items-center gap-x-3">
                 {/* FULL NAME */}
-                <div className="text-headline-4 text-neutral-900">
+                <div className="text-title-2 lg:text-headline-4 text-neutral-900">
                     { fullName }
                 </div>
 
@@ -28,7 +28,7 @@ export default function TutorHeader({
             </div>
 
             {/* SUBJECT */}
-            <div className="w-full text-left text-label-2 text-neutral-500">
+            <div className="w-full text-left text-body-3 lg:text-label-2 text-neutral-500">
                 {subject}
             </div>
         </div>

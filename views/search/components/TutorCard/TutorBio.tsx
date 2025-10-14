@@ -9,14 +9,14 @@ export default function TutorBio({ bio }: { bio: string }) {
 
     return (
         <div className="w-full">
-            <p className="text-body-2 text-neutral-500">
+            <p className="text-body-3 lg:text-body-2 text-neutral-500">
                 {displayText}
                 {shouldTruncate && !isExpanded && "..."}
             </p>
             {shouldTruncate && (
                 <button
                     onClick={() => setIsExpanded(!isExpanded)}
-                    className="text-body-2 text-neutral-500 underline transition-colors "
+                    className="text-body-3 lg:text-body-2 text-neutral-500 underline transition-colors "
                 >
                     {isExpanded ? "Show less" : "Learn more"}
                 </button>

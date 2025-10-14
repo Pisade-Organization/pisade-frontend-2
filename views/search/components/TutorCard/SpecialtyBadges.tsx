@@ -6,7 +6,7 @@ export default function SpecialtyBadges({
     specialties: string[]
 }) {
     return (
-        <div className="w-full flex justify-start items-center gap-x-2">
+        <div className="w-full flex flex-wrap justify-start items-center gap-x-2 gap-y-2">
         {specialties.length <= 3 ? (
             specialties.map((specialty, idx) => (
                 <SpecialtyBadge key={idx} specialty={specialty} />

@@ -5,6 +5,7 @@ import FilterPanel from "../components/filters/FilterPanel"
 import TutorListCard from "../components/TutorCard/TutorListCard"
 import { TutorCardProps } from "../types"
 import axios from "axios"
+import TutorGridCard from "../components/TutorCard/TutorGridCard"
 
 export default function SearchPage() {
     const [mode, setMode] = useState<'list' | 'grid'>('list')
@@ -50,13 +51,21 @@ export default function SearchPage() {
                     <p className="text-gray-600">{tutors.length} tutors found</p>
                 </div>
                 <div className={`grid gap-6 ${mode === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
-                    {tutors.map((tutor) => (
-                        <TutorListCard
-                            key={tutor.id}
-                            view={mode}
-                            {...tutor}
-                        />
-                    ))}
+                    {tutors.map((tutor) =>
+                        mode === 'grid' ? (
+                            <TutorGridCard
+                                key={tutor.id}
+                                view={mode}
+                                {...tutor}
+                            />
+                        ) : (
+                            <TutorListCard
+                                key={tutor.id}
+                                view={mode}
+                                {...tutor}
+                            />
+                        )
+                    )}
                 </div>
             </div>
         </div>
