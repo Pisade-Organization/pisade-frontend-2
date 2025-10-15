@@ -11,6 +11,7 @@ export interface TutorCardProps {
     subject: string;
     languages: string[];
     avgRating: number;
+    tutorRanking: 'STARTER' | 'PRO' | 'MASTER';
     studentsCount: number;
     lessonsCount: number;
     availability: {

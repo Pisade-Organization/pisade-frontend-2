@@ -5,11 +5,13 @@ export default function TutorAvatar({
     fullName,
     avatarUrl,
     isActive,
+    tutorRanking,
     className
 }: {
     fullName: string,
     avatarUrl: string,
     isActive: boolean,
+    tutorRanking: 'STARTER' | 'PRO' | 'MASTER'
     className?: string
 }) {
     return (
@@ -26,6 +28,16 @@ export default function TutorAvatar({
             {isActive && (
                 <div className="absolute top-2 lg:top-3 left-0 w-[10px] h-[10px] lg:w-4 lg:h-4 bg-green-600 rounded-full border-2 border-white z-20" />
             )}
+
+            <div className="absolute border border-white bg-electric-violet-25 rounded-full right-0 bottom-0 z-20">
+                <Image 
+                    src={`icons/tutor-ranking/${tutorRanking}.svg`}
+                    alt={`${tutorRanking} icon`}
+                    width={24}
+                    height={24}
+                    className="rounded-full w-6 h-6 object-cover"
+                />
+            </div>
         </div>
 
     )

@@ -127,6 +127,7 @@ module.exports = {
 					900: '#552a6b'
 				},
 				'electric-violet': {
+					25: '#FBF7FE',
 					50: '#f0e6fd',
 					100: '#d2b2f8',
 					200: '#bc8df4',

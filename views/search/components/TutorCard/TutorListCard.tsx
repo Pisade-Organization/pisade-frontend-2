@@ -22,6 +22,7 @@ export default function TutorListCard({
     avgRating,
     studentsCount,
     lessonsCount,
+    tutorRanking,
     videoThumbnailUrl,
   }: TutorCardProps) { 
     return (
@@ -38,6 +39,7 @@ export default function TutorListCard({
                 fullName={fullName}
                 avatarUrl={avatarUrl}
                 isActive={isActive}
+                tutorRanking={tutorRanking}
                 className={"hidden lg:block"}
             />
 
@@ -83,6 +85,7 @@ export default function TutorListCard({
                     fullName={fullName}
                     avatarUrl={avatarUrl}
                     isActive={isActive}
+                    tutorRanking={tutorRanking}
                 />
 
                 <div className="flex flex-col justify-center items-start gap-y-1">

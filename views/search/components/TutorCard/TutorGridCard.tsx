@@ -23,6 +23,7 @@ export default function TutorGridCard({
   avgRating,
   studentsCount,
   lessonsCount,
+  tutorRanking,
   videoThumbnailUrl,
 }: TutorCardProps) {
   return (
@@ -39,6 +40,7 @@ export default function TutorGridCard({
             avatarUrl={avatarUrl}
             isActive={isActive}
             fullName={fullName}
+            tutorRanking={tutorRanking}
           />
           <TutorActionButtons className="hidden xl:flex" />
         </div>
