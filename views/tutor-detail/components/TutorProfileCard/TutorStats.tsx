@@ -10,12 +10,12 @@ export default function TutorStats({
     lessonsCount: number
 }) {
     return (
-        <div className="flex justify-between items-center">
+        <div className="w-full flex justify-between items-center">
 
             <div className="flex flex-col justify-center items-start">
                 <div className="flex justify-center items-center gap-x-1">
                     <div className="text-neutral-900 text-headline-5">{avgRating}/5</div>
-                    <Star color={"#FFB130"} size={20}/>
+                    <Star color={"#FFB130"} fill={"#FFB130"} size={20}/>
                 </div>
 
                 <div className="text-neutral-600 text-body-3 lg:text-body-2">
