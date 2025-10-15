@@ -1,4 +1,4 @@
-
+import TutorProfileCard from "../components/TutorProfileCard"
 
 export default function TutorDetailPage({
     tutorId
@@ -7,7 +7,7 @@ export default function TutorDetailPage({
 }) {
     return (
         <div className="min-h-screen flex justify-center items-center">
-            {tutorId}
+            <TutorProfileCard></TutorProfileCard>
 
         </div>
     )
