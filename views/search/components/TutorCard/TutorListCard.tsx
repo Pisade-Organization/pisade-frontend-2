@@ -1,4 +1,5 @@
 "use client"
+import { useRouter } from "next/navigation"
 import { TutorCardProps } from "../../types"
 import TutorAvatar from "./TutorAvatar"
 import TutorHeader from "./TutorHeader"
@@ -10,6 +11,7 @@ import TutorBio from "./TutorBio"
 import TutorLanguages from "./TutorLanguages"
 
 export default function TutorListCard({
+    id,
     fullName,
     avatarUrl,
     flagUrl,
@@ -25,8 +27,14 @@ export default function TutorListCard({
     tutorRanking,
     videoThumbnailUrl,
   }: TutorCardProps) { 
+    const router = useRouter()
+    const onCardClick = () => {
+        router.push(`/tutor/${id}`)
+    }
     return (
-        <div className="
+        <div 
+        onClick={onCardClick}
+        className="
         cursor-pointer w-full bg-white border border-neutral-50 lg:border-none p-4 lg:p-0
         flex flex-col lg:flex-row lg:gap-x-5 gap-y-4 lg:gap-y-0 rounded-[15px] lg:rounded-none
         px-
