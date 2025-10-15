@@ -20,7 +20,7 @@ export default function FilterGrid({ children }: FilterGridProps) {
         style={{
           gridTemplateAreas: `
             "item1 item2 item3 item4"
-            "item5 item6 item7 ."
+            "item5 item6 item7 item7"
           `,
           gridTemplateColumns: "repeat(4, 1fr)",
           gridTemplateRows: "repeat(2, auto)",

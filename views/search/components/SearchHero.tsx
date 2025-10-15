@@ -1,6 +1,6 @@
 "use client"
 
-import SearchNavbar from "./Navbar"
+import SearchNavbar from "../../../components/Navbar"
 import SearchInput from "./SearchInput"
 import Image from "next/image"
 import { motion } from "framer-motion"

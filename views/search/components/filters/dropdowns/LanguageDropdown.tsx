@@ -169,7 +169,7 @@ export function LanguageDropdown() {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
                 <div className="flex justify-between items-center px-4 py-3 border-b">
-                  <h2 className="font-semibold text-base">Language</h2>
+                  <h2 className="text-neutral-900 text-title-1">Language</h2>
                   <button onClick={() => setOpen(false)}>
                     <X className="w-5 h-5 text-gray-500" />
                   </button>

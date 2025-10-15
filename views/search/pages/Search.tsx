@@ -9,6 +9,8 @@ import TutorGridCard from "../components/TutorCard/TutorGridCard"
 
 export default function SearchPage() {
     const [mode, setMode] = useState<'list' | 'grid'>('list')
+    const [minPrice, setMinPrice] = useState<number>(0)
+    const [maxPrice, setMaxPrice] = useState<number>(3000);
     const [tutors, setTutors] = useState<TutorCardProps[]>([])
     const [loading, setLoading] = useState(true)
 
@@ -31,7 +33,11 @@ export default function SearchPage() {
         return (
             <div className="">
                 <SearchHero />
-                <FilterPanel mode={mode} setMode={setMode} />
+                <FilterPanel 
+                    mode={mode} setMode={setMode} 
+                    minPrice={minPrice} setMinPrice={setMinPrice}
+                    maxPrice={maxPrice} setMaxPrice={setMaxPrice}
+                />
                 <div className="flex justify-center items-center h-64">
                     <div className="text-lg">Loading tutors...</div>
                 </div>
@@ -42,7 +48,11 @@ export default function SearchPage() {
     return (
         <div className="">
             <SearchHero />
-            <FilterPanel mode={mode} setMode={setMode} />
+            <FilterPanel 
+                mode={mode} setMode={setMode} 
+                minPrice={minPrice} setMinPrice={setMinPrice}
+                maxPrice={maxPrice} setMaxPrice={setMaxPrice}
+            />
             
             {/* TUTOR CARDS */}
             <div className="lg:block px-4 lg:px-20 lg:py-11 pb-24 lg:pb-0">

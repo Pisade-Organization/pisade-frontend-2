@@ -77,7 +77,7 @@ export function SpecialtyDropdown() {
       ref={triggerRef}
       onClick={() => isMobile && setOpen(true)}
       className={cn(
-        "flex w-full items-center justify-between rounded-[12px] border px-4 py-2 text-left shadow-sm hover:border-neutral-300 transition-all focus:outline-none h-[44px] lg:h-[56px]",
+        "flex w-full items-center justify-between rounded-[12px] border px-4 py-2 text-left shadow-sm hover:border-neutral-300 transition-all focus:outline-none h-[44px] lg:h-[60px]",
         !isShowAll
           ? "border-electric-violet-200 bg-electric-violet-50"
           : "border-electric-violet-50 bg-white"
@@ -170,7 +170,7 @@ export function SpecialtyDropdown() {
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
                 <div className="flex justify-between items-center px-4 py-3 border-b">
-                  <h2 className="font-semibold text-base">Specialty</h2>
+                  <h2 className="text-neutral-900 text-title-1">Specialty</h2>
                   <button onClick={() => setOpen(false)}>
                     <X className="w-5 h-5 text-gray-500" />
                   </button>
