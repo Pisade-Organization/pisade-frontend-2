@@ -83,7 +83,7 @@ export default function TutorDetailPage({
             </div>
             
             {/* DESKTOP */}
-            <div className="relative flex justify-center items-start gap-[29px] px-20">
+            <div className="hidden relative lg:flex justify-center items-start gap-[29px] px-20">
 
                 <div className="absolute w-full h-[252px] top-0 left-0 z-10">
                     <HeroBanner/>
