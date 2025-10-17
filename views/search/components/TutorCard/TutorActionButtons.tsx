@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils"
 import { Calendar } from "lucide-react"
 import { Heart } from "lucide-react"
 import { MessageCircle } from "lucide-react"
+import BaseButton from "@/components/base/BaseButton"
 
 export default function TutorActionButtons({
     className
@@ -19,9 +20,9 @@ export default function TutorActionButtons({
                 <MessageCircle size={44} className="p-[10px] text-neutral-700"/>
             </div>
 
-            <button className="text-label-2 text-white bg-electric-violet-500 py-3 px-4 rounded-xl transition-colors duration-200 hover:bg-electric-violet-600">
-                Book trial lesson
-            </button>
+            <BaseButton>
+                Book lesson
+            </BaseButton>
         </div>
     )
 }

@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Search } from "lucide-react"
 import MobileMenu from "./MobileMenu/MobileMenu"
+import BaseButton from "./base/BaseButton"
 
 export default function SearchNavbar() {
     const router = useRouter();
@@ -48,14 +49,18 @@ export default function SearchNavbar() {
                 </button>
 
                 {/* Sign up */}
-                <div className="cursor-pointer py-3 px-4 bg-black rounded-lg">
+                <BaseButton
+                    variant="secondary"
+                    typeStyle="borderless"
+                >
                     Sign Up
-                </div>
+                </BaseButton>
 
                 {/* Sign in */}
-                <div onClick={onSigninClick} className="cursor-pointer bg-electric-violet-500 py-3 px-4 rounded-lg">
+                <BaseButton 
+                    onClick={onSigninClick}>
                     Sign In
-                </div>
+                </BaseButton>
 
 
             </div>
