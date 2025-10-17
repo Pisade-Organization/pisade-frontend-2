@@ -3,19 +3,23 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
 export default function Controls({
     currentReview,
-    setCurrentReview
+    setCurrentReview,
+    setDirection,
+    total
 }: {
     currentReview: number,
-    setCurrentReview: (currentReview: number) => void
+    setCurrentReview: (currentReview: number) => void,
+    setDirection: (dir: 1 | -1) => void,
+    total: number
 }) {
-	// Temporary total count for the indicator; replace with prop if needed
-	const total = 4
 
 	const goPrev = () => {
+		setDirection(-1)
 		setCurrentReview((currentReview - 1 + total) % total)
 	}
 
 	const goNext = () => {
+		setDirection(1)
 		setCurrentReview((currentReview + 1) % total)
 	}
     return (

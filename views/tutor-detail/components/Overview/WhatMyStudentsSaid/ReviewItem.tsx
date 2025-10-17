@@ -55,6 +55,11 @@ export default function ReviewItem({
 
                 </div>
             </div>
+
+            {/* REVIEW TEXT */}
+            <div className="text-body-2 text-neutral-600">
+                {review}
+            </div>
         </div>
     )
 }

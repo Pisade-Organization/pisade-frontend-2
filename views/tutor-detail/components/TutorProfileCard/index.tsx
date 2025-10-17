@@ -9,7 +9,7 @@ import SendMessageBtn from "./SendMessageBtn"
 
 export default function TutorProfileCard() {
     return (
-        <div className="flex flex-col justify-center items-start lg:items-center
+        <div className="bg-white w-full lg:max-w-[334px] flex flex-col justify-center items-start lg:items-center
             rounded-[12px] lg:rounded-[15px] border border-neutral-50 p-4 lg:p-6 
             gap-y-3 lg:gap-5
         ">
@@ -37,6 +37,7 @@ export default function TutorProfileCard() {
             <TutorAvatar 
                     avatarUrl="https://t4.ftcdn.net/jpg/03/83/25/83/360_F_383258331_D8imaEMl8Q3lf7EKU2Pi78Cn0R7KkW9o.jpg"
                     fullName="Alana Somchai Degrey"
+                    className="hidden lg:flex"
                 />
 
             {/* DESKTOP NAME + SUBJECT + RATE */}

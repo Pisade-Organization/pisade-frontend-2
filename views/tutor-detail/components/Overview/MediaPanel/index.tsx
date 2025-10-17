@@ -15,18 +15,18 @@ export default function MediaPanel({
     hoursTaught: number
 }) {
     return (
-        <div className="flex flex-col rounded-[15px]">
+        <div className="w-full flex flex-col rounded-[15px]">
             <Thumbnail 
                 videoThumbnailUrl={videoThumbnailUrl}
                 videoUrl={videoUrl}
                 fullName={fullName}
             />
 
-            <div className="rounded-b-[15px] border border-neutral-100 flex justify-center items-center gap-x-4 p-3">
+            <div className="rounded-b-[15px] border border-neutral-100 flex justify-between items-center gap-4 py-4 px-[13px]">
 
                 <RankingLevel tutorRanking={tutorRanking} />
 
-                <div className="h-full border border-neutral-100"></div>
+                <div className="h-[47px] w-px bg-neutral-100"></div>
 
                 <HoursTaught hoursTaught={hoursTaught} />
 

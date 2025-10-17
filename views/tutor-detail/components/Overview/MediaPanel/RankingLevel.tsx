@@ -4,9 +4,9 @@ export default function RankingLevel({
 }: {
     tutorRanking: 'STARTER' | 'PRO' | 'MASTER'
 }) {
-    const tutorRankingBadgeSrc = `icons/tutor-ranking/${tutorRanking}.svg`
+    const tutorRankingBadgeSrc = `/icons/tutor-ranking/${tutorRanking}.svg`
     return (
-        <div className="flex justify-center items-center gap-y-2 px-5">
+        <div className="w-full flex justify-center items-center gap-2 px-5">
             
             <Image 
                 src={tutorRankingBadgeSrc}
@@ -18,7 +18,7 @@ export default function RankingLevel({
 
             <div className="flex flex-col justify-center items-start">
                 <div className="text-body-3 text-neutral-600">Ranking Level</div>
-                <div className="text-headline-5 text-electic-violet-600">
+                <div className="text-headline-5 text-electric-violet-600">
                     {tutorRanking.charAt(0) + tutorRanking.slice(1).toLowerCase()}
                 </div>
             </div>

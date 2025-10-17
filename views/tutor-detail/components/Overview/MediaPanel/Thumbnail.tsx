@@ -13,15 +13,17 @@ export default function Thumbnail({
     return (
         <div className="cursor-pointer relative w-full aspect-video rounded-t-[8px]">
             <Image 
-                width={567} 
-                height={320} 
                 src={videoThumbnailUrl} 
                 alt={`Introduction video of ${fullName}`}
-                className="w-[343px] h-[194px] lg:w-[567px] lg:h-[320px] rounded-t-[8px]"
+                fill
+                className="object-cover w-full h-full rounded-t-[8px]"
+                sizes="(min-width: 1024px) 567px, 100vw"
             />
 
-            <div className="absolute w-11 h-11 rounded-full bg-[#0B002B] bg-opacity-50">
-                <Play size={28} fill="white" color="white"/>
+            <div className="absolute inset-0 flex items-center justify-center">
+                <div className="shadow-md w-11 h-11 rounded-full bg-[#0B002B] bg-opacity-50 flex items-center justify-center">
+                    <Play size={18} fill="white" color="white"/>
+                </div>
             </div>
         </div>
     )

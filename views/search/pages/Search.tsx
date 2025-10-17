@@ -6,6 +6,7 @@ import TutorListCard from "../components/TutorCard/TutorListCard"
 import { TutorCardProps } from "../types"
 import axios from "axios"
 import TutorGridCard from "../components/TutorCard/TutorGridCard"
+import Navbar from "@/components/Navbar"
 
 export default function SearchPage() {
     const [mode, setMode] = useState<'list' | 'grid'>('list')
@@ -32,7 +33,7 @@ export default function SearchPage() {
     if (loading) {
         return (
             <div className="">
-                <SearchHero />
+                <Navbar variant="search" />
                 <FilterPanel 
                     mode={mode} setMode={setMode} 
                     minPrice={minPrice} setMinPrice={setMinPrice}
@@ -46,7 +47,8 @@ export default function SearchPage() {
     }
 
     return (
-        <div className="">
+        <>
+            <Navbar variant="search" />
             <SearchHero />
             <FilterPanel 
                 mode={mode} setMode={setMode} 
@@ -78,6 +80,6 @@ export default function SearchPage() {
                     )}
                 </div>
             </div>
-        </div>
+        </>
     )
 }

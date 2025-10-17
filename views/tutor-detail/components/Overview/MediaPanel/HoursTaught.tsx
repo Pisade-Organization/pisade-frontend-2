@@ -6,7 +6,7 @@ export default function HoursTaught({
     hoursTaught: number
 }) {
     return (
-        <div className="flex flex-col justify-center items-center">
+        <div className="w-full flex flex-col justify-center items-center">
             <div className="text-body-3 lg:text-body-4 text-neutral-600">
                 Hours taught
             </div>

@@ -35,7 +35,7 @@ export default function Overview({
     return (
         <>
             {/* MOBILE */}
-            <div className="lg:hidden w-full flex flex-col justify-center items-start gap-y-5">
+            <div className="lg:hidden w-full flex flex-col justify-center items-center gap-y-5">
 
                 <MediaPanel
                     videoThumbnailUrl={videoThumbnailUrl}
@@ -62,10 +62,10 @@ export default function Overview({
             {/* DESKTOP */}
             <div className="w-full hidden lg:flex flex-col justify-center items-start gap-8">
                 {/* TOP */}
-                <div className="w-full flex justify-center items-center gap-8">
+                <div className="w-full flex justify-center items-start gap-8">
 
                     {/* LEFT */}
-                    <div className="flex flex-col justify-center items-start gap-8">
+                    <div className="w-full max-w-[567] flex flex-col justify-center items-start gap-8">
                         <MediaPanel
                             videoThumbnailUrl={videoThumbnailUrl}
                             videoUrl={videoUrl}
@@ -80,7 +80,7 @@ export default function Overview({
                     </div>
 
                     {/* RIGHT */}
-                    <div className="flex flex-col justify-center items-start gap-4">
+                    <div className="flex flex-col justify-start items-center gap-4">
                         <WhatMyStudentsSaid
                             avgRating={avgRating}
                             studentReviewsCount={studentReviewsCount}
@@ -92,7 +92,7 @@ export default function Overview({
 
                 {/* BOTTOM (AVAILABILITY CALENDAR) */}
                 <div>
-                    
+
                 </div>
             </div>
         </>

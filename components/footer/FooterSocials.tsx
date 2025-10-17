@@ -10,9 +10,9 @@ export default function FooterSocials() {
 
             <div className="flex justify-between items-center gap-x-5">
 
-                <Image src="icons/common/linkedin.svg" width={20} height={20} alt="Linkedin icon" />
-                <Image src="icons/common/x.svg" width={20} height={20} alt="X icon" />
-                <Image src="icons/common/facebook.svg" width={20} height={20} alt="Facebook icon" />
+                <Image src="/icons/common/linkedin.svg" width={20} height={20} alt="Linkedin icon" />
+                <Image src="/icons/common/x.svg" width={20} height={20} alt="X icon" />
+                <Image src="/icons/common/facebook.svg" width={20} height={20} alt="Facebook icon" />
 
             </div>
         </div>

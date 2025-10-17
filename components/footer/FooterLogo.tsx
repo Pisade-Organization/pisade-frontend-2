@@ -6,7 +6,7 @@ export default function FooterLogo() {
         <div className="flex flex-col justify-center items-start gap-y-2">
 
             <Image 
-                src="logos/pisade.svg" 
+                src="/logos/pisade.svg" 
                 width={109}
                 height={36}
                 alt="Pisade logo"

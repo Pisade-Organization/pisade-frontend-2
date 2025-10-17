@@ -4,6 +4,7 @@ import SearchNavbar from "../../../components/Navbar"
 import SearchInput from "./SearchInput"
 import Image from "next/image"
 import { motion } from "framer-motion"
+import Navbar from "../../../components/Navbar"
 
 
 export default function SearchHero() {
@@ -29,9 +30,7 @@ export default function SearchHero() {
 
 
     return (
-        <div className="w-full h-[350px] lg:h-[632px] relative overflow-hidden wallpaper-hero">
-            <SearchNavbar />
-
+        <div className="py-14 w-full h-[350px] lg:h-[632px] relative overflow-hidden wallpaper-hero">
             <div
                 className="absolute w-full md:h-[100px] lg:h-[180px] bottom-0"
                 style={{

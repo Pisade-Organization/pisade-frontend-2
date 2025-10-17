@@ -1,15 +1,20 @@
 "use client"
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 
 export default function TutorAvatar({
     avatarUrl,
     fullName,
+    className
 }: {
     avatarUrl: string
     fullName: string
+    className?: string
 }) {
     return (
-        <div className="relative w-20 h-20 lg:w-48 lg:h-48 shrink-0 rounded-full">
+        <div className={cn("relative w-20 h-20 lg:w-48 lg:h-48 shrink-0 rounded-full",
+            className
+        )}>
             <Image
                 src={avatarUrl}
                 width={192}
