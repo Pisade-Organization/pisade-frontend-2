@@ -9,7 +9,7 @@ import SendMessageBtn from "./SendMessageBtn"
 
 export default function TutorProfileCard() {
     return (
-        <div className="bg-white w-full lg:max-w-[334px] flex flex-col justify-center items-start lg:items-center
+        <div className="bg-white w-full lg:w-[334px] flex flex-col justify-center items-start lg:items-center
             rounded-[12px] lg:rounded-[15px] border border-neutral-50 p-4 lg:p-6 
             gap-y-3 lg:gap-5
         ">
