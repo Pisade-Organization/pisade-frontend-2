@@ -1,8 +1,9 @@
-
+"use client"
+import Image from "next/image"
 export default function FooterNewsletter() {
     return (
         <div
-            className="search-input-outline relative flex flex-col max-w-[628px] w-full h-[333px] justify-center items-start px-10 py-9 gap-y-5 rounded-[12px]"
+            className="search-input-outline overflow-hidden relative flex flex-col max-w-[628px] w-full h-[333px] justify-center items-start px-10 py-9 gap-y-5 rounded-[12px]"
             style={{
             background:
                 "linear-gradient(90.6deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.24) 100%)",
@@ -38,6 +39,14 @@ export default function FooterNewsletter() {
             <button className="py-3 px-4 rounded-[8px] bg-electric-violet-500 text-white text-label-3 lg:text-label-2">
                 Let's talk
             </button>
+
+            <Image 
+                src="/icons/common/spark.svg"
+                alt="Spark Icon"
+                width={114}
+                height={114}
+                className="absolute -bottom-12 -right-2.5"
+            />
         </div>
 
     )
