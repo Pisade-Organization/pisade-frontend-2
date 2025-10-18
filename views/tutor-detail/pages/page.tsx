@@ -8,6 +8,7 @@ import ProfileTabs from "../components/ProfileTabs"
 import Overview from "../components/Overview"
 import Footer from "@/components/footer/Footer"
 import BackBtn from "../components/BackBtn"
+import Review from "../components/Reviews"
 
 export default function TutorDetailPage({
     tutorId
@@ -80,6 +81,41 @@ export default function TutorDetailPage({
                         ]}
                     />
                 )}
+
+                {currentTab === "Reviews & ratings" && (
+                    <Review 
+                        reviews={[
+                            {
+                                id: "1",
+                                avatarUrl: "/logos/pisade-mobile.svg",
+                                fullName: "Somchai Degrey",
+                                rating: 5,
+                                date: "March 21, 2025",
+                                review: "My son enjoys talking to her every time he has a lesson, and I'm also very happy with the way she leads the communication and helps improve his vocabulary and grammar."
+                            },
+                            {
+                                id: "2",
+                                avatarUrl: "/logos/pisade-mobile.svg",
+                                fullName: "Ananya P.",
+                                rating: 5,
+                                date: "March 15, 2025",
+                                review: "Very patient and clear explanations. Highly recommend."
+                            },
+                            {
+                                id: "3",
+                                avatarUrl: "/logos/pisade-mobile.svg",
+                                fullName: "Peter P.",
+                                rating: 4,
+                                date: "March 10, 2025",
+                                review: "Alana is an amazing tutor. Her lessons are always interesting and fun."
+                            }
+                        ]}
+                        summary={{
+                            avgRating: 4.5,
+                            totalReviews: 30
+                        }}
+                    />
+                )}
             </div>
             
             {/* DESKTOP */}
@@ -147,6 +183,41 @@ export default function TutorDetailPage({
                                 "Academic Writing Advisor"
                             ]}
                         />)}
+
+                    {currentTab === "Reviews & ratings" && (
+                        <Review 
+                            reviews={[
+                                {
+                                    id: "1",
+                                    avatarUrl: "/logos/pisade-mobile.svg",
+                                    fullName: "Somchai Degrey",
+                                    rating: 5,
+                                    date: "March 21, 2025",
+                                    review: "My son enjoys talking to her every time he has a lesson, and I'm also very happy with the way she leads the communication and helps improve his vocabulary and grammar."
+                                },
+                                {
+                                    id: "2",
+                                    avatarUrl: "/logos/pisade-mobile.svg",
+                                    fullName: "Ananya P.",
+                                    rating: 5,
+                                    date: "March 15, 2025",
+                                    review: "Very patient and clear explanations. Highly recommend."
+                                },
+                                {
+                                    id: "3",
+                                    avatarUrl: "/logos/pisade-mobile.svg",
+                                    fullName: "Peter P.",
+                                    rating: 4,
+                                    date: "March 10, 2025",
+                                    review: "Alana is an amazing tutor. Her lessons are always interesting and fun."
+                                }
+                            ]}
+                            summary={{
+                                avgRating: 4.5,
+                                totalReviews: 30
+                            }}
+                    />
+                )}
 
                 </div>
 
