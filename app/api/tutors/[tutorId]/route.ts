@@ -4,7 +4,7 @@ import path from 'path';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tutorId: string } }
+  { params }: { params: Promise<{ tutorId: string }> }
 ) {
   try {
     const { tutorId } = await params;
