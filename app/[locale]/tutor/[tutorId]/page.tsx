@@ -1,11 +1,9 @@
 import TutorDetailPage from "@/views/tutor-detail/pages/page"
-export default async function TutorDetail({
+
+export default function TutorDetail({
     params,
   }: {
     params: Promise<{ tutorId: string }>
   }) {
-    const { tutorId } = await params
-    return (
-        <TutorDetailPage tutorId={tutorId} />
-    )
+    return <TutorDetailPage params={params} />
   }

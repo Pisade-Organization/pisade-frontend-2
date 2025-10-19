@@ -8,6 +8,11 @@ export const servicePath = {
       getProfile: "/user/me",
       updateProfile: "/user/me",
     },
+    tutor: {
+      getTutor: "/tutors/:id",
+      getAllTutors: "/tutors",
+      getTutorReviews: "/tutors/:id/reviews",
+    },
     // add more modules later...
   };
   

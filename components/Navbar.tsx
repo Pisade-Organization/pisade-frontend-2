@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation"
 import { Search } from "lucide-react"
 import MobileMenu from "./MobileMenu/MobileMenu"
 import BaseButton from "./base/BaseButton"
+import { MessageCircle } from "lucide-react"
+import { Bell } from "lucide-react"
 
 type NavbarProps = {
-    variant?: "search" | "default"
+    variant?: "search" | "default" | "student_dashboard" | "tutor_dashboard"
 }
 
 export default function Navbar({ variant = "default" }: NavbarProps) {
@@ -91,7 +93,7 @@ export default function Navbar({ variant = "default" }: NavbarProps) {
     // Default variant placeholder for you to customize
     return (
         <nav className="w-full flex justify-between items-center py-4 px-4 lg:px-20 border-b border-[#E5E7EB] bg-white">
-            <div className="flex items-center gap-x-4">
+            <div className="flex items-center gap-x-20">
                 <Image
                     onClick={onLogoClick}
                     src="/logos/pisade-dark.svg"
@@ -101,19 +103,57 @@ export default function Navbar({ variant = "default" }: NavbarProps) {
                     priority
                     className="cursor-pointer"
                 />
-            </div>
 
+                {variant === "student_dashboard" && (
+                    <>
+                        <div className="flex justify-center items-center gap-7">
+                            <div>Class</div>
+                            <div>Schedule</div>
+                        </div>
+                    </>
+                )}
+
+            </div>
 
             <div className="hidden lg:flex items-center gap-x-3">
                 <BaseButton variant="secondary" typeStyle="outline" className="hover:bg-transparent">
-
                     <span>EN</span>
                     <ChevronDown size={20} className="inline ml-1" />
-
                 </BaseButton>
-                {/* Replace with your default variant actions/links */}
-                <BaseButton variant="secondary" typeStyle="borderless">Sign Up</BaseButton>
-                <BaseButton onClick={onSigninClick}>Sign In</BaseButton>
+
+                {/* NOT SIGNED IN */}
+                {variant === "default" && (
+                    <>
+                        {/* Replace with your default variant actions/links */}
+                        <BaseButton variant="secondary" typeStyle="borderless">Sign Up</BaseButton>
+                        <BaseButton onClick={onSigninClick}>Sign In</BaseButton>
+                    </>
+                )}
+
+                {/* MOCK STUDENT DASHBOARD */}
+                {/* MOCK SIGNIN */}
+                {variant === "student_dashboard" && (
+                    <>
+                        <div className="flex justify-center items-center">
+                            <button className="w-11 h-11">
+                                <MessageCircle size={22} className="text-neutral-700"/>
+                            </button>
+
+                            <button>
+                                <Bell size={22} className="text-neutral-700" />
+                            </button>
+                        </div>
+
+                        <Image 
+                            src="/logos/pisade.svg"
+                            alt="Profile picture"
+                            width={44}
+                            height={44}
+                            className="w-11 h-11 rounded-full"
+                        />
+                    </>
+                )}
+
             </div>
 
             

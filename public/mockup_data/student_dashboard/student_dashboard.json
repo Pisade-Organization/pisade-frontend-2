@@ -1,0 +1,61 @@
+{
+  "todayLessons": [
+    {
+      "id": 1,
+      "avatarUrl": "/images/tutor-detail/banner.jpg",
+      "fromTime": "09:00",
+      "toTime": "10:00",
+      "subject": "Mathematics",
+      "tutorName": "John Smith",
+      "tutorAvatar": "/images/tutor-detail/banner.jpg",
+      "status": "upcoming",
+      "roomId": "math-101-09am"
+    },
+    {
+      "id": 2,
+      "avatarUrl": "/images/tutor-detail/banner.jpg",
+      "fromTime": "11:00",
+      "toTime": "12:00",
+      "subject": "Physics",
+      "tutorName": "Jane Doe",
+      "tutorAvatar": "/images/tutor-detail/banner.jpg",
+      "status": "upcoming",
+      "roomId": "physics-201-11am"
+    },
+    {
+      "id": 3,
+      "avatarUrl": "/images/tutor-detail/banner.jpg",
+      "fromTime": "14:00",
+      "toTime": "15:00",
+      "subject": "Chemistry",
+      "tutorName": "Mike Johnson",
+      "tutorAvatar": "/images/tutor-detail/banner.jpg",
+      "status": "upcoming",
+      "roomId": "chem-301-2pm"
+    },
+    {
+      "id": 4,
+      "avatarUrl": "/images/tutor-detail/banner.jpg",
+      "fromTime": "16:00",
+      "toTime": "17:00",
+      "subject": "Biology",
+      "tutorName": "Sarah Wilson",
+      "tutorAvatar": "/images/tutor-detail/banner.jpg",
+      "status": "upcoming",
+      "roomId": "bio-401-4pm"
+    }
+  ],
+  "nextLesson": {
+    "id": 1,
+    "subject": "Mathematics",
+    "tutorName": "John Smith",
+    "time": "09:00 - 10:00",
+    "avatarUrl": "/images/tutor-detail/banner.jpg"
+  },
+  "stats": {
+    "totalLessons": 4,
+    "completedToday": 0,
+    "upcomingToday": 4,
+    "totalHours": 4
+  }
+}

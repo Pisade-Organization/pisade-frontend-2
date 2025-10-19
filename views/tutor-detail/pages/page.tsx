@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Navbar from "@/components/Navbar"
 import HeroBanner from "../components/HeroBanner"
 import TutorProfileCard from "../components/TutorProfileCard"
@@ -9,14 +9,63 @@ import Overview from "../components/Overview"
 import Footer from "@/components/footer/Footer"
 import BackBtn from "../components/BackBtn"
 import Review from "../components/Reviews"
+import { TutorDetailData } from "@/services/tutor/types"
+import { fetchTutorDetailData } from "@/services/tutor"
 
 export default function TutorDetailPage({
-    tutorId
+    params
 }: {
-    tutorId: string
+    params: Promise<{ tutorId: string }>
 }) {
     
     const [currentTab, setCurrentTab] = useState<"Overview" | "Availability calendar" | "Reviews & ratings" >('Overview')
+    const [tutorData, setTutorData] = useState<TutorDetailData | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const { tutorId } = await params
+                const data = await fetchTutorDetailData(tutorId)
+                
+                if (!data) {
+                    setError('Tutor not found')
+                } else {
+                    setTutorData(data)
+                }
+            } catch (err) {
+                setError('Failed to load tutor data')
+                console.error('Error fetching tutor data:', err)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchData()
+    }, [params])
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <div className="w-8 h-8 border-4 border-electric-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-gray-600">Loading tutor details...</p>
+                </div>
+            </div>
+        )
+    }
+
+    if (error || !tutorData) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-gray-900 mb-2">Tutor Not Found</h1>
+                    <p className="text-gray-600">The tutor you're looking for doesn't exist.</p>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <>
@@ -29,7 +78,7 @@ export default function TutorDetailPage({
                 </div>
 
                 <div className="relative z-10">
-                    <TutorProfileCard></TutorProfileCard>
+                    <TutorProfileCard tutorData={tutorData}></TutorProfileCard>
                 </div>
 
                 <ProfileTabs 
@@ -39,81 +88,28 @@ export default function TutorDetailPage({
 
                 {currentTab === 'Overview' && (
                     <Overview
-                        videoThumbnailUrl="https://media.istockphoto.com/id/1316134499/photo/a-concept-image-of-a-magnifying-glass-on-blue-background-with-a-word-example-zoom-inside-the.jpg?s=612x612&w=0&k=20&c=sZM5HlZvHFYnzjrhaStRpex43URlxg6wwJXff3BE9VA="
-                        videoUrl="youtube.com"
-                        fullName="Alana Somchai Degrey"
-                        tutorRanking="PRO"
-                        hoursTaught={210}
-                        about="Recent graduate from Chicago University's School of Dentistry. Specialized in academic English and test prep. My teaching style focuses on clarity and patience, supporting students of all levels. I have experience preparing learners for standardized exams and improving academic writing. Dedicated to creating engaging lessons that empower students to reach their goals."
-                        languages={["English (Native)", "Thai (Intermediate)"]}
-                        avgRating={4.8}
-                        studentReviewsCount={26}
-                        reviews={[
-                            {
-                                avatarUrl: "/logos/pisade-mobile.svg",
-                                fullName: "Somsak T.",
-                                review: "Great tutor! Helped me improve my speaking confidence a lot."
-                            },
-                            {
-                                avatarUrl: "/logos/pisade-mobile.svg",
-                                fullName: "Ananya P.",
-                                review: "Very patient and clear explanations. Highly recommend."
-                            },
-                            {
-                                avatarUrl: "/logos/pisade-mobile.svg",
-                                fullName: "Peter P.",
-                                review: "Alana is an amazing tutor. Her lessons are always interesting and fun."
-                            },
-                            {
-                                avatarUrl: "/logos/pisade-mobile.svg",
-                                fullName: "Phichayut S.",
-                                review: "I always feel motivated after her classes! She explains everything so clearly."
-                            }
-                        ]}
-                        specialties={[
-                            "Certified Teacher",
-                            "Native English Speaker",
-                            "Test Prep Expert",
-                            "IELTS Specialist",
-                            "University Admissions Coach",
-                            "Public Speaking Trainer",
-                            "Academic Writing Advisor"
-                        ]}
+                        videoThumbnailUrl={tutorData.videoThumbnailUrl}
+                        videoUrl={tutorData.videoUrl}
+                        fullName={tutorData.fullName}
+                        tutorRanking={tutorData.tutorRanking}
+                        hoursTaught={tutorData.lessonsCount}
+                        about={tutorData.bio}
+                        languages={tutorData.languages}
+                        avgRating={tutorData.avgRating}
+                        studentReviewsCount={tutorData.studentsCount}
+                        reviews={tutorData.reviews.map(review => ({
+                            avatarUrl: review.avatarUrl,
+                            fullName: review.fullName,
+                            review: review.review
+                        }))}
+                        specialties={tutorData.specialties}
                     />
                 )}
 
                 {currentTab === "Reviews & ratings" && (
                     <Review 
-                        reviews={[
-                            {
-                                id: "1",
-                                avatarUrl: "/logos/pisade-mobile.svg",
-                                fullName: "Somchai Degrey",
-                                rating: 5,
-                                date: "March 21, 2025",
-                                review: "My son enjoys talking to her every time he has a lesson, and I'm also very happy with the way she leads the communication and helps improve his vocabulary and grammar."
-                            },
-                            {
-                                id: "2",
-                                avatarUrl: "/logos/pisade-mobile.svg",
-                                fullName: "Ananya P.",
-                                rating: 5,
-                                date: "March 15, 2025",
-                                review: "Very patient and clear explanations. Highly recommend."
-                            },
-                            {
-                                id: "3",
-                                avatarUrl: "/logos/pisade-mobile.svg",
-                                fullName: "Peter P.",
-                                rating: 4,
-                                date: "March 10, 2025",
-                                review: "Alana is an amazing tutor. Her lessons are always interesting and fun."
-                            }
-                        ]}
-                        summary={{
-                            avgRating: 4.5,
-                            totalReviews: 30
-                        }}
+                        reviews={tutorData.reviews}
+                        summary={tutorData.summary}
                     />
                 )}
             </div>
@@ -129,7 +125,7 @@ export default function TutorDetailPage({
 
                     <BackBtn />
 
-                    <TutorProfileCard></TutorProfileCard>
+                    <TutorProfileCard tutorData={tutorData}></TutorProfileCard>
 
                 </div>
 
@@ -142,80 +138,27 @@ export default function TutorDetailPage({
 
                     {currentTab === 'Overview' && (
                         <Overview
-                            videoThumbnailUrl="https://media.istockphoto.com/id/1316134499/photo/a-concept-image-of-a-magnifying-glass-on-blue-background-with-a-word-example-zoom-inside-the.jpg?s=612x612&w=0&k=20&c=sZM5HlZvHFYnzjrhaStRpex43URlxg6wwJXff3BE9VA="
-                            videoUrl="youtube.com"
-                            fullName="Alana Somchai Degrey"
-                            tutorRanking="PRO"
-                            hoursTaught={210}
-                            about="Recent graduate from Chicago University's School of Dentistry. Specialized in academic English and test prep. My teaching style focuses on clarity and patience, supporting students of all levels. I have experience preparing learners for standardized exams and improving academic writing. Dedicated to creating engaging lessons that empower students to reach their goals."
-                            languages={["English (Native)", "Thai (Intermediate)"]}
-                            avgRating={4.8}
-                            studentReviewsCount={26}
-                            reviews={[
-                                {
-                                    avatarUrl: "/logos/pisade-mobile.svg",
-                                    fullName: "Somsak T.",
-                                    review: "Great tutor! Helped me improve my speaking confidence a lot."
-                                },
-                                {
-                                    avatarUrl: "/logos/pisade-mobile.svg",
-                                    fullName: "Ananya P.",
-                                    review: "Very patient and clear explanations. Highly recommend."
-                                },
-                                {
-                                    avatarUrl: "/logos/pisade-mobile.svg",
-                                    fullName: "Peter P.",
-                                    review: "Alana is an amazing tutor. Her lessons are always interesting and fun."
-                                },
-                                {
-                                    avatarUrl: "/logos/pisade-mobile.svg",
-                                    fullName: "Phichayut S.",
-                                    review: "I always feel motivated after her classes! She explains everything so clearly."
-                                }
-                            ]}
-                            specialties={[
-                                "Certified Teacher",
-                                "Native English Speaker",
-                                "Test Prep Expert",
-                                "IELTS Specialist",
-                                "University Admissions Coach",
-                                "Public Speaking Trainer",
-                                "Academic Writing Advisor"
-                            ]}
+                            videoThumbnailUrl={tutorData.videoThumbnailUrl}
+                            videoUrl={tutorData.videoUrl}
+                            fullName={tutorData.fullName}
+                            tutorRanking={tutorData.tutorRanking}
+                            hoursTaught={tutorData.lessonsCount}
+                            about={tutorData.bio}
+                            languages={tutorData.languages}
+                            avgRating={tutorData.avgRating}
+                            studentReviewsCount={tutorData.studentsCount}
+                            reviews={tutorData.reviews.map(review => ({
+                                avatarUrl: review.avatarUrl,
+                                fullName: review.fullName,
+                                review: review.review
+                            }))}
+                            specialties={tutorData.specialties}
                         />)}
 
                     {currentTab === "Reviews & ratings" && (
                         <Review 
-                            reviews={[
-                                {
-                                    id: "1",
-                                    avatarUrl: "/logos/pisade-mobile.svg",
-                                    fullName: "Somchai Degrey",
-                                    rating: 5,
-                                    date: "March 21, 2025",
-                                    review: "My son enjoys talking to her every time he has a lesson, and I'm also very happy with the way she leads the communication and helps improve his vocabulary and grammar."
-                                },
-                                {
-                                    id: "2",
-                                    avatarUrl: "/logos/pisade-mobile.svg",
-                                    fullName: "Ananya P.",
-                                    rating: 5,
-                                    date: "March 15, 2025",
-                                    review: "Very patient and clear explanations. Highly recommend."
-                                },
-                                {
-                                    id: "3",
-                                    avatarUrl: "/logos/pisade-mobile.svg",
-                                    fullName: "Peter P.",
-                                    rating: 4,
-                                    date: "March 10, 2025",
-                                    review: "Alana is an amazing tutor. Her lessons are always interesting and fun."
-                                }
-                            ]}
-                            summary={{
-                                avgRating: 4.5,
-                                totalReviews: 30
-                            }}
+                            reviews={tutorData.reviews}
+                            summary={tutorData.summary}
                     />
                 )}
 

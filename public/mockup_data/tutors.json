@@ -29,7 +29,41 @@
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
         "isActive": true,
-        "tutorRanking": "PRO"
+        "tutorRanking": "PRO",
+        "reviews": [
+          {
+            "id": "1",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "Somchai Degrey",
+            "rating": 5,
+            "date": "March 21, 2025",
+            "review": "My son enjoys talking to her every time he has a lesson, and I'm also very happy with the way she leads the communication and helps improve his vocabulary and grammar."
+          },
+          {
+            "id": "2",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "Ananya P.",
+            "rating": 5,
+            "date": "March 15, 2025",
+            "review": "Very patient and clear explanations. Highly recommend."
+          },
+          {
+            "id": "3",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "Peter P.",
+            "rating": 4,
+            "date": "March 10, 2025",
+            "review": "Alana is an amazing tutor. Her lessons are always interesting and fun."
+          },
+          {
+            "id": "4",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "Phichayut S.",
+            "rating": 5,
+            "date": "March 5, 2025",
+            "review": "I always feel motivated after her classes! She explains everything so clearly."
+          }
+        ]
       },
       {
         "id": "tutor_002",
@@ -52,7 +86,33 @@
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
         "isActive": false,
-        "tutorRanking": "MASTER"
+        "tutorRanking": "MASTER",
+        "reviews": [
+          {
+            "id": "5",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "Sarah M.",
+            "rating": 5,
+            "date": "March 18, 2025",
+            "review": "Marcus is an incredible math tutor! He made calculus so much clearer for me."
+          },
+          {
+            "id": "6",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "David L.",
+            "rating": 5,
+            "date": "March 12, 2025",
+            "review": "Excellent teacher with great patience. Highly recommend for any math subject."
+          },
+          {
+            "id": "7",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "Maria G.",
+            "rating": 4,
+            "date": "March 8, 2025",
+            "review": "Very knowledgeable and explains complex topics in simple terms."
+          }
+        ]
       },
       {
         "id": "tutor_003",
@@ -75,7 +135,33 @@
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
         "isActive": true,
-        "tutorRanking": "MASTER"
+        "tutorRanking": "MASTER",
+        "reviews": [
+          {
+            "id": "8",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "Alex K.",
+            "rating": 5,
+            "date": "March 20, 2025",
+            "review": "Dr. Johnson is an amazing chemistry tutor! Her explanations are crystal clear."
+          },
+          {
+            "id": "9",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "Emma R.",
+            "rating": 4,
+            "date": "March 14, 2025",
+            "review": "Very knowledgeable and patient. Helped me understand organic chemistry concepts."
+          },
+          {
+            "id": "10",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "James W.",
+            "rating": 5,
+            "date": "March 9, 2025",
+            "review": "Excellent tutor with great teaching methods. Highly recommend!"
+          }
+        ]
       },
       {
         "id": "tutor_004",
@@ -98,7 +184,25 @@
         "videoUrl": "youtube.com",
         "videoThumbnailUrl": "image",
         "isActive": false,
-        "tutorRanking": "PRO"
+        "tutorRanking": "PRO",
+        "reviews": [
+          {
+            "id": "11",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "Tomoko S.",
+            "rating": 5,
+            "date": "March 17, 2025",
+            "review": "Yuki-san is an excellent Japanese teacher! Very patient and knowledgeable."
+          },
+          {
+            "id": "12",
+            "avatarUrl": "/logos/pisade-mobile.svg",
+            "fullName": "Michael T.",
+            "rating": 4,
+            "date": "March 11, 2025",
+            "review": "Great cultural insights along with language learning. Highly recommend!"
+          }
+        ]
       },
       {
         "id": "tutor_005",

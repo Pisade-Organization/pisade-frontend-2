@@ -7,7 +7,20 @@ import BookLessonBtn from "./BookLessonBtn"
 import LikeBtn from "./LikeBtn"
 import SendMessageBtn from "./SendMessageBtn"
 
-export default function TutorProfileCard() {
+interface TutorProfileCardProps {
+    tutorData: {
+        avatarUrl: string;
+        fullName: string;
+        flagUrl: string;
+        subject: string;
+        baseRate: number;
+        avgRating: number;
+        studentsCount: number;
+        lessonsCount: number;
+    };
+}
+
+export default function TutorProfileCard({ tutorData }: TutorProfileCardProps) {
     return (
         <div className="bg-white w-full lg:w-[334px] flex flex-col justify-center items-start lg:items-center
             rounded-[12px] lg:rounded-[15px] border border-neutral-50 p-4 lg:p-6 
@@ -19,14 +32,14 @@ export default function TutorProfileCard() {
             <div className="lg:hidden flex justify-center items-center gap-x-4">
 
                 <TutorAvatar 
-                    avatarUrl="https://t4.ftcdn.net/jpg/03/83/25/83/360_F_383258331_D8imaEMl8Q3lf7EKU2Pi78Cn0R7KkW9o.jpg"
-                    fullName="Alana Somchai Degrey"
+                    avatarUrl={tutorData.avatarUrl}
+                    fullName={tutorData.fullName}
                 />
 
                 <div className="flex flex-col justify-center items-start gap-y-1">
-                    <TutorName fullName="Alana Somchai Degrey" />
-                    <TutorFlagAndSubject flagUrl="https://flagcdn.com/w40/th.png" subject="Physics" />
-                    <TutorRate baseRate={300} />
+                    <TutorName fullName={tutorData.fullName} />
+                    <TutorFlagAndSubject flagUrl={tutorData.flagUrl} subject={tutorData.subject} />
+                    <TutorRate baseRate={tutorData.baseRate} />
                 </div>
 
 
@@ -35,19 +48,19 @@ export default function TutorProfileCard() {
 
             {/* DESKTOP AVATAR */}
             <TutorAvatar 
-                    avatarUrl="https://t4.ftcdn.net/jpg/03/83/25/83/360_F_383258331_D8imaEMl8Q3lf7EKU2Pi78Cn0R7KkW9o.jpg"
-                    fullName="Alana Somchai Degrey"
+                    avatarUrl={tutorData.avatarUrl}
+                    fullName={tutorData.fullName}
                     className="hidden lg:flex"
                 />
 
             {/* DESKTOP NAME + SUBJECT + RATE */}
             <div className="flex flex-col justify-center items-start gap-y-3">
                 <div className="flex flex-col justify-center items-start gap-y-1">
-                    <TutorName fullName="Alana Somchai Degrey" />
-                    <TutorFlagAndSubject flagUrl="https://flagcdn.com/w40/th.png" subject="Physics" />
+                    <TutorName fullName={tutorData.fullName} />
+                    <TutorFlagAndSubject flagUrl={tutorData.flagUrl} subject={tutorData.subject} />
                 </div>
 
-                <TutorRate baseRate={300} />
+                <TutorRate baseRate={tutorData.baseRate} />
             </div>
 
             {/* DIVIDER */}
@@ -55,9 +68,9 @@ export default function TutorProfileCard() {
 
 
             <TutorStats 
-                avgRating={4.5}
-                studentsCount={20}
-                lessonsCount={200}
+                avgRating={tutorData.avgRating}
+                studentsCount={tutorData.studentsCount}
+                lessonsCount={tutorData.lessonsCount}
             />
             
             {/* DESKTOP DIVIDER */}

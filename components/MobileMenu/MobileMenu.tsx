@@ -11,7 +11,7 @@ import { Heart } from "lucide-react";
 export default function MobileMenu({
   variant = "default"
 }: {
-  variant?: "search" | "default"
+  variant?: "search" | "default" | "student_dashboard" | "tutor_dashboard"
 }) {
   const [open, setOpen] = useState(false);
 
