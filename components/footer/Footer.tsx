@@ -11,7 +11,9 @@ export default function Footer() {
             className="
                 border-t border-neutral-50 flex flex-col lg:flex-row 
                 justify-center items-start lg:items-center
-                gap-y-8 pt-9 lg:pt-16 pb-5 lg:pb-10 px-4 lg:px-[100px]"
+                gap-y-8 pt-9 lg:pt-16 pb-5 lg:pb-10 px-4 lg:px-[100px] 
+                2xl:rounded-t-2xl w-full max-w-screen-2xl
+                "
             
             style={{ background: 'linear-gradient(180deg, #25008D 0%, #0E0037 100%)' }}
         >

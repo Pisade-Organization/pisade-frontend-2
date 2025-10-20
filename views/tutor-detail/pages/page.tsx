@@ -11,6 +11,7 @@ import BackBtn from "../components/BackBtn"
 import Review from "../components/Reviews"
 import { TutorDetailData } from "@/services/tutor/types"
 import { fetchTutorDetailData } from "@/services/tutor"
+import Loading from "@/components/Loading"
 
 export default function TutorDetailPage({
     params
@@ -47,11 +48,8 @@ export default function TutorDetailPage({
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-center">
-                    <div className="w-8 h-8 border-4 border-electric-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading tutor details...</p>
-                </div>
+            <div className="flex items-center justify-center min-h-screen bg-[#EFEFEF]">
+                <Loading />
             </div>
         )
     }
@@ -68,7 +66,7 @@ export default function TutorDetailPage({
     }
 
     return (
-        <>
+        <div className="flex flex-col justify-center items-center">
             <Navbar />
             {/* MOBILE */}
             <div className="lg:hidden min-h-screen relative flex flex-col justify-start gap-y-4 px-4 py-20">
@@ -115,7 +113,7 @@ export default function TutorDetailPage({
             </div>
             
             {/* DESKTOP */}
-            <div className="hidden relative lg:flex justify-center items-start gap-[29px] px-20">
+            <div className="max-w-screen-2xl hidden relative lg:flex justify-center items-start gap-[29px] px-20">
 
                 <div className="absolute w-full h-[252px] top-0 left-0 z-10">
                     <HeroBanner/>
@@ -166,6 +164,6 @@ export default function TutorDetailPage({
 
             </div>
             <Footer />
-        </>
+        </div>
     )
 }

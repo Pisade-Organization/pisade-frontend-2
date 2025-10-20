@@ -38,30 +38,25 @@ export default function Navbar({ variant = "default" }: NavbarProps) {
                         priority
                         className="cursor-pointer"
                     />
-
                 </div>
 
                 <div className="hidden lg:flex justify-between items-center text-white gap-x-2 text-label-3">
 
                     {/* Languages */}
                     <button
-                        className="w-[76px] h-[45px] rounded-lg cursor-pointer flex items-center justify-center p-[1px]"
+                        className="rounded-lg cursor-pointer flex items-center justify-center p-[1px]"
                         style={{
                             background: "linear-gradient(110.21deg, rgba(255, 255, 255, 0.7) 2.78%, rgba(255, 250, 203, 0.534754) 58.48%, rgba(255, 57, 57, 0.07) 72.66%, rgba(255, 255, 255, 0.595) 100%)",
                         }}
                     >
-                        <div className="bg-black rounded-lg py-[10px] h-full w-full px-3 bg-gradient-to-r from-white/5 to-white/25">
+                        <div className="bg-black rounded-[8px]  px-4 py-3.5 bg-gradient-to-r from-white/5 to-white/25">
                             <span>EN</span>
                             <ChevronDown size={20} className="inline ml-1" />
                         </div>
                     </button>
 
-                    {/* Sign up */}
-                    <BaseButton
-                        variant="secondary"
-                        typeStyle="borderless"
-                    >
-                        Sign Up
+                    <BaseButton variant="secondary" typeStyle="outline" className="text-white border-white border-opacity-50 hover:bg-transparent">
+                        Become a tutor
                     </BaseButton>
 
                     {/* Sign in */}
@@ -116,7 +111,7 @@ export default function Navbar({ variant = "default" }: NavbarProps) {
             </div>
 
             <div className="hidden lg:flex items-center gap-x-3">
-                <BaseButton variant="secondary" typeStyle="outline" className="hover:bg-transparent">
+                <BaseButton variant="secondary" typeStyle="outline">
                     <span>EN</span>
                     <ChevronDown size={20} className="inline ml-1" />
                 </BaseButton>

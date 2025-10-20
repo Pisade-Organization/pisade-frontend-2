@@ -1,9 +1,10 @@
+import BaseButton from "@/components/base/BaseButton"
 import { Heart } from "lucide-react"
 
 export default function LikeBtn() {
     return (
-        <button className="rounded-[8px] border border-deep-royal-indigo-100 p-3">
+        <BaseButton variant="secondary" typeStyle="outline">
             <Heart size={24} />
-        </button>
+        </BaseButton>
     )
 }

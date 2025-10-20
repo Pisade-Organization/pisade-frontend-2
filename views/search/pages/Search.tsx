@@ -7,6 +7,7 @@ import { TutorCardProps } from "../types"
 import TutorGridCard from "../components/TutorCard/TutorGridCard"
 import Navbar from "@/components/Navbar"
 import { fetchTutorsPaginated } from "@/services/tutor"
+import Footer from "@/components/footer/Footer"
 
 export default function SearchPage() {
     const [mode, setMode] = useState<'list' | 'grid'>('list')
@@ -73,7 +74,7 @@ export default function SearchPage() {
     }
 
     return (
-        <>
+        <div className="flex flex-col justify-center items-center">
             <Navbar variant="search" />
             <SearchHero />
             <FilterPanel 
@@ -137,6 +138,7 @@ export default function SearchPage() {
                     </div>
                 )}
             </div>
-        </>
+            <Footer />
+        </div>
     )
 }

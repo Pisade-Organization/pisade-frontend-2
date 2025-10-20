@@ -32,7 +32,7 @@ export default function WhatMyStudentsSaid({
         exit: (dir: 1 | -1) => ({ opacity: 0, x: dir === 1 ? 40 : -40 })
     };
     return (
-        <div className="w-full border border-neutral-50 rounded-[15px] p-5
+        <div className="w-full max-w-[311px] border border-neutral-50 rounded-[15px] p-5
             flex flex-col justify-center items-start gap-y-5
         ">
 

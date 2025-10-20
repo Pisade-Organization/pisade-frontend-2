@@ -11,7 +11,7 @@ const buttonVariants = cva(
             },
             typeStyle: {
                 default:  "",
-                outline: "border bg-transparent",
+                outline: "border",
                 borderless: "bg-transparent border-none"
             },
 
@@ -35,7 +35,7 @@ const buttonVariants = cva(
             {
                 variant: "secondary",
                 typeStyle: "outline",
-                class: "text-deep-royal-indigo-700 border-deep-royal-indigo-700 hover:border-none hover:bg-deep-royal-indigo-700 hover:text-white"
+                class: "text-deep-royal-indigo-700 border-deep-royal-indigo-700 hover:bg-deep-royal-indigo-700 hover:text-white"
             },
             {
                 variant: "primary",

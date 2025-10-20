@@ -2,7 +2,7 @@
 import Image from "next/image"
 export default function HeroBanner() {
     return (
-        <div className="relative w-full overflow-hidden">
+        <div className="relative w-full overflow-hidden 2xl:rounded-2xl">
             <div className="hidden lg:block absolute w-full h-[252px] inset-0 -z-10 wallpaper-hero"></div>
             <Image 
                 src="/images/tutor-detail/mobile-banner.png"
