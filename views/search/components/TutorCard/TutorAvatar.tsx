@@ -1,6 +1,7 @@
 "use client"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { TUTOR_RANKING } from "@/types/tutorRanking.enum"
 export default function TutorAvatar({
     fullName,
     avatarUrl,
@@ -11,7 +12,7 @@ export default function TutorAvatar({
     fullName: string,
     avatarUrl: string,
     isActive: boolean,
-    tutorRanking: 'STARTER' | 'PRO' | 'MASTER'
+    tutorRanking: TUTOR_RANKING
     className?: string
 }) {
     return (
