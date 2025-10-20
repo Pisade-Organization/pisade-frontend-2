@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils"
 import { cva, type VariantProps } from "class-variance-authority"
+import React from "react"
 
 const buttonVariants = cva(
     "inline-flex justify-center items-center transition-all duration-200 ease-in-out rounded-[8px] text-label-3 lg:text-label-2 px-4 py-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ",
@@ -53,12 +54,17 @@ const buttonVariants = cva(
 
 export interface BaseButtonProps
     extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-        VariantProps<typeof buttonVariants> {}
+        VariantProps<typeof buttonVariants> {
+            iconLeft?: React.ReactNode,
+            iconRight?: React.ReactNode
+        }
 
 export default function BaseButton({
     className,
     variant = "primary",
     typeStyle = "default",
+    iconLeft,
+    iconRight,
     children,
     disabled,
     ...props
@@ -71,7 +77,9 @@ export default function BaseButton({
             )}
             {...props}
         >
+            {iconLeft && <span className="w-5 h-5">{iconLeft}</span>}
             {children}
+            {iconRight && <span className="w-5 h-5">{iconRight}</span>}
         </button>
     )
 }

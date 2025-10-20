@@ -1,0 +1,4 @@
+export enum AUTH_TYPES {
+    SIGNIN = "SIGNIN",
+    TUTOR_SIGNUP = "TUTORS_SIGNUP"
+}

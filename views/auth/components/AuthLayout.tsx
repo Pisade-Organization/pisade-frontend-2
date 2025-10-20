@@ -6,8 +6,13 @@ import AuthLeft from "./AuthLeft"
 import AuthRight from "./AuthRight"
 import AuthNavbar from "./AuthNavbar"
 import AuthVerifyEmail from "./AuthVerifyEmail"
+import { AUTH_TYPES } from "../types/auth.enum"
 
-export default function AuthLayout() {
+export default function AuthLayout({
+    type = AUTH_TYPES.SIGNIN
+}: {
+    type?: AUTH_TYPES
+}) {
     const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
     const [emailTo, setEmailTo] = useState<string>('');
 
@@ -51,6 +56,7 @@ export default function AuthLayout() {
                         <AuthRight
                             setIsEmailSent={setIsEmailSent}
                             setEmailTo={setEmailTo}
+                            type={type}
                         />
                         </motion.div>
                     )}

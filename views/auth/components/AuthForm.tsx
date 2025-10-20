@@ -1,6 +1,5 @@
 "use client"
 import { useState } from "react"
-import Image from "next/image";
 import { z } from "zod";
 import { AuthService } from "@/services/auth";
 import AuthTermsNotice from "./AuthTermsNotice";
