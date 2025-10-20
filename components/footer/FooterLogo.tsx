@@ -1,12 +1,12 @@
 "use client"
 import Image from "next/image"
+import { PisadeLogo } from "../icons"
 
 export default function FooterLogo() {
     return (
         <div className="flex flex-col justify-center items-start gap-y-2">
 
-            <Image 
-                src="/logos/pisade.svg" 
+            <PisadeLogo 
                 width={109}
                 height={36}
                 alt="Pisade logo"

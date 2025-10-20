@@ -1,5 +1,6 @@
 "use client"
 import Image from "next/image"
+import { LinkedInIcon, XIcon, FacebookIcon } from "../icons"
 
 export default function FooterSocials() {
     return (
@@ -10,9 +11,9 @@ export default function FooterSocials() {
 
             <div className="flex justify-between items-center gap-x-5">
 
-                <Image src="/icons/common/linkedin.svg" width={20} height={20} alt="Linkedin icon" />
-                <Image src="/icons/common/x.svg" width={20} height={20} alt="X icon" />
-                <Image src="/icons/common/facebook.svg" width={20} height={20} alt="Facebook icon" />
+                <LinkedInIcon width={20} height={20} alt="Linkedin icon" />
+                <XIcon width={20} height={20} alt="X icon" />
+                <FacebookIcon width={20} height={20} alt="Facebook icon" />
 
             </div>
         </div>

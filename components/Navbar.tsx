@@ -8,6 +8,7 @@ import MobileMenu from "./MobileMenu/MobileMenu"
 import BaseButton from "./base/BaseButton"
 import { MessageCircle } from "lucide-react"
 import { Bell } from "lucide-react"
+import { PisadeLogo, PisadeDarkLogo } from "./icons"
 
 type NavbarProps = {
     variant?: "search" | "default" | "student_dashboard" | "tutor_dashboard"
@@ -29,14 +30,12 @@ export default function Navbar({ variant = "default" }: NavbarProps) {
             <nav className="w-full flex justify-between items-center py-4 px-4 lg:px-20 bg-transparent absolute top-0 left-0 right-0 z-50 ">
 
                 <div className="flex justify-between items-center gap-x-12">
-                    <Image
+                    <PisadeLogo
                         onClick={onLogoClick}
-                        src={"/logos/pisade.svg"}
-                        alt="Pisade Logo"
                         width={109}
                         height={36}
-                        priority
                         className="cursor-pointer"
+                        alt="Pisade Logo"
                     />
                 </div>
 
@@ -89,14 +88,12 @@ export default function Navbar({ variant = "default" }: NavbarProps) {
     return (
         <nav className="w-full flex justify-between items-center py-4 px-4 lg:px-20 border-b border-[#E5E7EB] bg-white">
             <div className="flex items-center gap-x-20">
-                <Image
+                <PisadeDarkLogo
                     onClick={onLogoClick}
-                    src="/logos/pisade-dark.svg"
-                    alt="Pisade Logo"
                     width={109}
                     height={36}
-                    priority
                     className="cursor-pointer"
+                    alt="Pisade Logo"
                 />
 
                 {variant === "student_dashboard" && (
@@ -139,12 +136,11 @@ export default function Navbar({ variant = "default" }: NavbarProps) {
                             </button>
                         </div>
 
-                        <Image 
-                            src="/logos/pisade.svg"
-                            alt="Profile picture"
+                        <PisadeLogo 
                             width={44}
                             height={44}
                             className="w-11 h-11 rounded-full"
+                            alt="Profile picture"
                         />
                     </>
                 )}

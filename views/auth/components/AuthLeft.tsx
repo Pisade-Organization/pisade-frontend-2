@@ -1,5 +1,6 @@
 "use client"
 import Image from "next/image"
+import { BookIcon, StarIcon, PeopleIcon, ChartGrowthIcon, PisadeLogo } from "@/components/icons"
 
 export default function AuthLeft() {
     return (
@@ -12,47 +13,43 @@ export default function AuthLeft() {
 
             {/* BOOK */}
             <div className="absolute top-0 right-0">
-                <Image
-                    src="/icons/common/book.svg"
-                    alt="book"
+                <BookIcon
                     width={150}
                     height={150}
+                    alt="book"
                 />
             </div>
 
             {/* STAR */}
             <div className="absolute top-24 right-48">
-                <Image
-                    src="/icons/common/star.svg"
-                    alt="star"
+                <StarIcon
                     width={40}
                     height={40}
+                    alt="star"
                 />
             </div>
 
             {/* PEOPLE */}
             <div className="absolute bottom-32 left-[4.1rem]">
-                <Image
-                    src="/icons/common/people.svg"
-                    alt="poeple"
+                <PeopleIcon
                     width={120}
                     height={120}
+                    alt="people"
                 />
             </div>
 
             {/* CHART */}
             <div className="absolute -bottom-8 -left-8 blur-sm">
-                <Image
-                    src="/icons/common/chart-growth.svg"
-                    alt="chart-growth"
+                <ChartGrowthIcon
                     width={120}
                     height={111.18}
+                    alt="chart-growth"
                 />
             </div>
 
             <div className="flex flex-col justify-center items-center gap-y-8 mb-12">
                 {/* LOGO */}
-                <Image src="/logos/pisade.svg" alt="Pisade Logo" width={109} height={36} />
+                <PisadeLogo width={109} height={36} alt="Pisade Logo" />
 
                 {/* TITLE */}
                 <div className="text-center text-4xl xl:text-5xl font-bold flex flex-col gap-y-4">

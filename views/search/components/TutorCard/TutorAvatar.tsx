@@ -2,6 +2,7 @@
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { TUTOR_RANKING } from "@/types/tutorRanking.enum"
+import { StarterIcon, ProIcon, MasterIcon } from "@/components/icons"
 export default function TutorAvatar({
     fullName,
     avatarUrl,
@@ -31,13 +32,9 @@ export default function TutorAvatar({
             )}
 
             <div className="absolute border border-white bg-electric-violet-25 rounded-full right-0 bottom-0 z-20">
-                <Image 
-                    src={`icons/tutor-ranking/${tutorRanking}.svg`}
-                    alt={`${tutorRanking} icon`}
-                    width={24}
-                    height={24}
-                    className="rounded-full w-6 h-6 object-cover"
-                />
+                {tutorRanking === 'STARTER' && <StarterIcon width={24} height={24} alt={`${tutorRanking} icon`} className="rounded-full w-6 h-6 object-cover" />}
+                {tutorRanking === 'PRO' && <ProIcon width={24} height={24} alt={`${tutorRanking} icon`} className="rounded-full w-6 h-6 object-cover" />}
+                {tutorRanking === 'MASTER' && <MasterIcon width={24} height={24} alt={`${tutorRanking} icon`} className="rounded-full w-6 h-6 object-cover" />}
             </div>
         </div>
 

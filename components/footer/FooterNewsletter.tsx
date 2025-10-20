@@ -1,5 +1,6 @@
 "use client"
 import Image from "next/image"
+import { SparkIcon } from "../icons"
 export default function FooterNewsletter() {
     return (
         <div
@@ -40,11 +41,10 @@ export default function FooterNewsletter() {
                 Let's talk
             </button>
 
-            <Image 
-                src="/icons/common/spark.svg"
-                alt="Spark Icon"
+            <SparkIcon 
                 width={114}
                 height={114}
+                alt="Spark Icon"
                 className="absolute -bottom-12 -right-2.5"
             />
         </div>
