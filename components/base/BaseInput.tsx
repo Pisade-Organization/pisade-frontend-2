@@ -56,14 +56,17 @@ export default function BaseInput({
             <input type="text"
                 className={cn(
                     `
+                    w-full
+                    outline-none
                     rounded-[12px] 
                     py-3 px-4 
                     placeholder:text-neutral-300 text-neutral-700 
                     text-body-3 lg:text-body-2
-
+                    border border-neutral-100
                     `
                 )}
                 placeholder={placeholder}
+                {...props}
 
 
             />
