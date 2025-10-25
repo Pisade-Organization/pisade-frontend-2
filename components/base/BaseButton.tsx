@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import React from "react"
 
 const buttonVariants = cva(
-    "inline-flex justify-center items-center transition-all duration-200 ease-in-out rounded-[8px] text-label-3 lg:text-label-2 px-4 py-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ",
+    "inline-flex justify-center items-center gap-2 transition-all duration-200 ease-in-out rounded-[8px] text-label-3 lg:text-label-2 px-4 py-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed ",
     {
         variants: {
             variant: {
@@ -26,7 +26,7 @@ const buttonVariants = cva(
             {
                 variant: "secondary",
                 typeStyle: "default",
-                class: "text-white bg-deep-royal-indigo-700 hover:bg-white hover:border hover:border-deep-royal-indigo-700"
+                class: "text-white bg-deep-royal-indigo-700 hover:bg-white hover:border hover:border-deep-royal-indigo-700 hover:text-deep-royal-indigo-600"
             },
             {
                 variant: "primary",
@@ -77,7 +77,7 @@ export default function BaseButton({
             )}
             {...props}
         >
-            {iconLeft && <span className="w-5 h-5">{iconLeft}</span>}
+            {iconLeft && <span>{iconLeft}</span>}
             {children}
             {iconRight && <span className="w-5 h-5">{iconRight}</span>}
         </button>
