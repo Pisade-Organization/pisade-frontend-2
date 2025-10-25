@@ -35,22 +35,22 @@ export default function PhoneNumberInput({ required }: { required?: boolean }) {
       </div>
 
       {/* Input container */}
-      <div className="w-full flex items-center gap-2 border border-neutral-100 rounded-[12px] py-3 px-4">
+      <div className="w-full flex items-center gap-[10px] border border-neutral-50 rounded-[12px] py-3 px-4">
         {/* Country selector */}
         {/* Desktop Dropdown */}
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="flex items-center gap-1 min-w-[70px] hover:bg-neutral-50 rounded-md px-1 py-1 transition-colors"
+                className="flex items-center gap-1 transition-colors shrink-0"
               >
-                <img src={selected.flag} alt={selected.name} className="w-5 h-4 rounded-sm" />
-                <span className="text-body-3 text-neutral-800">{selected.dialCode}</span>
-                <ChevronDown size={10} className="text-neutral-600" />
+                <img src={selected.flag} alt={selected.name} className="w-4 h-3 rounded-sm shrink-0" />
+                <Typography variant="body-3" color="neutral-800">{selected.dialCode}</Typography>
+                <ChevronDown size={10} className="text-neutral-600 shrink-0" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-64">
+            <DropdownMenuContent align="start" className="w-full">
               {countryOptions.map((country) => (
                 <DropdownMenuItem
                   key={country.code}
@@ -69,15 +69,15 @@ export default function PhoneNumberInput({ required }: { required?: boolean }) {
         </div>
 
         {/* Mobile Button */}
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(true)}
-            className="flex items-center gap-1 min-w-[70px] hover:bg-neutral-50 rounded-md px-1 py-1 transition-colors"
+            className="flex items-center gap-1 transition-colors shrink-0"
           >
-            <img src={selected.flag} alt={selected.name} className="w-5 h-4 rounded-sm" />
-            <span className="text-body-3 text-neutral-800">{selected.dialCode}</span>
-            <ChevronDown size={10} className="text-neutral-600" />
+            <img src={selected.flag} alt={selected.name} className="w-4 h-3 rounded-sm shrink-0" />
+            <Typography variant="body-3" color="neutral-800">{selected.dialCode}</Typography>
+            <ChevronDown size={10} className="text-neutral-600 shrink-0" />
           </button>
         </div>
 
@@ -88,7 +88,7 @@ export default function PhoneNumberInput({ required }: { required?: boolean }) {
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Enter phone number"
           className={cn(
-            "flex-1 outline-none text-body-3 lg:text-body-2 text-neutral-700 placeholder:text-neutral-300 bg-transparent"
+            "flex-1 outline-none text-body-3 text-neutral-700 placeholder:text-neutral-300 bg-transparent placeholder:text-body-3"
           )}
         />
       </div>
@@ -127,7 +127,7 @@ export default function PhoneNumberInput({ required }: { required?: boolean }) {
                       setIsMobileMenuOpen(false);
                     }}
                     className={cn(
-                      "w-full flex items-center gap-4 p-4 rounded-lg border transition-colors",
+                      "w-full flex items-center gap-4 p-4 rounded-lg border transition-colors ",
                       selected.code === country.code
                         ? "border-blue-500 bg-blue-50"
                         : "border-neutral-100 hover:bg-neutral-50"

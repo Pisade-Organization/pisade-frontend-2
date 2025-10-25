@@ -64,7 +64,7 @@ export default function BaseSelect({
         <DropdownMenu>
           <DropdownMenuTrigger
             className={cn(
-              "w-full flex justify-between items-center py-3 px-4 gap-[10px] border border-neutral-50 rounded-[12px]"
+              "w-full flex justify-between items-center py-3 px-4 gap-[10px] border border-neutral-50 rounded-[12px] outline-none"
             )}
           >
             <Typography
