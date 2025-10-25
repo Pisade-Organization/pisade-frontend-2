@@ -2,10 +2,10 @@ import { useState } from "react"
 import Typography from "@/components/base/Typography"
 import BaseInput from "@/components/base/BaseInput"
 import BaseSelect from "@/components/base/BaseSelect"
-import PhoneNumberInput from "@/components/base/PhoneNumberInput"
 
-export default function Step1() {
-  const [country, setCountry] = useState<string>("")
+export default function PersonalInfoForm() {
+  const [countryOfBirth, setCountryOfBirth] = useState<string>("")
+  const [nationality, setNationality] = useState<string>("")
   return (
     <div className="w-full flex flex-col justify-center items-start gap-[18px] py-4 lg:py-6 px-5 lg:px-8">
         <Typography variant={{ base: "title-2", lg: "title-1" }} color="neutral-800">
@@ -29,8 +29,8 @@ export default function Step1() {
           ]}
           placeholder="Choose a country"
           required
-          value={country}
-          onChange={setCountry}
+          value={countryOfBirth}
+          onChange={setCountryOfBirth}
         />
         <BaseSelect 
           title="Nationality"
@@ -39,12 +39,13 @@ export default function Step1() {
           ]}
           placeholder="Choose a country"
           required
+          value={nationality}
+          onChange={setNationality}
         />
         <BaseInput
           title="Email"
           placeholder="Enter your email..."
         />
-        <PhoneNumberInput />
 
     </div>
   )
