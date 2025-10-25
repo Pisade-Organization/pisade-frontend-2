@@ -1,5 +1,6 @@
 
 "use client"
+import Typography from "@/components/base/Typography"
 import { useState } from "react"
 
 export default function TutorBio({ bio }: { bio: string }) {
@@ -9,10 +10,10 @@ export default function TutorBio({ bio }: { bio: string }) {
 
     return (
         <div className="w-full">
-            <p className="text-body-3 lg:text-body-2 text-neutral-500">
+            <Typography variant={{ base: "body-3", lg: "body-2" }} color="neutral-500">
                 {displayText}
                 {shouldTruncate && !isExpanded && "..."}
-            </p>
+            </Typography>
             {shouldTruncate && (
                 <button
                     onClick={() => setIsExpanded(!isExpanded)}

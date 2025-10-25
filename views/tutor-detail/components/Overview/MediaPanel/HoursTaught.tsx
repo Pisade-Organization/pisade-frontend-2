@@ -1,4 +1,4 @@
-
+import Typography from "@/components/base/Typography"
 
 export default function HoursTaught({
     hoursTaught
@@ -7,13 +7,18 @@ export default function HoursTaught({
 }) {
     return (
         <div className="w-full flex flex-col justify-center items-center">
-            <div className="text-body-3 lg:text-body-4 text-neutral-600">
+            <Typography 
+                variant={{ base: "body-3", lg: "body-4" }}
+                color="neutral-600"
+            >
                 Hours taught
-            </div>
-
-            <div className="text-title-1 lg:text-headline-5 text-electric-violet-600">
+            </Typography>
+            <Typography 
+                variant={{ base: "title-1", lg: "headline-5" }}
+                color="electric-violet-600"
+            >
                 { hoursTaught }
-            </div>
+            </Typography>
         </div>
     )
 }

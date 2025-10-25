@@ -1,5 +1,6 @@
 "use client"
 import { Star } from "lucide-react"
+import Typography from "@/components/base/Typography"
 
 export default function TutorStats({
     avgRating,
@@ -15,26 +16,18 @@ export default function TutorStats({
             
             <div className="flex flex-row-reverse lg:flex-row justify-center items-center gap-x-1">
                 <Star size={20} color="#FFB130" fill="#FFB130"/>
-
-                <div className="text-label-2 text-neutral-900">{avgRating}/5</div>
-
-                <div className="hidden lg:block text-body-2 text-neutral-600">Rating</div>
+                <Typography variant="label-2" color="neutral-900">{ avgRating }/5</Typography>
+                <Typography variant="body-2" color="neutral-600" className="hidden lg:block">Rating</Typography>
             </div>
 
             <div className="flex justify-center items-center gap-x-1">
-
-                <div className="text-label-2 text-neutral-900">{studentsCount}</div>
-
-                <div className="text-body-2 text-neutral-600">Students</div>
-
+                <Typography variant="label-2" color="neutral-900">{ studentsCount }</Typography>
+                <Typography variant="body-2" color="neutral-600">Students</Typography>
             </div>
 
             <div className="flex justify-center items-center gap-x-1">
-
-                <div className="text-label-2 text-neutral-900">{lessonsCount}</div>
-
-                <div className="text-body-2 text-neutral-600">Lessons</div>
-
+                <Typography variant="label-2" color="neutral-900">{ lessonsCount }</Typography>
+                <Typography variant="body-2" color="neutral-600">Lessons</Typography>
             </div>
         </div>
     )

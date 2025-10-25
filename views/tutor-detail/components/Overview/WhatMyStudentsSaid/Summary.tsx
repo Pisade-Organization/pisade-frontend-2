@@ -1,3 +1,4 @@
+import Typography from "@/components/base/Typography"
 import { Star } from "lucide-react"
 export default function Summary({
     avgRating,
@@ -13,13 +14,17 @@ export default function Summary({
 
             <div className="flex flex-col justify-center items-start gap-y-px">
 
-                <div className="text-headline-5 text-neutral-900">
+                <Typography variant="headline-5" color="neutral-900">
                     { avgRating }/5
-                </div>
-
-                <div className="text-body-3 text-neutral-600">
+                </Typography>
+                <Typography variant="body-3" color="neutral-600">
                     Based on { studentReviewsCount } student reviews
-                </div>
+                </Typography>
+
+
+                
+
+
             </div>
             
         </div>

@@ -1,3 +1,4 @@
+import { TUTOR_RANKING } from "@/types/tutorRanking.enum";
 export interface TutorCardProps {
     view?: "list" | "grid";
     id: string;
@@ -11,7 +12,7 @@ export interface TutorCardProps {
     subject: string;
     languages: string[];
     avgRating: number;
-    tutorRanking: 'STARTER' | 'PRO' | 'MASTER';
+    tutorRanking: TUTOR_RANKING;
     studentsCount: number;
     lessonsCount: number;
     availability: {

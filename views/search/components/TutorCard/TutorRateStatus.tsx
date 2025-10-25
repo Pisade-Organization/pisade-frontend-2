@@ -1,4 +1,5 @@
 import AvailableNowBadge from "./AvailableNowBadge"
+import Typography from "@/components/base/Typography"
 
 export default function TutorRateStatus({
     baseRate,
@@ -12,13 +13,19 @@ export default function TutorRateStatus({
 
             <div className="flex justify-center items-center gap-1">
 
-                <div className="text-title-1 lg:text-headline-4 text-neutral-900">
+                <Typography
+                    variant={{ base: "title-1", lg: "headline-4" }}
+                    color="neutral-900"
+                >
                     ฿{baseRate}
-                </div>
+                </Typography>
 
-                <div className="text-body-3 lg:text-body-2 text-neutral-600">
+                <Typography
+                    variant={{ base: "body-3", lg: "body-2" }}
+                    color="neutral-600"
+                >
                     /50m
-                </div>
+                </Typography>
 
             </div>
 

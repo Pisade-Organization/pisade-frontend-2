@@ -86,7 +86,7 @@ export default function SearchPage() {
             {/* TUTOR CARDS */}
             <div className="lg:block px-4 lg:px-20 lg:py-11 pb-24 lg:pb-0">
                 <div className="mb-6">
-                    <h2 className="text-2xl font-bold mb-2">Available Tutors</h2>
+                    <h1 className="text-2xl font-bold mb-2">Available Tutors</h1>
                     <p className="text-gray-600">
                         Showing {tutors.length} of {totalTutors} tutors
                     </p>

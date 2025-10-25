@@ -6,6 +6,11 @@ module.exports = {
       "./app/**/*.{js,ts,jsx,tsx,mdx}",
       "./views/**/*.{js,ts,jsx,tsx,mdx}",
     ],
+		safelist: [
+			// typography variants
+			{ pattern: /text-(headline|title|label|body)-[1-5]/ },
+			// if you use custom colors like "text-primary", "text-muted-foreground"
+		],
   theme: {
   	extend: {
 		fontFamily: {
@@ -138,6 +143,30 @@ module.exports = {
 					700: '#4d06a5',
 					800: '#3c0480',
 					900: '#2e0361'
+				},
+				yellow: {
+					normal: '#FFB130',
+					light: '#FFEFD6',
+				},
+				orange: {
+					normal: '#FC8B23',
+					light: '#FFF5EB',
+				},
+				green: {
+					normal: '#3BA55C',
+					light: '#EFFCF3'
+				},
+				blue: {
+					normal: '#3E70DD',
+					light: '#EFF4FF',
+				},
+				violet: {
+					normal: '#702DFF',
+					light: '#DCCCFF',
+				},
+				red: {
+					normal: '#ED4245',
+					light: '#FFF1F2',
 				},
 
 				// Semantic tokens

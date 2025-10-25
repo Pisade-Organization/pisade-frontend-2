@@ -1,4 +1,5 @@
 import AboutBody from "./AboutBody"
+import Typography from "@/components/base/Typography"
 export default function About({
     about
 }: {
@@ -6,9 +7,9 @@ export default function About({
 }) {
     return (
         <div className="flex flex-col justify-center items-start gap-y-3">
-            <div className="text-title-1 lg:text-body-2 text-neutral-900">
+            <Typography variant={{ base: "title-1", lg: "body-2" }} color="neutral-900">
                 About me
-            </div>
+            </Typography>
 
             <AboutBody about={about} />
         </div>

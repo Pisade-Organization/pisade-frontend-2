@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Typography from "@/components/base/Typography"
 export default function TutorHeader({
     fullName,
     flagUrl,
@@ -13,9 +14,10 @@ export default function TutorHeader({
             {/* NAME + FLAG */}
             <div className="flex justify-center items-center gap-x-3">
                 {/* FULL NAME */}
-                <div className="text-title-2 lg:text-headline-4 text-neutral-900">
+
+                <Typography variant={{ base: "title-2", lg: "headline-4" }} color="neutral-900">
                     { fullName }
-                </div>
+                </Typography>
 
                 {/* FLAG */}
                 <Image
@@ -28,9 +30,10 @@ export default function TutorHeader({
             </div>
 
             {/* SUBJECT */}
-            <div className="w-full text-left text-body-3 lg:text-label-2 text-neutral-500">
+            <Typography variant={{ base: "body-3", lg: "label-2" }} color="neutral-500">
                 {subject}
-            </div>
+            </Typography>
+
         </div>
 
 

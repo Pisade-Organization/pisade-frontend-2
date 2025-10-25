@@ -1,4 +1,5 @@
 "use client"
+import Typography from "@/components/base/Typography";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion"
 
@@ -38,10 +39,9 @@ export default function WhatMyStudentsSaid({
 
             {/* TITLE + SUMMARY */}
             <div className="flex flex-col justify-center items-start gap-y-3">
-                <div className="text-title-1 text-neutral-900">
+                <Typography variant="title-1" color="neutral-900">
                     What my students said
-                </div>
-
+                </Typography>
                 <Summary 
                     avgRating={avgRating}
                     studentReviewsCount={studentReviewsCount}

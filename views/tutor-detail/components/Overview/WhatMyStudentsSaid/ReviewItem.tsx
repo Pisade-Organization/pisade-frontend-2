@@ -1,4 +1,5 @@
 "use client"
+import Typography from "@/components/base/Typography"
 import Image from "next/image"
 import { Star } from "lucide-react"
 export default function ReviewItem({
@@ -25,10 +26,9 @@ export default function ReviewItem({
                 />
 
                 <div className="flex flex-col justify-center items-start gap-y-1">
-                    
-                    <div className="text-title-2 text-neutral-900">
+                    <Typography variant="title-2" color="neutral-900">
                         { fullName }
-                    </div>
+                    </Typography>
 
                     <div className="flex justify-center items-center gap-x-1">
                     {[...Array(Math.floor(avgRating))].map((_, idx) => (
@@ -57,9 +57,9 @@ export default function ReviewItem({
             </div>
 
             {/* REVIEW TEXT */}
-            <div className="text-body-2 text-neutral-600">
-                {review}
-            </div>
+            <Typography variant="body-2" color="neutral-600">
+                { review} 
+            </Typography>
         </div>
     )
 }
