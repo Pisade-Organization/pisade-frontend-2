@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { ElementType, ComponentPropsWithoutRef } from "react";
 
 type Variant =
   | "headline-1"
@@ -19,16 +20,17 @@ type Variant =
   | "body-3"
   | "body-4";
 
-type Breakpoint = "sm" | "md" | "lg" | "xl" | "2xl" | "base";
+type Breakpoint = "sm" | "md" | "lg" | "xl" | "2xl";
 
-type TypographyVariant = Variant | Partial<Record<Breakpoint, Variant>>;
+type TypographyVariant = Variant | Partial<Record<Breakpoint | "base", Variant>>;
 
-interface TypographyProps extends React.HTMLAttributes<HTMLParagraphElement> {
+type TypographyProps<T extends ElementType = "p"> = Omit<ComponentPropsWithoutRef<T>, "as"> & {
   variant: TypographyVariant;
-  color?: string;
-}
+  color?: string; // expects valid Tailwind text colors (e.g., "neutral-800", "primary")
+  as?: T;
+};
 
-const VARIANT_MAP: Record<Variant, string> = {
+const variantClasses: Record<Variant, string> = {
   "headline-1": "text-headline-1",
   "headline-2": "text-headline-2",
   "headline-3": "text-headline-3",
@@ -48,32 +50,41 @@ const VARIANT_MAP: Record<Variant, string> = {
   "body-4": "text-body-4",
 };
 
-export default function Typography({
-  variant,
-  color = "foreground",
-  className,
-  ...props
-}: TypographyProps) {
-  let fontSizeClasses = "";
-
+// Build responsive classes
+function buildVariantClasses(variant: TypographyVariant): string {
   if (typeof variant === "string") {
-    fontSizeClasses = VARIANT_MAP[variant];
-  } else {
-    const classes: string[] = [];
-    if (variant.base) classes.push(VARIANT_MAP[variant.base]);
-    if (variant.sm) classes.push(`sm:${VARIANT_MAP[variant.sm]}`);
-    if (variant.md) classes.push(`md:${VARIANT_MAP[variant.md]}`);
-    if (variant.lg) classes.push(`lg:${VARIANT_MAP[variant.lg]}`);
-    if (variant.xl) classes.push(`xl:${VARIANT_MAP[variant.xl]}`);
-    if (variant["2xl"]) classes.push(`2xl:${VARIANT_MAP[variant["2xl"]]}`);
-    fontSizeClasses = classes.join(" ");
+    return variantClasses[variant];
   }
 
-  const colorClass = color !== "foreground" ? `text-${color}` : "";
+  return Object.entries(variant)
+    .map(([bp, v]) => {
+      if (!v) return "";
+      return bp === "base"
+        ? variantClasses[v]
+        : `${bp}:${variantClasses[v]}`;
+    })
+    .filter(Boolean)
+    .join(" ");
+}
+
+export default function Typography<T extends ElementType = "p">({
+  variant,
+  color = "black",
+  as,
+  className,
+  children,
+  ...props
+}: TypographyProps<T>) {
+  const Tag = as || "p";
+  const variantClass = buildVariantClasses(variant);
+
+  // tailwind expects `text-{color}`
+  const textColor =
+    color.startsWith("text-") ? color : `text-${color}`;
 
   return (
-    <p className={cn(fontSizeClasses, colorClass, className)} {...props}>
-      {props.children}
-    </p>
+    <Tag className={`${variantClass} ${textColor} ${className}`} {...props}>
+      {children}
+    </Tag>
   );
 }

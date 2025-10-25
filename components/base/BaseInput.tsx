@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils"
 import { cva, type VariantProps } from "class-variance-authority"
 import React from "react"
+import Typography from "./Typography"
 
 const inputVariants = cva(
     "",
@@ -42,14 +43,14 @@ export default function BaseInput({
         <div className="w-full flex flex-col justify-center items-start gap-1">
             
             <div className="flex justify-start items-center gap-1">
-                <label className="text-neutral-800 text-label-3 lg:text-label-2">
-                    {title}
-                </label>
+                <Typography variant={{ base: "label-3", lg: "label-2" }} color="neutral-800">
+                    { title }
+                </Typography>
 
                 { required && (
-                    <label className="text-[#D9534F] text-label-3 lg:text-label-2">
+                    <Typography variant={{ base: "label-3", lg: "label-2" }} className="text-[#D9534F]">
                         *
-                    </label>
+                    </Typography>
                 )}
             </div>
 
@@ -61,8 +62,8 @@ export default function BaseInput({
                     rounded-[12px] 
                     py-3 px-4 
                     placeholder:text-neutral-300 text-neutral-700 
-                    text-body-3 lg:text-body-2
-                    border border-neutral-100
+                    text-body-3
+                    border border-neutral-50
                     `
                 )}
                 placeholder={placeholder}
@@ -70,10 +71,10 @@ export default function BaseInput({
 
 
             />
-            
-            <label className="text-body-4 text-[#D9534F]">
+
+            <Typography variant="body-4" className="text-[#D9534F]">
                 { errorMessage }
-            </label>
+            </Typography>
         </div>
     )
 }

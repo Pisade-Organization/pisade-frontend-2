@@ -25,7 +25,7 @@ export default function SearchPage() {
         const fetchTutors = async () => {
             try {
                 const response = await fetchTutorsPaginated(1, TUTORS_PER_PAGE)
-                setTutors(response.tutors)
+                setTutors(response.tutors as TutorCardProps[])
                 setTotalTutors(response.total)
                 setHasMore(response.hasMore)
                 setLoading(false)
@@ -47,7 +47,7 @@ export default function SearchPage() {
             const nextPage = currentPage + 1
             const response = await fetchTutorsPaginated(nextPage, TUTORS_PER_PAGE)
             
-            setTutors(prev => [...prev, ...response.tutors])
+            setTutors(prev => [...prev, ...response.tutors as TutorCardProps[]])
             setCurrentPage(nextPage)
             setHasMore(response.hasMore)
         } catch (error) {
