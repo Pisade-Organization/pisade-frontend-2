@@ -5,7 +5,10 @@ import Navbar from "../component/Navbar";
 import ProgressBar from "../component/ProgressBar";
 import OnboardingStepHeader from "../component/OnboardingStepHeader";
 import FormLayout from "../component/FormLayout";
-import OnboardingStepOne from "../component/Step1";
+import ActionButtonsFooter from "../component/ActionButtonsFooter";
+import OnboardingStepOne from "../component/OnboardingStepOne";
+import OnboardingStepTwo from "../component/OnboardingStepTwo";
+import OnboardingStepThree from "../component/OnboardingStepThree";
 export default function OnboardingPage() {
   
   const [step, setStep] = useState<number>(1);
@@ -13,11 +16,14 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-[#F9F7FB]">
       <Navbar />
       <ProgressBar step={1} />
-      <div className="w-full flex flex-col justify-center items-center py-8 lg:px-80 gap-[28px]">
-        <OnboardingStepHeader step={step} />
-          <FormLayout>
-            <OnboardingStepOne />
-          </FormLayout>
+      <div className="w-full flex justify-center items-start">
+        <div className="w-full max-w-[800px]  flex flex-col justify-center items-start py-8 gap-[28px]">
+          <OnboardingStepHeader step={step} />
+          { step === 1 && <OnboardingStepOne />}
+          { step === 2 && <OnboardingStepTwo />}
+          { step === 3 && <OnboardingStepThree />}
+          <ActionButtonsFooter step={step} setStep={setStep} />
+        </div>
       </div>
     </div>
   )

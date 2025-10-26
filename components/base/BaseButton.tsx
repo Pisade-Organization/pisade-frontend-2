@@ -44,7 +44,7 @@ const buttonVariants = cva(
                 class: "text-electric-violet-500 hover:bg-neutral-50"
             },
             {
-                variant: "primary",
+                variant: "secondary",
                 typeStyle: "borderless",
                 class: "text-deep-royal-indigo-700 hover:bg-neutral-50"
             }
@@ -77,9 +77,9 @@ export default function BaseButton({
             )}
             {...props}
         >
-            {iconLeft && <span>{iconLeft}</span>}
+            {iconLeft && <span className="flex items-center [&_svg]:stroke-current">{iconLeft}</span>}
             {children}
-            {iconRight && <span className="w-5 h-5">{iconRight}</span>}
+            {iconRight && <span className="flex items-center w-5 h-5 [&_svg]:stroke-current">{iconRight}</span>}
         </button>
     )
 }

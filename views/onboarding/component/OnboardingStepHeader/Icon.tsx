@@ -18,7 +18,7 @@ export default function Icon({
 }) {
   return (
     <div className="flex justify-center items-center w-[84px] h-[84px] rounded-full bg-white">
-      {data[8]}
+      {data[step]}
     </div>
   )
 }

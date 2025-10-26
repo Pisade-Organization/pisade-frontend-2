@@ -12,7 +12,7 @@ export default function PersonalInfoForm() {
     () => countryOptions.find((country) => country.code === "TH") as CountryOption
   );
   return (
-    <div className="w-full flex flex-col justify-center items-start gap-[18px] py-4 lg:py-6 px-5 lg:px-8">
+    <div className="w-full flex flex-col justify-center items-start gap-[18px] py-4 lg:py-6 px-5 lg:px-8 rounded-t-[20px] bg-white">
         <Typography variant={{ base: "title-2", lg: "title-1" }} color="neutral-800">
           1. Personal Info
         </Typography>
