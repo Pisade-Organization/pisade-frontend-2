@@ -13,6 +13,12 @@ export const servicePath = {
       getAllTutors: "/tutors",
       getTutorReviews: "/tutors/:id/reviews",
     },
-    // add more modules later...
+    onboarding: {
+      getOnboardingStepOne: "/onboarding/step-1",
+      saveOnboardingStepOne: "/onboarding/step-1",
+
+      getOnboardingStepTwo: "/onboarding/step-2",
+      saveOnboardingStepTwo: "/onboarding/step-2"
+    }
   };
   
