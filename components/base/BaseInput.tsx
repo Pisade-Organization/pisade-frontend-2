@@ -40,9 +40,9 @@ export default function BaseInput({
     ...props
 }: BaseInputProps) {
     return (
-        <div className="w-full flex flex-col justify-center items-start gap-1">
+        <div className=" w-full flex flex-col gap-1">
             
-            <div className="flex justify-start items-center gap-1">
+            <div className="w-full flex justify-start items-center gap-1">
                 <Typography variant={{ base: "label-3", lg: "label-2" }} color="neutral-800">
                     { title }
                 </Typography>
@@ -59,8 +59,8 @@ export default function BaseInput({
                     `
                     w-full
                     outline-none
-                    rounded-[12px] 
-                    py-3 px-4 
+                    rounded-[12px]
+                    py-3 px-4
                     placeholder:text-neutral-300 text-neutral-700 
                     text-body-3
                     border border-neutral-50

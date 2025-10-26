@@ -38,11 +38,11 @@ export default function BaseSelect({
 
   // current label
   const current = options.find((o) => o.value === value);
-
   return (
-    <div className="w-full flex flex-col gap-1">
+    // TODO: Parent div is still using mb-1, remove mb-1 and fix the problem that this not aligns with @BaseInput
+    <div className="mb-1 w-full flex flex-col gap-1"> 
       {/* Label */}
-      <div className="flex items-center gap-1">
+      <div className="flex justify-start items-start gap-1">
         <Typography
           variant={{ base: "label-3", lg: "label-2" }}
           color="neutral-800"
@@ -64,7 +64,7 @@ export default function BaseSelect({
         <DropdownMenu>
           <DropdownMenuTrigger
             className={cn(
-              "w-full flex justify-between items-center py-3 px-4 gap-[10px] border border-neutral-50 rounded-[12px] outline-none"
+              "w-full border border-neutral-50 rounded-[12px] py-3 px-4 flex justify-between items-center"
             )}
           >
             <Typography
