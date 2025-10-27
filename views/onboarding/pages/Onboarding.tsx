@@ -4,11 +4,11 @@ import { useState } from "react";
 import Navbar from "../component/Navbar";
 import ProgressBar from "../component/ProgressBar";
 import OnboardingStepHeader from "../component/OnboardingStepHeader";
-import FormLayout from "../component/FormLayout";
 import ActionButtonsFooter from "../component/ActionButtonsFooter";
 import OnboardingStepOne from "../component/OnboardingStepOne";
 import OnboardingStepTwo from "../component/OnboardingStepTwo";
 import OnboardingStepThree from "../component/OnboardingStepThree";
+import OnboardingStepFive from "../component/OnboardingStepFive";
 export default function OnboardingPage() {
   
   const [step, setStep] = useState<number>(1);
@@ -22,6 +22,8 @@ export default function OnboardingPage() {
           { step === 1 && <OnboardingStepOne />}
           { step === 2 && <OnboardingStepTwo />}
           { step === 3 && <OnboardingStepThree />}
+
+          { step === 5 && <OnboardingStepFive />}
           <ActionButtonsFooter step={step} setStep={setStep} />
         </div>
       </div>

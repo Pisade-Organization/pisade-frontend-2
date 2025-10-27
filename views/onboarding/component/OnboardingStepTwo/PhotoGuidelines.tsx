@@ -13,7 +13,7 @@ export default function PhotoGuidelines() {
   return (
     <div className="flex flex-col justify-center items-start gap-1">
       {guidelines.map((guideline) => (
-        <div className="inline-flex gap-2">
+        <div key={guideline} className="inline-flex gap-2">
           <Check size={18} className="text-green-normal"/>
           <Typography variant="body-3" color="neutral-500">{ guideline }</Typography>
         </div>

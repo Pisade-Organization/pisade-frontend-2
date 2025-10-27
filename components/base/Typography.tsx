@@ -28,6 +28,7 @@ type TypographyProps<T extends ElementType = "p"> = Omit<ComponentPropsWithoutRe
   variant: TypographyVariant;
   color?: string; // expects valid Tailwind text colors (e.g., "neutral-800", "primary")
   as?: T;
+  underline?: boolean;
 };
 
 const variantClasses: Record<Variant, string> = {
@@ -73,6 +74,7 @@ export default function Typography<T extends ElementType = "p">({
   as,
   className,
   children,
+  underline = false,
   ...props
 }: TypographyProps<T>) {
   const Tag = as || "p";
@@ -82,8 +84,10 @@ export default function Typography<T extends ElementType = "p">({
   const textColor =
     color.startsWith("text-") ? color : `text-${color}`;
 
+  const underlineClass = underline ? "underline" : "";
+
   return (
-    <Tag className={`${variantClass} ${textColor} ${className}`} {...props}>
+    <Tag className={cn(variantClass, textColor, underlineClass, className)} {...props}>
       {children}
     </Tag>
   );
