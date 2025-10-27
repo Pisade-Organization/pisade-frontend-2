@@ -50,7 +50,7 @@ export default function Title({
   }
   return (
     <div className="flex flex-col justify-center items-start gap-1">
-      <Typography variant={{ base: "label-3" }} className="text-electric-violet-300">
+      <Typography variant="label-3" color="electric-violet-300">
         STEP {step}/8
       </Typography>
 

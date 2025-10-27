@@ -9,48 +9,83 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import BaseButton from "@/components/base/BaseButton"
 
 export default function OnboardingStepFiveForm() {
   const [open, setOpen] = useState<string | undefined>("")
+  const topics = [
+    {
+      title: "1. Introduce yourself",
+      description: "Show potential students who you are, your teaching experience, interests and hobbies",
+      placeholder: "Hello, my name is... and I'm from...",
+      info: "Don’t include your last name or present your information in a CV format"
+    },
+    {
+      title: "2. Teaching experience",
+      description: "Provide a detailed description of your relevant teaching experience. Include certifications, teaching methodology, education, and subject expertise.",
+      placeholder: "I have 5 years of teaching experience...",
+      info: "Don’t include your last name or present your information in a CV format"
+    },
+    {
+      title: "3. Motivate potencial students",
+      description: "Start your first lesson and discover how enjoyable learning English can be. Build confidence, fluency, and real communication skills.",
+      placeholder: "Book a trial lesson with me...",
+      info: "Don’t include your last name or present your information in a CV format",
+    },
+    {
+      title: "4. Write a catchy headline",
+      description: "Make your headline attention-grabbing, mention your specific teaching languageand encourage students to read your full description.",
+      placeholder: "Book a trial lesson with me...",
+      info: "Don’t include your last name or present your information in a CV format"
+    }
+  ]
   return (
     <Accordion type="single" collapsible value={open} onValueChange={setOpen} className="w-full">
-      <AccordionItem value="item-1" 
-      className={cn(
-        "w-full border-none bg-white",
-        open === "item-1" && "flex flex-col items-start pt-6 pb-8 px-8 gap-5",
-        open !== "item-1" && "py-1 px-8"
-      )}>
-
-        <AccordionTrigger className={cn(
-          "[&>svg]:hidden hover:no-underline",
-          open === "item-1" && "flex flex-col justify-center items-start gap-1"
-        )}>
-          <Typography variant={{ base: "title-2", lg: "title-1" }} color="neutral-800">
-            1. Introduce Yourself
-          </Typography>
-
-          { open === "item-1" && (
-            <Typography variant="body-3" color="neutral-400">
-              Show potential students who you are, your teaching experience, interests and hobbies
-            </Typography>
+      {topics.map((topic, idx) => (
+        <AccordionItem
+          key={idx}
+          value={`item-${idx + 1}`}
+          className={cn(
+            "w-full border-none bg-white",
+            open === `item-${idx + 1}` && "flex flex-col items-start pt-6 pb-8 px-8 gap-5",
+            open !== `item-${idx + 1}` && "py-1 px-8"
           )}
-        </AccordionTrigger>
-
-        <AccordionContent className="w-full flex flex-col justify-center items-start gap-2">
-          <textarea
-            className="w-full rounded-[12px] h-[150px] py-3 px-4 border border-neutral-100 outline-none"
-            placeholder="Hello, my name is... and I'm from..."
-          />
-
-          <div className="rounded-[15px] w-full flex justify-start items-center py-2 px-4 gap-2 bg-electric-violet-25">
-            <Info size={16} className="text-deep-royal-indigo-500"/>
-            <Typography variant={{ base: "body-4", lg: "body-3" }} color="deep-royal-indigo-500">
-              Don’t include your last name or present your information in a CV format
+        >
+          <AccordionTrigger
+            className={cn(
+              "[&>svg]:hidden hover:no-underline",
+              open === `item-${idx + 1}` && "flex flex-col justify-center items-start gap-1"
+            )}
+          >
+            <Typography variant={{ base: "title-2", lg: "title-1" }} color="neutral-800">
+              {topic.title}
             </Typography>
-          </div>
-        </AccordionContent>
+            {open === `item-${idx + 1}` && (
+              <Typography variant="body-3" color="neutral-400">
+                {topic.description}
+              </Typography>
+            )}
+          </AccordionTrigger>
 
-      </AccordionItem>
+          <AccordionContent className="w-full flex flex-col justify-center items-center gap-2">
+            <textarea
+              className="w-full rounded-[12px] h-[150px] py-3 px-4 border border-neutral-100 outline-none"
+              placeholder={topic.placeholder}
+            />
+
+            <div className="rounded-[15px] w-full flex justify-start items-center py-2 px-4 gap-2 bg-electric-violet-25">
+              <Info size={16} className="text-deep-royal-indigo-500"/>
+              <Typography variant={{ base: "body-4", lg: "body-3" }} color="deep-royal-indigo-500">
+                {topic.info}
+              </Typography>
+            </div>
+            
+            <BaseButton variant="secondary">
+              Save
+            </BaseButton>
+          </AccordionContent>
+        </AccordionItem>
+      ))}
     </Accordion>
 
   )

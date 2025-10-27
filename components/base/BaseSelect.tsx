@@ -23,6 +23,7 @@ interface BaseSelectProps {
   options: { value: string; label: string }[];
   value?: string;
   onChange?: (value: string) => void;
+  inputBackground?: string;
 }
 
 export default function BaseSelect({
@@ -33,6 +34,7 @@ export default function BaseSelect({
   options,
   value,
   onChange,
+  inputBackground
 }: BaseSelectProps) {
   const [openMobile, setOpenMobile] = useState(false);
 
@@ -64,6 +66,7 @@ export default function BaseSelect({
         <DropdownMenu>
           <DropdownMenuTrigger
             className={cn(
+              inputBackground && `bg-${inputBackground}`,
               "w-full border border-neutral-50 rounded-[12px] py-3 px-4 flex justify-between items-center"
             )}
           >

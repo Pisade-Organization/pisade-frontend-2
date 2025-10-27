@@ -87,7 +87,7 @@ export default function Typography<T extends ElementType = "p">({
   const underlineClass = underline ? "underline" : "";
 
   return (
-    <Tag className={cn(variantClass, textColor, underlineClass, className)} {...props}>
+    <Tag className={`${variantClass} ${textColor} ${underlineClass} ${className})`} {...props}>
       {children}
     </Tag>
   );
