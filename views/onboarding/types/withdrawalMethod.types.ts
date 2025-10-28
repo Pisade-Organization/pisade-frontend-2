@@ -1,0 +1,1 @@
+export type WithdrawalMethod = "Prompt Pay" | "Bank transfer";

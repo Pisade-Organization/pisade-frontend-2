@@ -26,6 +26,7 @@ export interface BaseInputProps
             className?: string
             errorMessage?: string
             required?: boolean
+            leftIcon?: React.ReactNode
         }
 
 export default function BaseInput({
@@ -37,6 +38,7 @@ export default function BaseInput({
     errorMessage,
     children,
     disabled,
+    leftIcon,
     ...props
 }: BaseInputProps) {
     return (
@@ -54,23 +56,36 @@ export default function BaseInput({
                 )}
             </div>
 
-            <input type="text"
-                className={cn(
+            <div className={cn(
                     `
+                    inline-flex gap-[10px]
                     w-full
-                    outline-none
                     rounded-[12px]
                     py-3 px-4
-                    placeholder:text-neutral-300 text-neutral-700 
-                    text-body-3
                     border border-neutral-50
                     `
                 )}
-                placeholder={placeholder}
-                {...props}
+            >
+                { leftIcon }
+
+                <input type="text"
+                    className={cn(
+                        `
+                        w-full
+                        outline-none
+                        placeholder:text-neutral-300 text-neutral-700 
+                        text-body-3
+                        `
+                    )}
+                    placeholder={placeholder}
+                    {...props}
 
 
-            />
+                />
+
+
+            </div>
+
 
             <Typography variant="body-4" className="text-[#D9534F]">
                 { errorMessage }

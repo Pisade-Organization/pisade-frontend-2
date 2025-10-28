@@ -11,6 +11,7 @@ import OnboardingStepThree from "../component/OnboardingStepThree";
 import OnboardingStepFive from "../component/OnboardingStepFive";
 import OnboardingStepSix from "../component/OnboardingStepSix";
 import OnboardingStepSeven from "../component/OnboardingStepSeven";
+import OnboardingStepEight from "../component/OnboardingStepEight";
 
 export default function OnboardingPage() {
   const [step, setStep] = useState<number>(1);
@@ -22,13 +23,14 @@ export default function OnboardingPage() {
       <div className="w-full flex justify-center items-start">
         <div className="w-full max-w-[800px]  flex flex-col justify-center items-start py-8 gap-[28px]">
           <OnboardingStepHeader step={step} />
-          { step === 1 && <OnboardingStepOne />}
-          { step === 2 && <OnboardingStepTwo />}
-          { step === 3 && <OnboardingStepThree />}
+          { step === 1 && <OnboardingStepOne /> }
+          { step === 2 && <OnboardingStepTwo /> }
+          { step === 3 && <OnboardingStepThree /> }
 
-          { step === 5 && <OnboardingStepFive />}
-          { step === 6 && <OnboardingStepSix />}
-          { step === 7 && <OnboardingStepSeven />}
+          { step === 5 && <OnboardingStepFive /> }
+          { step === 6 && <OnboardingStepSix /> }
+          { step === 7 && <OnboardingStepSeven /> }
+          { step === 8 && <OnboardingStepEight /> }
           <ActionButtonsFooter step={step} setStep={setStep} />
         </div>
       </div>
