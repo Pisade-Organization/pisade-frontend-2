@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import AuthLayout from "../components/AuthLayout";
 import Loading from "@/components/Loading";
 import { AUTH_TYPES } from "../types/auth.enum";
+import LoadingPage from "@/components/LoadingPage";
 
 export default function TutorSignUpPage() {
   const { data: session, status } = useSession();
@@ -21,9 +22,7 @@ export default function TutorSignUpPage() {
   // While loading session, render nothing (or a spinner)
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loading />
-      </div>
+      <LoadingPage />
     );
   }
 

@@ -54,7 +54,7 @@ export default function BaseSelect({
         {required && (
           <Typography
             variant={{ base: "label-3", lg: "label-2" }}
-            className="text-[#D9534F]"
+            color="[#D9534F]"
           >
             *
           </Typography>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import AuthLayout from "../components/AuthLayout";
 import Loading from "@/components/Loading";
+import LoadingPage from "@/components/LoadingPage";
 
 export default function SigninPage() {
   const { data: session, status } = useSession();
@@ -20,9 +21,7 @@ export default function SigninPage() {
   // While loading session, render nothing (or a spinner)
   if (status === "loading") {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loading />
-      </div>
+      <LoadingPage/>
     );
   }
 

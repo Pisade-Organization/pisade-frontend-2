@@ -50,7 +50,7 @@ export default function BaseInput({
                 </Typography>
 
                 { required && (
-                    <Typography variant={{ base: "label-3", lg: "label-2" }} className="text-[#D9534F]">
+                    <Typography variant={{ base: "label-3", lg: "label-2" }} color="[#D9534F]">
                         *
                     </Typography>
                 )}
@@ -87,7 +87,7 @@ export default function BaseInput({
             </div>
 
 
-            <Typography variant="body-4" className="text-[#D9534F]">
+            <Typography variant="body-4" color="[#D9534F]">
                 { errorMessage }
             </Typography>
         </div>
