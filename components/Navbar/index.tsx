@@ -14,7 +14,7 @@ import LanguageSwitcher from "./LanguageSwitcher"
 import UserAvatar from "./UserAvatar"
 
 type NavbarProps = {
-  variant?: "search" | "tutor-detail" | "student_dashboard" | "tutor_dashboard"
+  variant?: "search" | "tutor_detail" | "student_dashboard" | "tutor_dashboard"
 }
 
 // ------------------ Main Navbar ------------------ //
@@ -26,7 +26,6 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
   const onSigninClick = () => router.push("/signin")
 
   const isAuth = status === "authenticated"
-
   // ------------------ Variants ------------------ //
   if (variant === "search") {
     return (
@@ -34,7 +33,9 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
         <Logo onClick={onLogoClick} />
         <div className="hidden lg:flex items-center gap-2">
           {isAuth ? (
-            <UserAvatar avatarUrl={data?.user?.avatarUrl} fullName={data?.user?.fullName} />
+            <>
+              <UserAvatar avatarUrl={data?.user?.avatarUrl} fullName={data?.user?.fullName} />
+            </>
           ) : (
             <>
               <LanguageSwitcher dark />
@@ -67,7 +68,7 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
 
       <div className="hidden lg:flex items-center gap-3">
         <LanguageSwitcher />
-        {variant === "tutor-detail" && (
+        {variant === "tutor_detail" && (
           <>
             <BaseButton variant="secondary" typeStyle="borderless">Sign Up</BaseButton>
             <BaseButton onClick={onSigninClick}>Sign In</BaseButton>

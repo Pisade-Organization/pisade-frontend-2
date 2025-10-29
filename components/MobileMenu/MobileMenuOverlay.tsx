@@ -1,7 +1,15 @@
 import { motion } from "framer-motion";
 import MobileMenuHeader from "./MobileMenuHeader";
+import SearchOverlay from "./Overlays/SearchOverlay";
 
-export default function MobileMenuOverlay({ setOpen }: { setOpen: (open: boolean) => void }) {
+export default function MobileMenuOverlay({ 
+  setOpen, 
+  variant 
+  }: 
+  { 
+    setOpen: (open: boolean) => void, 
+    variant: "search" | "tutor_detail" | "student_dashboard" | "tutor_dashboard"
+  }) {
   return (
     <motion.div
       className="fixed inset-0 z-50 bg-white flex flex-col gap-y-1 px-4 py-3"
@@ -11,7 +19,8 @@ export default function MobileMenuOverlay({ setOpen }: { setOpen: (open: boolean
       transition={{ type: "spring", stiffness: 260, damping: 25 }}
     >
       <MobileMenuHeader setOpen={setOpen} />
-      {/* Add menu content here */}
+      { variant === "search" && <SearchOverlay />}
+      
     </motion.div>
   );
 }

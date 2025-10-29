@@ -10,7 +10,7 @@ import MobileMenuOverlay from "./MobileMenuOverlay";
 export default function MobileMenu({
   variant = "search",
 }: {
-  variant?: "search" | "tutor-detail" | "student_dashboard" | "tutor_dashboard";
+  variant?: "search" | "tutor_detail" | "student_dashboard" | "tutor_dashboard";
 }) {
   const [open, setOpen] = useState(false);
 
@@ -18,7 +18,7 @@ export default function MobileMenu({
     switch (variant) {
       case "search":
         return <SearchMenuButton onClick={() => setOpen(true)} />;
-      case "tutor-detail":
+      case "tutor_detail":
         return <TutorDetailMenuButton />;
       // future variants:
       // case "student_dashboard": return <StudentDashboardButton />
@@ -33,7 +33,7 @@ export default function MobileMenu({
       {renderMenuButton()}
 
       <AnimatePresence>
-        {open && <MobileMenuOverlay setOpen={setOpen} />}
+        {open && <MobileMenuOverlay setOpen={setOpen} variant={variant} />}
       </AnimatePresence>
     </>
   );

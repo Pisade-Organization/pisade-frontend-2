@@ -224,7 +224,6 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      // Minimal + up-to-date data to client
       session.user = {
         id: token.id as string,
         email: token.email as string,
@@ -233,20 +232,19 @@ export const authOptions: NextAuthOptions = {
         fullName: token.fullName,
         avatarUrl: token.avatarUrl,
       };
+    
       (session as any).access_token = token.access_token;
       (session as any).error = token.error;
+    
+      // 🔑 Force session expiry to track JWT expiry
+      if (token.exp) {
+        session.expires = new Date(token.exp * 1000).toISOString();
+      }
+    
       return session;
     },
-
-    async redirect({ url, baseUrl }) {
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      try {
-        const u = new URL(url);
-        if (u.origin === baseUrl) return url;
-      } catch {}
-      return baseUrl;
-    },
   },
+    
 
   pages: {
     signIn: "/auth/signin",

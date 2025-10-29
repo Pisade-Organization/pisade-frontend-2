@@ -67,7 +67,7 @@ export default function TutorDetailPage({
 
     return (
         <div className="flex flex-col justify-center items-center">
-            <Navbar variant="tutor-detail" />
+            <Navbar variant="tutor_detail" />
             {/* MOBILE */}
             <div className="lg:hidden min-h-screen relative flex flex-col justify-start gap-y-4 px-4 py-20">
 
