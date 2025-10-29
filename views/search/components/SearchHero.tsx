@@ -1,10 +1,9 @@
 "use client"
 
-import SearchNavbar from "../../../components/Navbar"
+import Navbar from "@/components/Navbar"
 import SearchInput from "./SearchInput"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import Navbar from "../../../components/Navbar"
 import { PeopleIcon, ChartGrowthIcon, EclipseIcon, Eclipse2Icon, FolderIcon, BookIcon, TargetIcon, StarIcon } from "@/components/icons"
 
 

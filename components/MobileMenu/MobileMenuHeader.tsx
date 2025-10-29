@@ -7,7 +7,7 @@ import React from "react"
 export default function MobileMenuHeader({
     setOpen
 }: {
-    setOpen: React.Dispatch<React.SetStateAction<boolean>>
+    setOpen: (open: boolean) => void;
 }) {
     return (
         <div className="flex justify-between items-center">

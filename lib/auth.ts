@@ -11,6 +11,8 @@ declare module "next-auth" {
     email: string;
     role: Role;
     onboardingStatus?: string;
+    fullName?: string;
+    avatarUrl?: string;
   }
   interface Session {
     user: User;
@@ -25,6 +27,8 @@ declare module "next-auth/jwt" {
     email?: string;
     role?: Role;
     onboardingStatus?: string;
+    fullName?: string;
+    avatarUrl?: string;
     access_token?: string;
     refresh_token?: string;
     exp?: number;
@@ -96,9 +100,17 @@ function needsRevalidate(nextAt?: number) {
 async function revalidateUser(token: any) {
   try {
     if (!token?.access_token) throw new Error("no access token");
-    await api.get("/users/me", {
+    const { data } = await api.get<BackendUser>("/profile/me", {
       headers: { Authorization: `Bearer ${token.access_token}` },
     });
+
+    // ✅ overwrite profile fields so frontend always sees latest info
+    token.email = data.email ?? token.email;
+    token.role = data.role ?? token.role;
+    token.onboardingStatus = data.onboardingStatus ?? token.onboardingStatus;
+    token.fullName = data.fullName ?? token.fullName;
+    token.avatarUrl = data.avatarUrl ?? token.avatarUrl;
+
     token._revalidateAt = dayjs().add(REVALIDATE_EVERY, "second").unix();
     return token;
   } catch {
@@ -167,13 +179,14 @@ export const authOptions: NextAuthOptions = {
         token.email = (user as any).email ?? decoded.email;
         token.role = (user as any).role ?? decoded.role;
         token.onboardingStatus = (user as any).onboardingStatus ?? decoded.onboardingStatus;
+        token.fullName = (user as any).fullName;
+        token.avatarUrl = (user as any).avatarUrl;
 
-        token.access_token = access_token;            // exposed to client (session) OK
-        token.refresh_token = refresh_token;          // SERVER ONLY (in JWT), not exposed to client
+        token.access_token = access_token;
+        token.refresh_token = refresh_token;
         token.exp = decoded.exp;
         token.error = undefined;
         token._revalidateAt = dayjs().add(REVALIDATE_EVERY, "second").unix();
-
         return token;
       }
 
@@ -182,23 +195,27 @@ export const authOptions: NextAuthOptions = {
         try {
           const data = await refreshTokenOnce(token.refresh_token as string);
           const decoded = jwtDecode<Decoded>(data.access_token);
+
           token.access_token = data.access_token;
           token.refresh_token = data.refresh_token;
           token.exp = decoded.exp;
           token.error = undefined;
-          // keep user props fresh if backend encodes them
-          token.email = decoded.email ?? token.email;
-          token.role = decoded.role ?? token.role;
-          token.onboardingStatus = decoded.onboardingStatus ?? token.onboardingStatus;
+
+          // ✅ hydrate profile fields from backend refresh response
+          token.email = data.user.email ?? token.email;
+          token.role = data.user.role ?? token.role;
+          token.onboardingStatus = data.user.onboardingStatus ?? token.onboardingStatus;
+          token.fullName = data.user.fullName ?? token.fullName;
+          token.avatarUrl = data.user.avatarUrl ?? token.avatarUrl;
         } catch (err) {
           const ax = err as AxiosError;
+          console.error("[JWT Refresh Error]", ax.response?.data || ax.message);
           token.error = "RefreshAccessTokenError";
-          // don’t delete tokens yet; client will signOut on seeing the error
           return token;
         }
       }
 
-      // Periodic server-side user revalidation to kill zombie sessions
+      // Periodic server-side user revalidation
       if (needsRevalidate(token._revalidateAt as number)) {
         token = await revalidateUser(token);
       }
@@ -207,16 +224,17 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      // Minimal data to client. DO NOT leak refresh_token.
+      // Minimal + up-to-date data to client
       session.user = {
-        ...session.user,
         id: token.id as string,
         email: token.email as string,
         role: token.role as Role,
-        onboardingStatus: token.onboardingStatus as string | undefined,
+        onboardingStatus: token.onboardingStatus,
+        fullName: token.fullName,
+        avatarUrl: token.avatarUrl,
       };
       (session as any).access_token = token.access_token;
-      (session as any).error = token.error; // client can act (e.g., signOut) on this
+      (session as any).error = token.error;
       return session;
     },
 
@@ -233,11 +251,11 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout"
-    // error: "/auth/error", // optional: read ?error=
+    // error: "/auth/error",
   },
 
   events: {
-    // Optional: revoke refresh token on signOut (best effort)
+    // Optional: revoke refresh token on signOut
     async signOut({ token }) {
       const rt = token?.refresh_token as string | undefined;
       if (!rt) return;

@@ -8,6 +8,7 @@ import TutorGridCard from "../components/TutorCard/TutorGridCard"
 import Navbar from "@/components/Navbar"
 import { fetchTutorsPaginated } from "@/services/tutor"
 import Footer from "@/components/footer/Footer"
+import LoadingPage from "@/components/LoadingPage"
 
 export default function SearchPage() {
     const [mode, setMode] = useState<'list' | 'grid'>('list')
@@ -59,17 +60,7 @@ export default function SearchPage() {
 
     if (loading) {
         return (
-            <div className="">
-                <Navbar variant="search" />
-                <FilterPanel 
-                    mode={mode} setMode={setMode} 
-                    minPrice={minPrice} setMinPrice={setMinPrice}
-                    maxPrice={maxPrice} setMaxPrice={setMaxPrice}
-                />
-                <div className="flex justify-center items-center h-64">
-                    <div className="text-lg">Loading tutors...</div>
-                </div>
-            </div>
+            <LoadingPage />
         )
     }
 
