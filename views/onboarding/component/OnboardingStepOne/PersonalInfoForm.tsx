@@ -1,16 +1,14 @@
-import { useState } from "react"
+"use client"
+import { Controller, useFormContext } from "react-hook-form"
 import Typography from "@/components/base/Typography"
 import BaseInput from "@/components/base/BaseInput"
 import BaseSelect from "@/components/base/BaseSelect"
 import PhoneNumberInput from "@/components/base/PhoneNumberInput"
 import { CountryOption, countryOptions } from "@/data/countryOptions"
+import { useSession } from "next-auth/react"
 export default function PersonalInfoForm() {
-  const [countryOfBirth, setCountryOfBirth] = useState<string>("")
-  const [nationality, setNationality] = useState<string>("")
-  const [phoneNumber, setPhoneNumber] = useState<string>("")
-  const [country, setCountry] = useState<CountryOption>(
-    () => countryOptions.find((country) => country.code === "TH") as CountryOption
-  );
+  const { control } = useFormContext()
+  const { data } = useSession()
   return (
     <div className="w-full flex flex-col justify-center items-start gap-[18px] py-4 lg:py-6 px-5 lg:px-8 rounded-t-[20px] bg-white">
         <Typography variant={{ base: "title-2", lg: "title-1" }} color="neutral-800">
@@ -21,55 +19,92 @@ export default function PersonalInfoForm() {
         <div className="w-full flex flex-col justify-center items-center gap-5">
 
           <div className="w-full flex flex-col lg:flex-row justify-center items-center gap-0 lg:gap-4">
-            <BaseInput 
-              title="First name"
-              placeholder="Enter your first name..."
-              required
+            <Controller
+              name="firstName"
+              control={control}
+              render={({ field }) => (
+                <BaseInput 
+                  title="First name"
+                  placeholder="Enter your first name..."
+                  required
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
             />
-            <BaseInput
-              title="Last name"
-              placeholder="Enter your last name..."
-              required
-            />
-          </div>
-
-          <div className="w-full flex flex-col lg:flex-row justify-center items-center gap-0 lg:gap-4">
-            <BaseSelect 
-              title="Country of birth"
-              options={[
-                { value: "TH", label: "Thailand"}
-              ]}
-              placeholder="Choose a country"
-              required
-              value={countryOfBirth}
-              onChange={setCountryOfBirth}
-            />
-            <BaseSelect 
-              title="Nationality"
-              options={[
-                { value: "TH", label: "Thailand" }
-              ]}
-              placeholder="Choose a country"
-              required
-              value={nationality}
-              onChange={setNationality}
+            <Controller
+              name="lastName"
+              control={control}
+              render={({ field }) => (
+                <BaseInput
+                  title="Last name"
+                  placeholder="Enter your last name..."
+                  required
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
             />
           </div>
 
           <div className="w-full flex flex-col lg:flex-row justify-center items-center gap-0 lg:gap-4">
-            <PhoneNumberInput 
-              phoneNumber={phoneNumber}
-              setPhoneNumber={setPhoneNumber}
-              country={country}
-              setCountry={setCountry}
+            <Controller
+              name="countryOfBirth"
+              control={control}
+              render={({ field }) => (
+                <BaseSelect 
+                  title="Country of birth"
+                  options={[
+                    { value: "TH", label: "Thailand"}
+                  ]}
+                  placeholder="Choose a country"
+                  required
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
             />
+            <Controller
+              name="nationality"
+              control={control}
+              render={({ field }) => (
+                <BaseSelect 
+                  title="Nationality"
+                  options={[
+                    { value: "TH", label: "Thailand" }
+                  ]}
+                  placeholder="Choose a country"
+                  required
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </div>
+
+          <div className="w-full flex flex-col lg:flex-row justify-center items-center gap-0 lg:gap-4">
+            <Controller
+              name="phoneNumber"
+              control={control}
+              render={({ field }) => (
+                <PhoneNumberInput 
+                  phoneNumber={field.value}
+                  setPhoneNumber={field.onChange}
+                  country={countryOptions.find((c) => c.code === "TH") as CountryOption}
+                  setCountry={() => {}}
+                />
+              )}
+            />
+
             <BaseInput 
               title="Email"
-              
               placeholder="Enter your email..."
               required
-
+              value={data?.user.email}
+              disabled
+              readOnly
             />
+
 
           </div>
 

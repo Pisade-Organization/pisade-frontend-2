@@ -1,29 +1,38 @@
 "use client"
-import { useState } from "react";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 
 import Navbar from "../component/Navbar";
 import ProgressBar from "../component/ProgressBar";
 import OnboardingStepHeader from "../component/OnboardingStepHeader";
 import ActionButtonsFooter from "../component/ActionButtonsFooter";
-import OnboardingStepOne from "../component/OnboardingStepOne";
-import OnboardingStepTwo from "../component/OnboardingStepTwo";
-import OnboardingStepThree from "../component/OnboardingStepThree";
-import OnboardingStepFive from "../component/OnboardingStepFive";
-import OnboardingStepSix from "../component/OnboardingStepSix";
-import OnboardingStepSeven from "../component/OnboardingStepSeven";
-import OnboardingStepEight from "../component/OnboardingStepEight";
+import { OnboardingProvider } from "../context/OnboardingProvider";
+import { useOnboardingNavigation } from "../hooks/useOnboardingNavigation";
 
-export default function OnboardingPage() {
-  const [step, setStep] = useState<number>(1);
-  const [direction, setDirection] = useState<'increasing' | 'decreasing'>('increasing');
+const Step1 = dynamic(() => import("../component/OnboardingStepOne"), { ssr: false })
+const Step2 = dynamic(() => import("../component/OnboardingStepTwo"), { ssr: false })
+const Step3 = dynamic(() => import("../component/OnboardingStepThree"), { ssr: false })
+const Step5 = dynamic(() => import("../component/OnboardingStepFive"), { ssr: false })
+const Step6 = dynamic(() => import("../component/OnboardingStepSix"), { ssr: false })
+const Step7 = dynamic(() => import("../component/OnboardingStepSeven"), { ssr: false })
+const Step8 = dynamic(() => import("../component/OnboardingStepEight"), { ssr: false })
+const Step9 = dynamic(() => import("../component/OnboardingStepNine"), { ssr: false })
 
-  const updateStep = (newStep: number) => {
-    setDirection(newStep > step ? 'increasing' : 'decreasing');
-    setStep(newStep);
-  };
+const Steps: Record<number, React.ComponentType<any> | undefined> = {
+  1: Step1,
+  2: Step2,
+  3: Step3,
+  5: Step5,
+  6: Step6,
+  7: Step7,
+  8: Step8,
+  9: Step9,
+}
 
-  const slideVariants = {
+function OnboardingContent() {
+  const { step, direction } = useOnboardingNavigation()
+
+  const SlideVariants = {
     enter: (direction: 'increasing' | 'decreasing') => ({
       x: direction === 'increasing' ? 100 : -100,
       opacity: 0
@@ -47,102 +56,33 @@ export default function OnboardingPage() {
           <OnboardingStepHeader step={step} />
           <div className="w-full relative overflow-hidden">
             <AnimatePresence mode="wait" custom={direction}>
-              {step === 1 && (
-                <motion.div
-                  key="step-1"
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                >
-                  <OnboardingStepOne />
-                </motion.div>
-              )}
-              {step === 2 && (
-                <motion.div
-                  key="step-2"
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                >
-                  <OnboardingStepTwo />
-                </motion.div>
-              )}
-              {step === 3 && (
-                <motion.div
-                  key="step-3"
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                >
-                  <OnboardingStepThree />
-                </motion.div>
-              )}
-              {step === 5 && (
-                <motion.div
-                  key="step-5"
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                >
-                  <OnboardingStepFive />
-                </motion.div>
-              )}
-              {step === 6 && (
-                <motion.div
-                  key="step-6"
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                >
-                  <OnboardingStepSix />
-                </motion.div>
-              )}
-              {step === 7 && (
-                <motion.div
-                  key="step-7"
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                >
-                  <OnboardingStepSeven />
-                </motion.div>
-              )}
-              {step === 8 && (
-                <motion.div
-                  key="step-8"
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                >
-                  <OnboardingStepEight />
-                </motion.div>
-              )}
+              <motion.div
+                key={`step-${step}`}
+                custom={direction}
+                variants={SlideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                {(() => {
+                  const Component = Steps[step]
+                  return Component ? <Component /> : null
+                })()}
+              </motion.div>
             </AnimatePresence>
           </div>
-          <ActionButtonsFooter step={step} setStep={updateStep} />
+          <ActionButtonsFooter />
         </div>
       </div>
     </div>
+  )
+}
+
+export default function OnboardingPage() {
+  return (
+    <OnboardingProvider>
+      <OnboardingContent />
+    </OnboardingProvider>
   )
 }

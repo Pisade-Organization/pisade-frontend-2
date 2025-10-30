@@ -1,5 +1,4 @@
-import { Book2Icon, ClockIcon, Folder2Icon, People2Icon, Rocket2Icon, TaskIcon, UploadIcon, MoneyIcon } from "@/components/icons"
-
+import { Book2Icon, ClockIcon, Folder2Icon, People2Icon, Rocket2Icon, TaskIcon, UploadIcon, MoneyIcon, SecureIcon } from "@/components/icons"
 
 const data: any = {
   1: <TaskIcon width={50} height={50} className="mr-2" />,
@@ -9,7 +8,8 @@ const data: any = {
   5: <Rocket2Icon width={50} height={50} className="mb-3" />,
   6: <UploadIcon width={50} height={50} className="mr-2" />,
   7: <ClockIcon width={50} height={50} className="mr-2" />,
-  8: <MoneyIcon width={50} height={50} className="mr-1 w-24 h-24" />
+  8: <MoneyIcon width={50} height={50} className="mr-1 w-24 h-24" />,
+  9: <SecureIcon width={50} height={50} className="mr-1" />,
 }
 export default function Icon({
   step

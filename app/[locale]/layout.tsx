@@ -6,6 +6,7 @@ import { routing } from "@/i18n/routing";
 import React from "react";
 import { Noto_Sans_Thai, Rethink_Sans } from "next/font/google";
 import SessionProviderWrapper from "@/components/providers/SessionProviderWrapper";
+import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
 
 const rethink = Rethink_Sans({
   subsets: ["latin"],
@@ -99,9 +100,11 @@ export default async function RootLayout({
       </head>
       <body className={safeLocale === "th" ? "font-thai" : "font-rethink"}>
         <SessionProviderWrapper>
-          <NextIntlClientProvider messages={messages} locale={safeLocale}>
-            {children}
-          </NextIntlClientProvider>
+          <ReactQueryProvider>
+            <NextIntlClientProvider messages={messages} locale={safeLocale}>
+              {children}
+            </NextIntlClientProvider>
+          </ReactQueryProvider>
         </SessionProviderWrapper>
       </body>
     </html>

@@ -22,3 +22,4 @@ export { default as FacebookIcon } from './FacebookIcon';
 export { default as MoneyIcon } from './Money';
 export { default as People2Icon } from './People2Icon';
 export { default as Rocket2Icon } from './Rocket2Icon';
+export { default as SecureIcon } from './SecureIcon';

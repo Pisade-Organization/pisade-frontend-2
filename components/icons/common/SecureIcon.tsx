@@ -1,22 +1,22 @@
 import React from 'react';
 import Image from 'next/image';
 
-interface GiftIconProps {
+interface SecureIconProps {
   width?: number;
   height?: number;
   className?: string;
   alt?: string;
 }
 
-export default function GiftIcon({ 
+export default function SecureIcon({ 
   width = 24, 
   height = 24, 
   className = '', 
-  alt = 'Gift icon' 
-}: GiftIconProps) {
+  alt = 'Secure icon' 
+}: SecureIconProps) {
   return (
     <Image
-      src="/icons/common/gift.svg"
+      src="/icons/common/secure.svg"
       alt={alt}
       width={width}
       height={height}

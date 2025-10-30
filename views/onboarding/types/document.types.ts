@@ -1,0 +1,1 @@
+export type DocumentType = "ID Card" | "Passport";

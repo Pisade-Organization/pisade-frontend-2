@@ -5,8 +5,8 @@ export default function ProgressBar({
 }: {
   step: number
 }) {
-  // Ensure step is clamped between 0 and 8
-  const totalSteps = 8
+  // Ensure step is clamped between 0 and 9
+  const totalSteps = 9
   const progressPercent = Math.max(0, Math.min(step, totalSteps)) / totalSteps * 100
 
   return (

@@ -46,12 +46,17 @@ export default function Title({
     8: {
       title: "Pricing",
       description: "Make your classes worth your time."
+    },
+    
+    9: {
+      title: "Verify your identity",
+      description: "Almost done! Just verify your ID or passport to complete your profile"
     }
   }
   return (
     <div className="flex flex-col justify-center items-start gap-1">
       <Typography variant="label-3" color="electric-violet-300">
-        STEP {step}/8
+        STEP {step}/9
       </Typography>
 
       <h4 className="text-headline-4 text-neutral-900">

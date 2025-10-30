@@ -1,10 +1,65 @@
+"use client"
+import { useEffect } from "react"
+import { useStepOne } from "@/hooks/tutors/onboarding/queries/useStepOne"
+import { useSaveStepOne } from "@/hooks/tutors/onboarding/mutations/useUpdateStepOne"
+import { FormProvider, useForm } from "react-hook-form"
+import { useOnboardingNavigation } from "../../hooks/useOnboardingNavigation"
+
 import PersonalInfoForm from "./PersonalInfoForm"
 import TeachingInfo from "./TeachingInfo"
+
 export default function OnboardingStepOne() {
+  const { data, isLoading, isFetching, isError, error } = useStepOne()
+  const saveStepOne = useSaveStepOne()
+  const { registerStepActions, unregisterStepActions } = useOnboardingNavigation()
+
+  const methods = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      countryOfBirth: "",
+      nationality: "",
+      phoneNumber: "",
+      subject: "",
+      langauge: "",
+      langaugeLevel: "",
+    }
+  })
+
+  useEffect(() => {
+    if (data) {
+      const sanitized = Object.fromEntries(
+        Object.entries(data).map(([key, value]) => [key, value ?? ""])
+      )
+      methods.reset(sanitized as any)
+    }
+  }, [data, methods])
+
+  useEffect(() => {
+    const validate = async () => {
+      return await methods.trigger()
+    }
+    const save = async () => {
+      const values = methods.getValues()
+      const payload = Object.fromEntries(
+        Object.entries(values).map(([key, value]) => [key, value === "" ? null : value])
+      )
+      await saveStepOne.mutateAsync(payload as any)
+    }
+    registerStepActions(1, { validate, save })
+    return () => {
+      unregisterStepActions(1)
+    }
+  }, [registerStepActions, unregisterStepActions])
+
+  if (isLoading) return <p>Loading...</p>
+
   return (
-    <div className="w-full flex flex-col justify-start items-center gap-1">
-      <PersonalInfoForm />
-      <TeachingInfo />
-    </div>
+    <FormProvider {...methods}>
+      <div className="w-full flex flex-col justify-start items-center gap-1">
+        <PersonalInfoForm />
+        <TeachingInfo />
+      </div>
+    </FormProvider>
   )
 }
