@@ -6,8 +6,12 @@ export interface OnboardingStepOnePayload {
   countryCode?: string;
   phoneNumber?: string;
   isOver18?: boolean;
+  subject?: string;
+  languages?: {
+    language: string;
+    level: string;
+  }[];
 }
-
 
 /* ======================
       REQUEST DTOs
@@ -34,6 +38,22 @@ export interface OnboardingStepOnePostResponse extends OnboardingStepOnePayload 
   createdAt: string;
   updatedAt: string;
 }
+
+
+export interface OnboardingStepTwoPayload {
+  file?: Buffer;
+}
+
+export type OnboardingStepTwoDto = Partial<OnboardingStepTwoPayload>;
+
+export interface OnboardingStepTwoGetResponse extends OnboardingStepTwoPayload {
+  currentStep: number;
+}
+
+export interface OnboardingStepTwoPostResponse extends OnboardingStepTwoPayload {
+  id: string;
+}
+
 
 /* ======================
       ERROR SHAPE

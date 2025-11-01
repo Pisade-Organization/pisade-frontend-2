@@ -21,15 +21,19 @@ export default function OnboardingStepOne() {
       nationality: "",
       phoneNumber: "",
       subject: "",
-      langauge: "",
-      langaugeLevel: "",
+      languages: [] as { language: string; level: string }[],
     }
   })
 
   useEffect(() => {
     if (data) {
       const sanitized = Object.fromEntries(
-        Object.entries(data).map(([key, value]) => [key, value ?? ""])
+        Object.entries(data).map(([key, value]) => {
+          if (key === "languages") {
+            return [key, value ?? []]
+          }
+          return [key, value ?? ""]
+        })
       )
       methods.reset(sanitized as any)
     }
@@ -42,7 +46,16 @@ export default function OnboardingStepOne() {
     const save = async () => {
       const values = methods.getValues()
       const payload = Object.fromEntries(
-        Object.entries(values).map(([key, value]) => [key, value === "" ? null : value])
+        Object.entries(values).map(([key, value]) => {
+          if (key === "languages") {
+            // Filter out empty language entries
+            const languages = Array.isArray(value) 
+              ? value.filter(lang => lang.language && lang.level)
+              : []
+            return [key, languages.length > 0 ? languages : undefined]
+          }
+          return [key, value === "" ? null : value]
+        })
       )
       await saveStepOne.mutateAsync(payload as any)
     }
