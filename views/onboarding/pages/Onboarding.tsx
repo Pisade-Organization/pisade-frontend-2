@@ -12,6 +12,7 @@ import { useOnboardingNavigation } from "../hooks/useOnboardingNavigation";
 const Step1 = dynamic(() => import("../component/OnboardingStepOne"), { ssr: false })
 const Step2 = dynamic(() => import("../component/OnboardingStepTwo"), { ssr: false })
 const Step3 = dynamic(() => import("../component/OnboardingStepThree"), { ssr: false })
+const Step4 = dynamic(() => import("../component/OnboardingStepFour"), { ssr: false })
 const Step5 = dynamic(() => import("../component/OnboardingStepFive"), { ssr: false })
 const Step6 = dynamic(() => import("../component/OnboardingStepSix"), { ssr: false })
 const Step7 = dynamic(() => import("../component/OnboardingStepSeven"), { ssr: false })
@@ -22,6 +23,7 @@ const Steps: Record<number, React.ComponentType<any> | undefined> = {
   1: Step1,
   2: Step2,
   3: Step3,
+  4: Step4,
   5: Step5,
   6: Step6,
   7: Step7,

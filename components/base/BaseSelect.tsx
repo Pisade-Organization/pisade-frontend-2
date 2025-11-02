@@ -17,6 +17,7 @@ import { ChevronDown, X } from "lucide-react";
 // Props
 interface BaseSelectProps {
   title?: string;
+  titleClassname?: string;
   placeholder?: string;
   required?: boolean;
   errorMessage?: string;
@@ -28,6 +29,7 @@ interface BaseSelectProps {
 
 export default function BaseSelect({
   title,
+  titleClassname,
   placeholder,
   required,
   errorMessage,

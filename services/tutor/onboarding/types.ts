@@ -54,6 +54,56 @@ export interface OnboardingStepTwoPostResponse extends OnboardingStepTwoPayload 
   id: string;
 }
 
+export interface CertificationDto {
+  certificationName: string;
+  description: string;
+  issuedBy: string;
+  startYear: number;
+  endYear: number;
+}
+
+export interface OnboardingStepThreePayload {
+  hasTeachingCertificate?: boolean;
+  certificates?: CertificationDto[];
+}   
+
+export type OnboardingStepThreeDto = Partial<OnboardingStepThreePayload>;
+
+export interface OnboardingStepThreeGetResponse extends OnboardingStepThreePayload {
+  currentStep: number;
+}
+
+export enum Degree {
+  BACHELOR = "BACHELOR",
+  MASTER = "MASTER",
+  DOCTORATE = "DOCTORATE",
+  ASSOCIATE = "ASSOCIATE",
+  DIPLOMA = "DIPLOMA",
+  CERTIFICATE = "CERTIFICATE",
+}
+
+export interface EducationDto {
+  universityName: string;
+  degree: Degree;
+  fieldOfStudy: string;
+  specialization: string;
+  yearStart: number;
+  yearEnd?: number;
+  currentlyStudying?: boolean;
+  fileUrl?: string;
+}
+
+export interface OnboardingStepFourPayload {
+  hasDiploma?: boolean;
+  educations?: EducationDto[];
+}
+
+export type OnboardingStepFourDto = Partial<OnboardingStepFourPayload>;
+
+export interface OnboardingStepFourGetResponse extends OnboardingStepFourPayload {
+  currentStep: number;
+}
+
 
 /* ======================
       ERROR SHAPE
