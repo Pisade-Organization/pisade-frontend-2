@@ -18,7 +18,10 @@ export const servicePath = {
       saveOnboardingStepOne: "/onboarding/step-1",
 
       getOnboardingStepTwo: "/onboarding/step-2",
-      saveOnboardingStepTwo: "/onboarding/step-2"
+      saveOnboardingStepTwo: "/onboarding/step-2",
+
+      getOnboardingStepFive: "/onboarding/step-5",
+      saveOnboardingStepFive: "/onboarding/step-5"
     }
   };
   

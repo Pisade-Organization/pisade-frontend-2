@@ -1,8 +1,10 @@
 "use client"
+import { useState } from "react"
 import Typography from "@/components/base/Typography"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CircleCheckBig, Trash } from "lucide-react"
 import { useFormContext } from "react-hook-form"
+import { cn } from "@/lib/utils"
 import DiplomaForm from "./DiplomaForm"
 import BaseButton from "@/components/base/BaseButton"
 
@@ -15,6 +17,10 @@ export default function DiplomaItem({ index, onRemove }: DiplomaItemProps) {
   const { watch } = useFormContext()
   const educations = watch("educations") || []
   const education = educations[index]
+
+  const itemValue = `item-${index}`
+  const [open, setOpen] = useState<string>(index === 0 ? itemValue : "")
+  const isOpen = open === itemValue
 
   // Build display text from form data
   const getDiplomaDisplayText = () => {
@@ -42,13 +48,24 @@ export default function DiplomaItem({ index, onRemove }: DiplomaItemProps) {
       type="single"
       collapsible
       className="w-full"
-      defaultValue={index === 0 ? `item-${index}` : undefined}
+      value={open}
+      onValueChange={setOpen}
     >
-      <AccordionItem value={`item-${index}`} className="pt-6 pb-8 px-8 bg-white">
-        <AccordionTrigger className="bg-white pt-4 px-4 hover:no-underline">
+      <AccordionItem
+        value={itemValue}
+        className={cn(
+          "w-full border-none bg-white transition-all duration-300",
+          isOpen ? "pt-6 pb-8 px-8" : "py-1 px-8"
+        )}
+      >
+        <AccordionTrigger
+          className={cn(
+            "bg-white hover:no-underline transition-colors"
+          )}
+        >
           <div className="flex gap-2 flex-1">
             <div className="flex items-center gap-3">
-              <CircleCheckBig size={16} className="text-electric-violet-700"/>
+              <CircleCheckBig className="text-neutral-300 h-4 w-4 md:h-6 md:w-6"/>
               <div className="flex flex-col">
                 <Typography variant="title-2" color="neutral-800">
                   Diploma {index + 1}

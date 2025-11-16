@@ -104,6 +104,25 @@ export interface OnboardingStepFourGetResponse extends OnboardingStepFourPayload
   currentStep: number;
 }
 
+export interface OnboardingStepFivePayload {
+  introduceYourself?: string;
+  teachingExperience?: string;
+  motivatePotentialStudents?: string;
+  catchyHeadline?: string;
+}
+
+export type OnboardingStepFiveDto = Partial<OnboardingStepFivePayload>;
+
+export interface OnboardingStepFiveGetResponse extends OnboardingStepFivePayload {
+  currentStep: number;
+}
+
+export interface OnboardingStepFivePostResponse extends OnboardingStepFivePayload {
+  message: string;
+  onboardingId: string;
+  currentStep: number;
+}
+
 
 /* ======================
       ERROR SHAPE
