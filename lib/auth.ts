@@ -423,8 +423,13 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
-      // Early refresh if close to expiry
-      if (shouldRefresh(token.exp) && token.refresh_token) {
+      // Early refresh if close to expiry OR if token is already expired but refresh token exists
+      const needsRefresh = token.refresh_token && (
+        shouldRefresh(token.exp) || 
+        (token.exp && normalizeExp(token.exp) && dayjs().unix() >= normalizeExp(token.exp)!)
+      );
+      
+      if (needsRefresh) {
         try {
           const data = await refreshTokenOnce(token.refresh_token as string);
           let decoded: Decoded;
@@ -513,14 +518,32 @@ export const authOptions: NextAuthOptions = {
       (session as any).access_token = token.access_token;
       (session as any).error = token.error;
     
-      // 🔑 Force session expiry to track JWT expiry (use normalized exp)
-      if (token.exp) {
+      // 🔑 Session expiry: If refresh token exists, extend session even if JWT is expired
+      // This prevents logout when user returns to inactive tabs
+      if (token.refresh_token) {
+        // If we have a refresh token, extend session to allow refresh on next access
+        // Set expiry to 7 days from now (refresh token should be valid longer)
+        const extendedExpiry = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
+        session.expires = new Date(extendedExpiry).toISOString();
+        logAuth("info", "Session expiry extended due to valid refresh token", {
+          expires: session.expires,
+        });
+      } else if (token.exp) {
+        // No refresh token: use JWT expiry
         const normalizedExp = normalizeExp(token.exp);
         if (normalizedExp) {
-          session.expires = new Date(normalizedExp * 1000).toISOString();
+          const expTime = normalizedExp * 1000;
+          const now = Date.now();
+          // Only set expiry if token hasn't expired yet, otherwise extend slightly
+          if (expTime > now) {
+            session.expires = new Date(expTime).toISOString();
+          } else {
+            // Token expired but no refresh token - give a short grace period
+            logAuth("warn", "JWT expired and no refresh token, setting short grace period");
+            session.expires = new Date(now + 5 * 60 * 1000).toISOString(); // 5 minutes
+          }
         } else {
           logAuth("warn", "Session callback: invalid exp, setting default expiry");
-          // Fallback: set expiry to 1 hour from now if exp is invalid
           session.expires = new Date(Date.now() + 60 * 60 * 1000).toISOString();
         }
       } else {
