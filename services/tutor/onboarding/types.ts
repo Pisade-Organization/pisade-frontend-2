@@ -41,17 +41,19 @@ export interface OnboardingStepOnePostResponse extends OnboardingStepOnePayload 
 
 
 export interface OnboardingStepTwoPayload {
-  file?: Buffer;
+  key?: string;
 }
 
 export type OnboardingStepTwoDto = Partial<OnboardingStepTwoPayload>;
 
 export interface OnboardingStepTwoGetResponse extends OnboardingStepTwoPayload {
   currentStep: number;
+  avatarUrl: string;
 }
 
 export interface OnboardingStepTwoPostResponse extends OnboardingStepTwoPayload {
   id: string;
+  avatarUrl: string;
 }
 
 export interface CertificationDto {
