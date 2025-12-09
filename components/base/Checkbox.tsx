@@ -11,17 +11,24 @@ interface BaseCheckboxProps
     "onCheckedChange" | "onChange"
   > {
   defaultChecked?: boolean;
+  checked?: boolean;
   onChange?: (checked: boolean) => void;
 }
 
 export const BaseCheckbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
   BaseCheckboxProps
->(({ defaultChecked = false, onChange, className, ...props }, ref) => {
-  const [checked, setChecked] = React.useState(defaultChecked);
+>(({ defaultChecked = false, checked: controlledChecked, onChange, className, ...props }, ref) => {
+  const [uncontrolledChecked, setUncontrolledChecked] = React.useState(defaultChecked);
+  
+  // Use controlled checked if provided, otherwise use uncontrolled state
+  const isControlled = controlledChecked !== undefined;
+  const checked = isControlled ? controlledChecked : uncontrolledChecked;
 
   const handleChange = (value: boolean) => {
-    setChecked(value);
+    if (!isControlled) {
+      setUncontrolledChecked(value);
+    }
     onChange?.(value);
   };
 

@@ -15,9 +15,22 @@ import type {
   OnboardingStepFiveDto,
   OnboardingStepFiveGetResponse,
   OnboardingStepFivePostResponse,
+  OnboardingStepThreeGetResponse,
+  OnboardingStepThreeDto,
+  OnboardingStepThreePostResponse,
+  OnboardingStepFourGetResponse,
+  OnboardingStepFourDto,
+  OnboardingStepFourPostResponse,
+  GetCurrentStepResponse,
 } from './types'
 
 export const TutorOnboardingService = {
+
+  // GET CURRENT STEP
+  async getCurrentStep(): Promise<GetCurrentStepResponse> {
+    const res = await apiInstanceClient.get(servicePath.onboarding.getCurrentStep);
+    return res.data;
+  },
   
   // GET STEP 1
   async getOnboardingStepOne(): Promise<OnboardingStepOneGetResponse> {
@@ -43,8 +56,29 @@ export const TutorOnboardingService = {
     return res.data;
   },
 
-  // ....
+  // GET STEP 3
+  async getOnboardingStepThree(): Promise<OnboardingStepThreeGetResponse> {
+    const res = await apiInstanceClient.get(servicePath.onboarding.getOnboardingStepThree);
+    return res.data;
+  },
 
+  // SAVE STEP 3
+  async saveOnboardingStepThree(data: OnboardingStepThreeDto): Promise<OnboardingStepThreePostResponse> {
+    const res = await apiInstanceClient.post(servicePath.onboarding.saveOnboardingStepThree, data);
+    return res.data;
+  },
+
+  // GET STEP 4
+  async getOnboardingStepFour(): Promise<OnboardingStepFourGetResponse> {
+    const res = await apiInstanceClient.get(servicePath.onboarding.getOnboardingStepFour);
+    return res.data;
+  },
+
+  // SAVE STEP 4
+  async saveOnboardingStepFour(data: OnboardingStepFourDto): Promise<OnboardingStepFourPostResponse> {
+    const res = await apiInstanceClient.post(servicePath.onboarding.saveOnboardingStepFour, data);
+    return res.data;
+  },
 
   // GET STEP FIVE
   async getOnboardingStepFive(): Promise<OnboardingStepFiveGetResponse> {

@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import React from "react"
 import Typography from "./Typography"
 
-const inputVariants = cva(
+const textAreaVariants = cva(
     "",
     {
         variants: {
@@ -18,30 +18,29 @@ const inputVariants = cva(
     }
 )
 
-export interface BaseInputProps 
-    extends React.InputHTMLAttributes<HTMLInputElement>,
-        VariantProps<typeof inputVariants> {
+export interface BaseTextAreaProps 
+    extends React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+        VariantProps<typeof textAreaVariants> {
             title?: string
             placeholder?: string
             className?: string
             errorMessage?: string
             required?: boolean
-            leftIcon?: React.ReactNode
+            rows?: number
         }
 
-export default function BaseInput({
+export default function BaseTextArea({
     title, 
     placeholder,
     className,
     state = "default",
     required = false,
     errorMessage,
-    children,
     disabled,
-    leftIcon,
     readOnly,
+    rows = 4,
     ...props
-}: BaseInputProps) {
+}: BaseTextAreaProps) {
     return (
         <div className=" w-full flex flex-col gap-1">
             
@@ -68,28 +67,24 @@ export default function BaseInput({
                     readOnly && "bg-neutral-50"
                 )}
             >
-                { leftIcon }
-
-                <input type="text"
+                <textarea
                     className={cn(
                         `
                         w-full
                         outline-none
                         placeholder:text-neutral-300 text-neutral-700 
                         text-body-3
+                        resize-none
                         `,
                         readOnly && "bg-neutral-50"
                     )}
                     placeholder={placeholder}
                     readOnly={readOnly}
+                    disabled={disabled}
+                    rows={rows}
                     {...props}
-
-
                 />
-
-
             </div>
-
 
             <Typography variant="body-4" color="[#D9534F]">
                 { errorMessage }
@@ -97,3 +92,4 @@ export default function BaseInput({
         </div>
     )
 }
+

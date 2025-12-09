@@ -17,7 +17,7 @@ import { ChevronDown, X } from "lucide-react";
 // Props
 interface BaseSelectProps {
   title?: string;
-  titleClassname?: string;
+  titleColor?: string;
   placeholder?: string;
   required?: boolean;
   errorMessage?: string;
@@ -29,7 +29,7 @@ interface BaseSelectProps {
 
 export default function BaseSelect({
   title,
-  titleClassname,
+  titleColor,
   placeholder,
   required,
   errorMessage,
@@ -49,7 +49,9 @@ export default function BaseSelect({
       <div className="flex justify-start items-start gap-1">
         <Typography
           variant={{ base: "label-3", lg: "label-2" }}
-          color="neutral-800"
+          color={
+            titleColor ? titleColor : "neutral-800"
+          }
         >
           {title}
         </Typography>
@@ -108,6 +110,7 @@ export default function BaseSelect({
       {/* MOBILE: Fullscreen overlay */}
       <div className="block lg:hidden">
         <button
+          type="button"
           onClick={() => setOpenMobile(true)}
           className={cn(
             "w-full flex justify-between items-center py-3 px-4 gap-[10px] border border-neutral-50 rounded-[12px]"
@@ -134,7 +137,7 @@ export default function BaseSelect({
               {/* Header */}
               <div className="flex justify-between items-center px-4 py-3 border-b">
                 <Typography variant="title-2">Choose a country</Typography>
-                <button onClick={() => setOpenMobile(false)}>
+                <button type="button" onClick={() => setOpenMobile(false)}>
                   <X className="h-5 w-5 text-neutral-600" />
                 </button>
               </div>
@@ -144,6 +147,7 @@ export default function BaseSelect({
                 {options.map((opt) => (
                   <button
                     key={opt.value}
+                    type="button"
                     onClick={() => {
                       onChange?.(opt.value);
                       setOpenMobile(false);

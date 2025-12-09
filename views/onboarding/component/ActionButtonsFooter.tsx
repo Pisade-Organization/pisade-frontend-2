@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react"
 import { useOnboardingNavigation } from "../hooks/useOnboardingNavigation"
 
 export default function ActionButtonsFooter() {
-  const { canBack, performBack, performContinue, isBusy, continueLabel } = useOnboardingNavigation()
+  const { canBack, performBack, performContinue, isBusy, continueLabel, canContinue } = useOnboardingNavigation()
 
   return (
     <div className="w-full flex justify-between items-center">
@@ -11,7 +11,7 @@ export default function ActionButtonsFooter() {
         Back
       </BaseButton>
 
-      <BaseButton disabled={isBusy} onClick={performContinue} variant="secondary" iconRight={<ArrowRight size={20} />}>
+      <BaseButton disabled={isBusy || !canContinue} onClick={performContinue} variant="secondary" iconRight={<ArrowRight size={20} />}>
         {continueLabel}
       </BaseButton>
     </div>

@@ -17,7 +17,7 @@ export default function Icon({
   step: number
 }) {
   return (
-    <div className="flex justify-center items-center w-[84px] h-[84px] rounded-full bg-white">
+    <div className="flex justify-center items-center w-[68px] h-[68px] lg:w-[84px] lg:h-[84px] min-w-[68px] min-h-[68px] lg:min-w-[84px] lg:min-h-[84px] flex-shrink-0 aspect-square rounded-full bg-white">
       {data[step]}
     </div>
   )

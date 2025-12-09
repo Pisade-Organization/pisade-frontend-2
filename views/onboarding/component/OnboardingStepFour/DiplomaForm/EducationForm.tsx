@@ -140,7 +140,7 @@ export default function EducationForm({ index }: EducationFormProps) {
           render={({ field }) => (
             <div className="flex items-center gap-2">
               <BaseCheckbox 
-                defaultChecked={field.value || false}
+                checked={field.value || false}
                 onChange={(checked) => {
                   field.onChange(checked)
                   if (checked) {

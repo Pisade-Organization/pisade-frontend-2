@@ -16,6 +16,8 @@ export function useOnboardingNavigation() {
     continueLabel,
     registerStepActions,
     unregisterStepActions,
+    canContinue,
+    setCanContinue,
   } = useOnboardingContext()
 
   const canBack = step > 1 && !isBusy
@@ -37,6 +39,8 @@ export function useOnboardingNavigation() {
     continueLabel,
     registerStepActions,
     unregisterStepActions,
+    canContinue,
+    setCanContinue,
   }
 }
 

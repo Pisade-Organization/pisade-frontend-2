@@ -14,11 +14,19 @@ export const servicePath = {
       getTutorReviews: "/tutors/:id/reviews", // GET
     },
     onboarding: {
+      getCurrentStep: "/onboarding/current-step", // GET
+
       getOnboardingStepOne: "/onboarding/step-1", // GET
       saveOnboardingStepOne: "/onboarding/step-1", // POST
 
       getOnboardingStepTwo: "/onboarding/step-2", // GET
       saveOnboardingStepTwo: "/onboarding/step-2", // POST
+
+      getOnboardingStepThree: "/onboarding/step-3", // GET
+      saveOnboardingStepThree: "/onboarding/step-3", // POST
+
+      getOnboardingStepFour: "/onboarding/step-4", // GET
+      saveOnboardingStepFour: "/onboarding/step-4", // POST
 
       getOnboardingStepFive: "/onboarding/step-5", // GET
       saveOnboardingStepFive: "/onboarding/step-5" // POST

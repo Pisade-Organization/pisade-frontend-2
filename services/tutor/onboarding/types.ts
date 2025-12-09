@@ -1,3 +1,7 @@
+export interface GetCurrentStepResponse {
+  currentStep: number;
+}
+
 export interface OnboardingStepOnePayload {
   firstName?: string;
   lastName?: string;
@@ -62,6 +66,16 @@ export interface CertificationDto {
   issuedBy: string;
   startYear: number;
   endYear: number;
+  certificateFileKey?: string;
+}
+
+export interface CertificationResponse {
+  certificationName: string;
+  description: string;
+  issuedBy: string;
+  startYear: number;
+  endYear: number;
+  certificateFileUrl?: string;
 }
 
 export interface OnboardingStepThreePayload {
@@ -71,8 +85,19 @@ export interface OnboardingStepThreePayload {
 
 export type OnboardingStepThreeDto = Partial<OnboardingStepThreePayload>;
 
-export interface OnboardingStepThreeGetResponse extends OnboardingStepThreePayload {
+export interface OnboardingStepThreeGetResponse {
+  hasTeachingCertificate?: boolean;
+  subject?: string;
+  certifications?: CertificationResponse[];
+}
+export interface OnboardingStepThreePostResponse {
+  id: string;
+  tutorId: string;
   currentStep: number;
+  message: string;
+  hasTeachingCertificate: boolean;
+  certificationsCount: boolean;
+  certifications: CertificationResponse[];
 }
 
 export enum Degree {
@@ -102,8 +127,20 @@ export interface OnboardingStepFourPayload {
 
 export type OnboardingStepFourDto = Partial<OnboardingStepFourPayload>;
 
-export interface OnboardingStepFourGetResponse extends OnboardingStepFourPayload {
+// GET response uses "diplomas" instead of "educations"
+export interface OnboardingStepFourGetResponse {
+  hasDiploma?: boolean;
+  diplomas?: EducationDto[];
+}
+
+// POST response
+export interface OnboardingStepFourPostResponse {
+  message: string;
+  id: string;
+  tutorId: string;
   currentStep: number;
+  hasDiploma?: boolean;
+  diplomasCreated?: number;
 }
 
 export interface OnboardingStepFivePayload {

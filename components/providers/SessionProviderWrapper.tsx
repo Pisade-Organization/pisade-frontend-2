@@ -2,55 +2,51 @@
 
 import { SessionProvider, useSession, signOut } from "next-auth/react";
 import { ReactNode, useEffect } from "react";
+import { AuthHydrationGate } from "./AuthHydrationGate";
 
 function SessionErrorWatcher({ children }: { children: ReactNode }) {
   const { data: session, status, update } = useSession();
 
+  // Auto-logout if backend reports invalid session
   useEffect(() => {
-    const hasError = (session as any)?.error;
-    if (status === "authenticated" && hasError) {
-      // Auto sign out when backend indicates an invalid/expired session
+    if (status === "authenticated" && (session as any)?.error) {
       signOut({ callbackUrl: "/signin" });
     }
   }, [status, session]);
 
-  // Refresh session when tab becomes visible (user returns to tab)
+  // Refresh when tab becomes visible
   useEffect(() => {
-    const handleVisibilityChange = async () => {
+    const handleVisibility = () => {
       if (document.visibilityState === "visible" && status === "authenticated") {
-        // Manually trigger session update when tab becomes visible
-        // This ensures token refresh happens even if tab was inactive for a long time
-        try {
-          await update();
-        } catch (error) {
-          console.error("[SessionProvider] Failed to update session on visibility change:", error);
-        }
+        update();
       }
     };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
   }, [status, update]);
+
+  // 🔥 THE REAL FIX: keep-alive ping even in background tabs
+  // Persistent keep-alive to refresh tokens even in inactive tabs
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch("/api/auth/session");
+    }, 2 * 60 * 1000); // every 2 minutes
+
+    return () => clearInterval(interval);
+  }, []);
 
   return <>{children}</>;
 }
 
-export default function SessionProviderWrapper({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function SessionProviderWrapper({ children }: { children: ReactNode }) {
   return (
-    <SessionProvider 
-      // Refetch session every 5 minutes (more frequent for inactive tabs)
-      // This ensures tokens are refreshed before expiry even in background tabs
-      refetchInterval={5 * 60}
-      // Also refetch when window regains focus to catch any changes
-      refetchOnWindowFocus={true}
+    <SessionProvider
+      refetchOnWindowFocus={false}
+      refetchInterval={0}
     >
-      <SessionErrorWatcher>{children}</SessionErrorWatcher>
+      <AuthHydrationGate>
+        <SessionErrorWatcher>{children}</SessionErrorWatcher>
+      </AuthHydrationGate>
     </SessionProvider>
   );
 }

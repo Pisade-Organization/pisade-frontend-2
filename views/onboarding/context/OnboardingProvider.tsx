@@ -1,5 +1,5 @@
 "use client"
-import { createContext, useCallback, useContext, useMemo, useState, ReactNode } from "react"
+import { createContext, useCallback, useContext, useMemo, useState, useEffect, ReactNode } from "react"
 
 type Direction = "increasing" | "decreasing"
 
@@ -18,6 +18,8 @@ type OnboardingContextValue = {
   isBusy: boolean
   isFinalStep: boolean
   continueLabel: string
+  canContinue: boolean
+  setCanContinue: (canContinue: boolean) => void
 }
 
 const OnboardingContext = createContext<OnboardingContextValue | undefined>(undefined)
@@ -33,11 +35,23 @@ export function OnboardingProvider({ children, initialStep = 1, totalSteps = 9 }
   const [direction, setDirection] = useState<Direction>("increasing")
   const [isBusy, setIsBusy] = useState<boolean>(false)
   const [actionsRegistry, setActionsRegistry] = useState<Map<number, StepActions>>(new Map())
+  const [canContinue, setCanContinue] = useState<boolean>(true)
+  const [hasInitialized, setHasInitialized] = useState<boolean>(false)
+
+  // Update step when initialStep changes (e.g., when API data loads)
+  useEffect(() => {
+    if (!hasInitialized && initialStep) {
+      setStepState(initialStep)
+      setHasInitialized(true)
+    }
+  }, [initialStep, hasInitialized])
 
   const setStep = useCallback((newStep: number) => {
     setDirection(newStep > step ? "increasing" : "decreasing")
     const clamped = Math.max(1, Math.min(newStep, totalSteps))
     setStepState(clamped)
+    // Reset canContinue when step changes (each step will set its own value)
+    setCanContinue(true)
   }, [step, totalSteps])
 
   const next = useCallback(() => {
@@ -109,6 +123,8 @@ export function OnboardingProvider({ children, initialStep = 1, totalSteps = 9 }
     isBusy,
     isFinalStep,
     continueLabel,
+    canContinue,
+    setCanContinue,
   }), [
     step,
     direction,
@@ -123,6 +139,7 @@ export function OnboardingProvider({ children, initialStep = 1, totalSteps = 9 }
     isBusy,
     isFinalStep,
     continueLabel,
+    canContinue,
   ])
 
   return (

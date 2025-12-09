@@ -9,7 +9,7 @@ export default function NoHigherEducationCheckbox({
 }) {
   return (
     <div className="w-full rounded-t-[20px] bg-white flex justify-start items-center pt-4 pb-5 px-4 lg:py-5 lg:px-8 gap-2">
-      <BaseCheckbox defaultChecked={hasHigherEducationDegree} onChange={setHasHigherEducationDegree} />
+      <BaseCheckbox checked={hasHigherEducationDegree} onChange={setHasHigherEducationDegree} />
       <Typography variant={{ base: "body-3", lg: "body-2" }} color="neutral-800">
         I don't have a higher education degree
       </Typography>

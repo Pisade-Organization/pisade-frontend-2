@@ -25,6 +25,9 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
   const onLogoClick = () => router.push("/")
   const onSigninClick = () => router.push("/signin")
 
+  // Prevent hydration flicker - rely on hydration gate
+  if (status === "loading") return null
+
   const isAuth = status === "authenticated"
   // ------------------ Variants ------------------ //
   if (variant === "search") {

@@ -1,6 +1,8 @@
 "use client"
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
+import { useCurrentStep } from "@/hooks/tutors/onboarding/queries/useCurrentStep";
+import LoadingPage from "@/components/LoadingPage";
 
 import Navbar from "../component/Navbar";
 import ProgressBar from "../component/ProgressBar";
@@ -82,8 +84,15 @@ function OnboardingContent() {
 }
 
 export default function OnboardingPage() {
+  const { data: currentStepData, isLoading: isLoadingCurrentStep } = useCurrentStep()
+  const initialStep = currentStepData?.currentStep || 1
+
+  if (isLoadingCurrentStep) {
+    return <LoadingPage />
+  }
+
   return (
-    <OnboardingProvider>
+    <OnboardingProvider initialStep={initialStep}>
       <OnboardingContent />
     </OnboardingProvider>
   )
