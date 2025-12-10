@@ -135,24 +135,17 @@ export default function OnboardingStepFour() {
       
       // Convert form data to DTO format
       const educations: EducationDto[] = values.educations
-        .map((edu) => {
-          // Skip empty educations
-          if (!edu.universityName || !edu.degree || !edu.yearStart) {
-            return null
-          }
-          
-          return {
-            universityName: edu.universityName,
-            degree: edu.degree as Degree,
-            fieldOfStudy: edu.fieldOfStudy || "",
-            specialization: edu.specialization || "",
-            yearStart: parseInt(edu.yearStart, 10),
-            yearEnd: edu.yearEnd ? parseInt(edu.yearEnd, 10) : undefined,
-            currentlyStudying: edu.currentlyStudying || false,
-            fileUrl: edu.fileUrl,
-          }
-        })
-        .filter((edu): edu is EducationDto => edu !== null)
+        .filter((edu) => edu.universityName && edu.degree && edu.yearStart)
+        .map((edu) => ({
+          universityName: edu.universityName,
+          degree: edu.degree as Degree,
+          fieldOfStudy: edu.fieldOfStudy || "",
+          specialization: edu.specialization || "",
+          yearStart: parseInt(edu.yearStart, 10),
+          yearEnd: edu.yearEnd ? parseInt(edu.yearEnd, 10) : undefined,
+          currentlyStudying: edu.currentlyStudying || false,
+          fileUrl: edu.fileUrl,
+        }))
 
       const payload = {
         hasDiploma: !noHigherEducationDegreeRef.current,
