@@ -47,20 +47,34 @@ export function OnboardingProvider({ children, initialStep = 1, totalSteps = 9 }
   }, [initialStep, hasInitialized])
 
   const setStep = useCallback((newStep: number) => {
-    setDirection(newStep > step ? "increasing" : "decreasing")
-    const clamped = Math.max(1, Math.min(newStep, totalSteps))
-    setStepState(clamped)
-    // Reset canContinue when step changes (each step will set its own value)
-    setCanContinue(true)
-  }, [step, totalSteps])
+    setStepState((currentStep) => {
+      setDirection(newStep > currentStep ? "increasing" : "decreasing")
+      const clamped = Math.max(1, Math.min(newStep, totalSteps))
+      // Reset canContinue when step changes (each step will set its own value)
+      setCanContinue(true)
+      return clamped
+    })
+  }, [totalSteps])
 
   const next = useCallback(() => {
-    setStep(step + 1)
-  }, [setStep, step])
+    setStepState((currentStep) => {
+      const newStep = currentStep + 1
+      setDirection("increasing")
+      const clamped = Math.max(1, Math.min(newStep, totalSteps))
+      setCanContinue(true)
+      return clamped
+    })
+  }, [totalSteps])
 
   const back = useCallback(() => {
-    setStep(step - 1)
-  }, [setStep, step])
+    setStepState((currentStep) => {
+      const newStep = currentStep - 1
+      setDirection("decreasing")
+      const clamped = Math.max(1, Math.min(newStep, totalSteps))
+      setCanContinue(true)
+      return clamped
+    })
+  }, [totalSteps])
 
   const registerStepActions = useCallback((s: number, actions: StepActions) => {
     setActionsRegistry(prev => {

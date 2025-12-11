@@ -47,6 +47,7 @@ export default function OnboardingStepThree() {
     key: string | null
     error: string | null
     isUploading: boolean
+    originalFileUrl?: string | null // Store original file URL for existing certificates
   }>>({})
   
   // Use refs to access latest values without including them in dependencies
@@ -55,6 +56,23 @@ export default function OnboardingStepThree() {
   const noTeachingCertificateRef = useRef(noTeachingCertificate)
   const sessionRef = useRef(session)
   const certificateFilesRef = useRef(certificateFiles)
+  
+  // Helper function to extract key from S3 URL
+  const extractKeyFromUrl = (url: string): string | null => {
+    try {
+      // Extract the key from URL pattern like: https://...amazonaws.com/tutor/userId/certificates/key
+      const urlObj = new URL(url)
+      const pathParts = urlObj.pathname.split('/').filter(Boolean)
+      // Skip 'tutor' and find the rest of the path
+      const tutorIndex = pathParts.indexOf('tutor')
+      if (tutorIndex !== -1 && tutorIndex < pathParts.length - 1) {
+        return pathParts.slice(tutorIndex).join('/')
+      }
+      return null
+    } catch {
+      return null
+    }
+  }
   
   // Keep refs in sync
   useEffect(() => {
@@ -121,14 +139,17 @@ export default function OnboardingStepThree() {
         })
         
         // Initialize file state for existing certificates with file URLs
-        const initialFiles: Record<number, { file: File | null; key: string | null; error: string | null; isUploading: boolean }> = {}
+        const initialFiles: Record<number, { file: File | null; key: string | null; error: string | null; isUploading: boolean; originalFileUrl?: string | null }> = {}
         stepThreeData.certifications.forEach((cert, index) => {
           if (cert.certificateFileUrl) {
+            // Try to extract the key from the URL
+            const extractedKey = extractKeyFromUrl(cert.certificateFileUrl)
             initialFiles[index] = {
               file: null,
-              key: "existing", // Mark as existing
+              key: extractedKey || "existing", // Use extracted key or mark as existing
               error: null,
               isUploading: false,
+              originalFileUrl: cert.certificateFileUrl, // Store original URL
             }
           }
         })
@@ -188,7 +209,19 @@ export default function OnboardingStepThree() {
           }
           
           const fileData = certificateFilesRef.current[index]
-          const fileKey = fileData?.key && fileData.key !== "existing" ? fileData.key : undefined
+          // Use the key if it exists and is not the "existing" placeholder
+          // If it's "existing", try to extract from original URL or check if certificate originally had a file
+          let fileKey: string | undefined = undefined
+          
+          if (fileData?.key && fileData.key !== "existing") {
+            fileKey = fileData.key
+          } else if (fileData?.key === "existing" && fileData?.originalFileUrl) {
+            // Try to extract key from original URL
+            const extractedKey = extractKeyFromUrl(fileData.originalFileUrl)
+            if (extractedKey) {
+              fileKey = extractedKey
+            }
+          }
           
           const dto: CertificationDto = {
             certificationName: cert.certificationName,
@@ -208,7 +241,7 @@ export default function OnboardingStepThree() {
 
       const payload = {
         hasTeachingCertificate: !noTeachingCertificateRef.current,
-        certificates: certificates.length > 0 ? certificates : undefined,
+        certifications: certificates.length > 0 ? certificates : undefined,
       }
 
       await saveStepThreeRef.current.mutateAsync(payload)
@@ -244,7 +277,18 @@ export default function OnboardingStepThree() {
         }
         
         const certFileData = certificateFilesRef.current[idx]
-        const certFileKey = certFileData?.key && certFileData.key !== "existing" ? certFileData.key : undefined
+        // Use the key if it exists and is not the "existing" placeholder
+        let certFileKey: string | undefined = undefined
+        
+        if (certFileData?.key && certFileData.key !== "existing") {
+          certFileKey = certFileData.key
+        } else if (certFileData?.key === "existing" && certFileData?.originalFileUrl) {
+          // Try to extract key from original URL
+          const extractedKey = extractKeyFromUrl(certFileData.originalFileUrl)
+          if (extractedKey) {
+            certFileKey = extractedKey
+          }
+        }
         
         const dto: CertificationDto = {
           certificationName: cert.certificationName,
@@ -265,7 +309,7 @@ export default function OnboardingStepThree() {
     // Save with all certificates
     const payload = {
       hasTeachingCertificate: !noTeachingCertificateRef.current,
-      certificates: certificatesDto.length > 0 ? certificatesDto : undefined,
+      certifications: certificatesDto.length > 0 ? certificatesDto : undefined,
     }
     
     await saveStepThreeRef.current.mutateAsync(payload)
@@ -279,7 +323,9 @@ export default function OnboardingStepThree() {
         ...prev[index],
         file,
         error,
-        key: error || !file ? null : prev[index]?.key || null,
+        key: error || !file ? (prev[index]?.key === "existing" ? "existing" : null) : null,
+        // Preserve originalFileUrl unless we're uploading a new file
+        originalFileUrl: file ? undefined : prev[index]?.originalFileUrl,
       }
     }))
     
@@ -295,7 +341,8 @@ export default function OnboardingStepThree() {
           ...prev[index],
           error: "User ID not found in session",
           file: null,
-          key: null,
+          key: prev[index]?.key === "existing" ? "existing" : null,
+          originalFileUrl: prev[index]?.originalFileUrl,
         }
       }))
       return
@@ -340,6 +387,7 @@ export default function OnboardingStepThree() {
           key: presignedResponse.key,
           error: null,
           isUploading: false,
+          originalFileUrl: undefined, // Clear original URL when new file is uploaded
         }
       }))
     } catch (err) {
@@ -348,8 +396,9 @@ export default function OnboardingStepThree() {
         [index]: {
           ...prev[index],
           error: err instanceof Error ? err.message : "Failed to upload file",
-          key: null,
+          key: prev[index]?.key === "existing" ? "existing" : null,
           isUploading: false,
+          originalFileUrl: prev[index]?.originalFileUrl,
         }
       }))
     }

@@ -11,16 +11,41 @@ import type {
   OnboardingStepTwoGetResponse,
   OnboardingStepTwoPostResponse,
 
+  // STEP 3
+  OnboardingStepThreeDto,
+  OnboardingStepThreeGetResponse,
+  OnboardingStepThreePostResponse,
+
+  // STEP 4
+  OnboardingStepFourDto,
+  OnboardingStepFourGetResponse,
+  OnboardingStepFourPostResponse,
+
   // STEP 5
   OnboardingStepFiveDto,
   OnboardingStepFiveGetResponse,
   OnboardingStepFivePostResponse,
-  OnboardingStepThreeGetResponse,
-  OnboardingStepThreeDto,
-  OnboardingStepThreePostResponse,
-  OnboardingStepFourGetResponse,
-  OnboardingStepFourDto,
-  OnboardingStepFourPostResponse,
+
+  // STEP 6
+  OnboardingStepSixDto,
+  OnboardingStepSixGetResponse,
+  OnboardingStepSixPostResponse,
+
+  // STEP 7
+  OnboardingStepSevenDto,
+  OnboardingStepSevenGetResponse,
+  OnboardingStepSevenPostResponse,
+
+  // STEP 8
+  OnboardingStepEightDto,
+  OnboardingStepEightGetResponse,
+  OnboardingStepEightPostResponse,
+
+  // STEP 9
+  OnboardingStepNineDto,
+  OnboardingStepNineGetResponse,
+  OnboardingStepNinePostResponse,
+
   GetCurrentStepResponse,
 } from './types'
 
@@ -89,7 +114,54 @@ export const TutorOnboardingService = {
   async saveOnboardingStepFive(data: OnboardingStepFiveDto): Promise<OnboardingStepFivePostResponse> {
     const res = await apiInstanceClient.post(servicePath.onboarding.saveOnboardingStepFive, data);
     return res.data;
-  }
+  },
 
+  // GET STEP SIX
+  async getOnboardingStepSix(): Promise<OnboardingStepSixGetResponse> {
+    const res = await apiInstanceClient.get(servicePath.onboarding.getOnboardingStepSix);
+    return res.data;
+  },
+
+  // SAVE STEP SIX
+  async saveOnboardingStepSix(data: OnboardingStepSixDto): Promise<OnboardingStepSixPostResponse> {
+    const res = await apiInstanceClient.post(servicePath.onboarding.saveOnboardingStepSix, data);
+    return res.data;
+  },
+
+  // GET STEP SEVEN
+  async getOnboardingStepSeven(): Promise<OnboardingStepSevenGetResponse> {
+    const res = await apiInstanceClient.get(servicePath.onboarding.getOnboardingStepSeven);
+    return res.data;
+  },
+
+  // SAVE STEP SEVEN
+  async saveOnboardingStepSeven(data: OnboardingStepSevenDto): Promise<OnboardingStepSevenPostResponse> {
+    const res = await apiInstanceClient.post(servicePath.onboarding.saveOnboardingStepSeven, data);
+    return res.data;
+  },
+
+  // GET STEP EIGHT
+  async getOnboardingStepEight(): Promise<OnboardingStepEightGetResponse> {
+    const res = await apiInstanceClient.get(servicePath.onboarding.getOnboardingStepEight);
+    return res.data;
+  },
+
+  // SAVE STEP EIGHT
+  async saveOnboardingStepEight(data: OnboardingStepEightDto): Promise<OnboardingStepEightPostResponse> {
+    const res = await apiInstanceClient.post(servicePath.onboarding.saveOnboardingStepEight, data);
+    return res.data;
+  },
+
+  // GET STEP NINE
+  async getOnboardingStepNine(): Promise<OnboardingStepNineGetResponse> {
+    const res = await apiInstanceClient.get(servicePath.onboarding.getOnboardingStepNine);
+    return res.data;
+  },
+
+  // SAVE STEP NINE
+  async saveOnboardingStepNine(data: OnboardingStepNineDto): Promise<OnboardingStepNinePostResponse> {
+    const res = await apiInstanceClient.post(servicePath.onboarding.saveOnboardingStepNine, data);
+    return res.data;
+  },
 
 }

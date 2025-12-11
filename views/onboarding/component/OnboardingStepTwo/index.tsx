@@ -126,7 +126,7 @@ export default function OnboardingStepTwo() {
         selectedFile={selectedFile}
         onFileChange={handleFileChange}
         error={fileError}
-        existingImageUrl={stepTwoData?.avatarUrl}
+        existingImageUrl={stepTwoData}
       />
 
       <div className="w-full flex lg:flex-row flex-col justify-center lg:justify-between items-center gap-6 ">

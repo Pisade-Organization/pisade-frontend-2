@@ -270,13 +270,15 @@ async function revalidateUser(token: any): Promise<any> {
     const errorMessage = ax.response?.data || ax.message || "Unknown error";
     
     // Differentiate between permanent and temporary errors
-    if (statusCode === 401 || statusCode === 403) {
-      // Permanent: user deleted, disabled, or token invalid
+    if (statusCode === 401 || statusCode === 403 || statusCode === 404) {
+      // Permanent: user deleted, disabled, token invalid, or profile not found
+      // 404 means user profile not found - should sign out
       logAuth("error", "User revalidation failed: permanent error", {
         status: statusCode,
         error: errorMessage,
+        reason: statusCode === 404 ? "Profile not found" : "Unauthorized/Forbidden",
       });
-      token.error = "UserDeletedOrInvalid";
+      token.error = statusCode === 404 ? "ProfileNotFound" : "UserDeletedOrInvalid";
       delete token.access_token;
       delete token.refresh_token;
       delete token.exp;

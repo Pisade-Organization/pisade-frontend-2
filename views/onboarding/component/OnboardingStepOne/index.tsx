@@ -26,28 +26,72 @@ export default function OnboardingStepOne() {
     }
   })
 
+  // Use refs to access latest values without including them in dependencies
+  const methodsRef = useRef(methods)
+  const saveStepOneRef = useRef(saveStepOne)
+  
+  // Keep refs in sync
   useEffect(() => {
-    if (data) {
-      const sanitized = Object.fromEntries(
-        Object.entries(data).map(([key, value]) => {
-          if (key === "languages") {
-            return [key, value ?? []]
-          }
-          return [key, value ?? ""]
-        })
-      )
-      methods.reset(sanitized as any)
-      // Store the original data for comparison
-      originalDataRef.current = sanitized
+    methodsRef.current = methods
+    saveStepOneRef.current = saveStepOne
+  })
+
+  useEffect(() => {
+    if (!data) return
+    
+    const sanitized = Object.fromEntries(
+      Object.entries(data).map(([key, value]) => {
+        if (key === "languages") {
+          return [key, value ?? []]
+        }
+        return [key, value ?? ""]
+      })
+    )
+    
+    // Create a stable string representation for comparison
+    const newDataStr = JSON.stringify(sanitized)
+    
+    // Only reset if the data actually changed to prevent infinite loops
+    if (originalDataRef.current) {
+      const currentDataStr = JSON.stringify(originalDataRef.current)
+      
+      // If data hasn't changed, don't reset
+      if (currentDataStr === newDataStr) {
+        return
+      }
     }
-  }, [data, methods])
+    
+    // Only reset on initial load or when data comes from server (not during user editing)
+    // Check if form is currently being interacted with by checking if it's dirty
+    const formIsDirty = methodsRef.current.formState.isDirty
+    
+    // If form has been modified by user, don't reset to prevent interrupting input
+    // This is especially important for select inputs which can trigger this effect
+    if (formIsDirty && originalDataRef.current) {
+      // Update the reference but don't reset the form
+      originalDataRef.current = sanitized
+      return
+    }
+    
+    // Reset form with new data
+    methodsRef.current.reset(sanitized as any, {
+      keepDefaultValues: false,
+      keepDirty: false,
+      keepErrors: false,
+      keepIsSubmitted: false,
+      keepTouched: false,
+    })
+    
+    // Store the original data for comparison
+    originalDataRef.current = sanitized
+  }, [data])
 
   useEffect(() => {
     const validate = async () => {
-      return await methods.trigger()
+      return await methodsRef.current.trigger()
     }
     const save = async () => {
-      const values = methods.getValues()
+      const values = methodsRef.current.getValues()
       const payload = Object.fromEntries(
         Object.entries(values).map(([key, value]) => {
           if (key === "languages") {
@@ -101,13 +145,13 @@ export default function OnboardingStepOne() {
         }
       }
 
-      await saveStepOne.mutateAsync(payload as any)
+      await saveStepOneRef.current.mutateAsync(payload as any)
     }
     registerStepActions(1, { validate, save })
     return () => {
       unregisterStepActions(1)
     }
-  }, [registerStepActions, unregisterStepActions, methods, saveStepOne])
+  }, [registerStepActions, unregisterStepActions])
 
   if (isLoading) return <p>Loading...</p>
 

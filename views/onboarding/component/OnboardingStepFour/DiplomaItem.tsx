@@ -11,9 +11,22 @@ import BaseButton from "@/components/base/BaseButton"
 interface DiplomaItemProps {
   index: number
   onRemove?: () => void
+  selectedFile?: File | null
+  onFileChange?: (file: File | null, error: string | null) => void
+  fileError?: string | null
+  existingImageUrl?: string
+  isUploading?: boolean
 }
 
-export default function DiplomaItem({ index, onRemove }: DiplomaItemProps) {
+export default function DiplomaItem({ 
+  index, 
+  onRemove,
+  selectedFile,
+  onFileChange,
+  fileError,
+  existingImageUrl,
+  isUploading
+}: DiplomaItemProps) {
   const { watch } = useFormContext()
   const educations = watch("educations") || []
   const education = educations[index]
@@ -96,7 +109,14 @@ export default function DiplomaItem({ index, onRemove }: DiplomaItemProps) {
         </AccordionTrigger>
 
         <AccordionContent>
-          <DiplomaForm index={index} />
+          <DiplomaForm 
+            index={index}
+            selectedFile={selectedFile}
+            onFileChange={onFileChange}
+            fileError={fileError}
+            existingImageUrl={existingImageUrl}
+            isUploading={isUploading}
+          />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

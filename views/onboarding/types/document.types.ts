@@ -1,1 +1,1 @@
-export type DocumentType = "ID Card" | "Passport";
+export type DocumentType = "ID_CARD" | "PASSPORT";

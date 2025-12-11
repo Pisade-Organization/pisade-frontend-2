@@ -2,7 +2,9 @@ export interface GetCurrentStepResponse {
   currentStep: number;
 }
 
-export interface OnboardingStepOnePayload {
+// STEP 1
+// POST DTO
+export interface OnboardingStepOneDto {
   firstName?: string;
   lastName?: string;
   countryOfBirth?: string;
@@ -17,25 +19,37 @@ export interface OnboardingStepOnePayload {
   }[];
 }
 
-/* ======================
-      REQUEST DTOs
-   ====================== */
-
-// POST: client submits onboarding step one fields
-// userId/tutorId is auto-attached by axios interceptor
-export type OnboardingStepOneDto = Partial<OnboardingStepOnePayload>;
-
-/* ======================
-      RESPONSES
-   ====================== */
-
-// GET response: server returns stored step-one fields + current step
-export interface OnboardingStepOneGetResponse extends OnboardingStepOnePayload {
+// GET RESPONSE
+export interface OnboardingStepOneGetResponse {
+  firstName?: string;
+  lastName?: string;
+  countryOfBirth?: string;
+  nationality?: string;
+  countryCode?: string;
+  phoneNumber?: string;
+  isOver18?: boolean;
+  subject?: string;
+  languages?: {
+    language: string;
+    level: string;
+  }[];
   currentStep: number;
 }
 
-// POST response: server returns saved object with metadata
-export interface OnboardingStepOnePostResponse extends OnboardingStepOnePayload {
+// POST RESPONSE
+export interface OnboardingStepOnePostResponse {
+  firstName?: string;
+  lastName?: string;
+  countryOfBirth?: string;
+  nationality?: string;
+  countryCode?: string;
+  phoneNumber?: string;
+  isOver18?: boolean;
+  subject?: string;
+  languages?: {
+    language: string;
+    level: string;
+  }[];
   id: string;
   tutorId: string;
   currentStep: number;
@@ -43,19 +57,22 @@ export interface OnboardingStepOnePostResponse extends OnboardingStepOnePayload 
   updatedAt: string;
 }
 
-
-export interface OnboardingStepTwoPayload {
+// STEP 2
+export interface OnboardingStepTwoDto {
   key?: string;
 }
 
-export type OnboardingStepTwoDto = Partial<OnboardingStepTwoPayload>;
-
-export interface OnboardingStepTwoGetResponse extends OnboardingStepTwoPayload {
-  currentStep: number;
+// GET RESPONSE
+export interface OnboardingStepTwoGetResponse {
   avatarUrl: string;
 }
 
-export interface OnboardingStepTwoPostResponse extends OnboardingStepTwoPayload {
+// POST DTO
+// (same as STEP 2 - OnboardingStepTwoDto)
+
+// POST RESPONSE
+export interface OnboardingStepTwoPostResponse {
+  key?: string;
   id: string;
   avatarUrl: string;
 }
@@ -78,18 +95,21 @@ export interface CertificationResponse {
   certificateFileUrl?: string;
 }
 
-export interface OnboardingStepThreePayload {
+// STEP 3
+// POST DTO
+export interface OnboardingStepThreeDto {
   hasTeachingCertificate?: boolean;
-  certificates?: CertificationDto[];
-}   
+  certifications?: CertificationDto[];
+}
 
-export type OnboardingStepThreeDto = Partial<OnboardingStepThreePayload>;
-
+// GET RESPONSE
 export interface OnboardingStepThreeGetResponse {
   hasTeachingCertificate?: boolean;
   subject?: string;
   certifications?: CertificationResponse[];
 }
+
+// POST RESPONSE
 export interface OnboardingStepThreePostResponse {
   id: string;
   tutorId: string;
@@ -118,22 +138,23 @@ export interface EducationDto {
   yearEnd?: number;
   currentlyStudying?: boolean;
   fileUrl?: string;
+  diplomaFileKey?: string;
 }
 
-export interface OnboardingStepFourPayload {
+// STEP 4
+// POST DTO
+export interface OnboardingStepFourDto {
   hasDiploma?: boolean;
   educations?: EducationDto[];
 }
 
-export type OnboardingStepFourDto = Partial<OnboardingStepFourPayload>;
-
-// GET response uses "diplomas" instead of "educations"
+// GET RESPONSE
 export interface OnboardingStepFourGetResponse {
   hasDiploma?: boolean;
   diplomas?: EducationDto[];
 }
 
-// POST response
+// POST RESPONSE
 export interface OnboardingStepFourPostResponse {
   message: string;
   id: string;
@@ -143,25 +164,174 @@ export interface OnboardingStepFourPostResponse {
   diplomasCreated?: number;
 }
 
-export interface OnboardingStepFivePayload {
+// STEP 5
+// POST DTO
+export interface OnboardingStepFiveDto {
   introduceYourself?: string;
   teachingExperience?: string;
   motivatePotentialStudents?: string;
   catchyHeadline?: string;
 }
 
-export type OnboardingStepFiveDto = Partial<OnboardingStepFivePayload>;
-
-export interface OnboardingStepFiveGetResponse extends OnboardingStepFivePayload {
+// GET RESPONSE
+export interface OnboardingStepFiveGetResponse {
+  introduceYourself?: string;
+  teachingExperience?: string;
+  motivatePotentialStudents?: string;
+  catchyHeadline?: string;
   currentStep: number;
 }
 
-export interface OnboardingStepFivePostResponse extends OnboardingStepFivePayload {
+// POST RESPONSE
+export interface OnboardingStepFivePostResponse {
+  introduceYourself?: string;
+  teachingExperience?: string;
+  motivatePotentialStudents?: string;
+  catchyHeadline?: string;
   message: string;
   onboardingId: string;
   currentStep: number;
 }
 
+// STEP 6
+// POST DTO
+export interface OnboardingStepSixDto {
+  videoKey?: string;
+  thumbnailKey?: string | null;
+}
+
+//GET RESPONSE
+export interface OnboardingStepSixGetResponse {
+  videoUrl?: string;
+  thumbnailUrl?: string;
+}
+
+// POST RESPONSE
+export interface OnboardingStepSixPostResponse {
+  id: string;
+  tutorId: string;
+  currentStep: number;
+  message: string;
+  videoUrl: string;
+  thumbnailUrl: string | null;
+}
+
+// STEP 7
+
+// HELPERS
+export interface AvailabilityDto {
+  day: number;
+  startTime: string;
+}
+
+export interface AvailabilityGetResponse {
+  id: string;
+  onboardingId: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+}
+
+export interface AvailabilityPostResponse {
+  onboardingId: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+}
+
+// POST DTO
+export interface OnboardingStepSevenDto {
+  timezone: string;
+  availabilities: AvailabilityDto[];
+}
+
+// GET RESPONSE
+export interface OnboardingStepSevenGetResponse {
+  timezone: string;
+  availabilities: AvailabilityGetResponse[];
+}
+
+// POST RESPONSE
+export interface OnboardingStepSevenPostResponse {
+  id: string;
+  tutorId: string;
+  currentStep: number;
+  timezone: string;
+  message: string;
+  availabilities: AvailabilityPostResponse[];
+}
+
+// STEP 8
+
+// HELPERS
+export enum WithdrawalMethod {
+  BANK_TRANSFER = "BANK_TRANSFER",
+  PROMPTPAY = "PROMPTPAY",
+}
+
+// POST DTO
+export interface OnboardingStepEightDto {
+  lessonPrice?: number;
+  withdrawalMethod?: WithdrawalMethod;
+  withdrawalPhoneNumber?: string;
+  bankName?: string;
+  bankAccountNumber?: string;
+}
+
+// GET RESPONSE
+export interface OnboardingStepEightGetResponse {
+  lessonPrice?: number | null;
+  withdrawalMethod?: string | null;
+  withdrawalPhoneNumber?: string | null;
+  bankName?: string | null;
+  bankAccountNumber?: string | null;
+}
+
+// POST RESPONSE
+export interface OnboardingStepEightPostResponse {
+  id: string;
+  tutorId: string;
+  currentStep: number;
+  message: string;
+  lessonPrice: number;
+  withdrawalMethod: WithdrawalMethod,
+  withdrawalPhoneNumber: string,
+  bankName: string,
+  bankAccountNumber: string,
+}
+
+// STEP 9
+
+// HELPERS
+export enum DocumentType {
+  ID_CARD = 'ID_CARD',
+  PASSPORT = 'PASSPORT',
+}
+
+// POST DTO
+export interface OnboardingStepNineDto {
+  documentType?: DocumentType;
+  idCardKey?: string;
+  passportKey?: string;
+}
+
+// GET RESPONSE
+export interface OnboardingStepNineGetResponse {
+  documentType: DocumentType | null;
+  idCardUrl: string | null;
+  passportUrl: string | null;
+}
+
+// POST RESPONSE
+export interface OnboardingStepNinePostResponse {
+  id: string;
+  tutorId: string;
+  currentStep: number;
+  message: string;
+  documentType: DocumentType;
+  idCardUrl: string | null;
+  passportUrl: string | null;
+}
 
 /* ======================
       ERROR SHAPE

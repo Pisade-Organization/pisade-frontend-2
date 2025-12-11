@@ -29,7 +29,19 @@ export const servicePath = {
       saveOnboardingStepFour: "/onboarding/step-4", // POST
 
       getOnboardingStepFive: "/onboarding/step-5", // GET
-      saveOnboardingStepFive: "/onboarding/step-5" // POST
+      saveOnboardingStepFive: "/onboarding/step-5", // POST
+
+      getOnboardingStepSix: "/onboarding/step-6", // GET
+      saveOnboardingStepSix: "/onboarding/step-6", // POST
+
+      getOnboardingStepSeven: "/onboarding/step-7", // GET
+      saveOnboardingStepSeven: "/onboarding/step-7", // POST
+
+      getOnboardingStepEight: "/onboarding/step-8", // GET
+      saveOnboardingStepEight: "/onboarding/step-8", // POST
+
+      getOnboardingStepNine: "/onboarding/step-9", // GET
+      saveOnboardingStepNine: "/onboarding/step-9", // POST
     },
     upload: {
       getPresignedUrl: '/upload/presigned', // GET
