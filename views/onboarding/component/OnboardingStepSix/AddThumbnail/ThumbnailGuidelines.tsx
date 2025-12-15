@@ -8,7 +8,7 @@ export default function ThumbnailGuidelines() {
       {/* GUIDELINE BUTTON */}
       <div className="inline-flex justify-start items-center gap-2">
         <SquareArrowRight className="w-4 h-4 text-electric-violet-700" />
-        <Typography variant={{ base: "label-4" }} color="electric-violet-700" underline>
+        <Typography variant={{ base: "label-4" , lg: "label-3"}} color="electric-violet-700" underline>
           Learn more about thumbnail guidelines
         </Typography>
       </div>

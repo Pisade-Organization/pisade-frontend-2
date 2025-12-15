@@ -18,12 +18,17 @@ export default function UploadYourPhoto({ selectedFile, onFileChange, error: ext
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
+  const isBlobUrl = (value: unknown): value is string => typeof value === "string" && value.startsWith("blob:")
+  const revokeBlobUrl = (url: string | null) => {
+    if (isBlobUrl(url)) {
+      URL.revokeObjectURL(url)
+    }
+  }
+
   // Clean up preview URL when component unmounts (only blob URLs need cleanup)
   useEffect(() => {
     return () => {
-      if (previewUrl && previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl)
-      }
+      revokeBlobUrl(previewUrl)
     }
   }, [previewUrl])
 
@@ -31,24 +36,18 @@ export default function UploadYourPhoto({ selectedFile, onFileChange, error: ext
   useEffect(() => {
     if (selectedFile) {
       // Clean up previous preview URL (only if it was a blob URL)
-      if (previewUrl && previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl)
-      }
+      revokeBlobUrl(previewUrl)
       // Create preview URL for new file
       const url = URL.createObjectURL(selectedFile)
       setPreviewUrl(url)
     } else if (existingImageUrl) {
       // If no new file selected, show existing image
       // Clean up blob URL if it exists
-      if (previewUrl && previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl)
-      }
+      revokeBlobUrl(previewUrl)
       setPreviewUrl(existingImageUrl)
     } else {
       // Clean up preview URL if no file and no existing image
-      if (previewUrl && previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl)
-      }
+      revokeBlobUrl(previewUrl)
       setPreviewUrl(null)
     }
   }, [selectedFile, existingImageUrl])
