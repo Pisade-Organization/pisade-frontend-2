@@ -36,7 +36,7 @@ export default function Commission() {
             <div className="inline-flex gap-2">
               <Check size={18} className="text-green-normal"/>
               <Typography variant="body-3" color="neutral-500">
-                For all the subsequent lessons, <Typography variant="label-3" color="neutral-800">Pisade charges percentages (18%-33%)</Typography> of the hourly rate
+                For all the subsequent lessons, <Typography variant="label-3" color="neutral-800" as="span">Pisade charges percentages (18%-33%)</Typography> of the hourly rate
               </Typography>
             </div>
 

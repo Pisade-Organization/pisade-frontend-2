@@ -2,10 +2,10 @@
 
 import Typography from "@/components/base/Typography"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Check } from "lucide-react"
+import { X } from "lucide-react"
 import { useLayoutEffect, useState } from "react"
 
-export default function GoodPhoto() {
+export default function BadPhoto() {
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window !== "undefined") {
       return window.innerWidth < 1024
@@ -25,12 +25,12 @@ export default function GoodPhoto() {
     <>
       {/* MOBILE */}
       {isMobile && (
-        <AccordionItem value="item-1">
+        <AccordionItem value="item-2">
           <AccordionTrigger className="inline-flex justify-between items-center ">
             <div className="inline-flex justify-start items-center gap-[10px]">
-              <Check className="text-green-normal w-5 h-5 rounded-sm p-[2px] bg-green-light" />
+              <X className="text-red-normal w-5 h-5 rounded-sm p-[2px] bg-red-light" />
               <Typography variant={{ base: "title-2" }} color="neutral-900">
-                Good photo
+                Bad photo
               </Typography>
             </div>
           </AccordionTrigger>
@@ -42,27 +42,27 @@ export default function GoodPhoto() {
             <ul className="list-disc pl-4 flex flex-col gap-2">
               <li>
                 <Typography variant={{ base: "body-3" }} color="neutral-700">
-                  All text is clear and readable
+                  Text is blurry or out of focus
                 </Typography>
               </li>
               <li>
                 <Typography variant={{ base: "body-3" }} color="neutral-700">
-                  No glare or shadow
+                  Glare makes it unreadable
                 </Typography>
               </li>
               <li>
                 <Typography variant={{ base: "body-3" }} color="neutral-700">
-                  All corners visible
+                  Missing corners or cropped edges
                 </Typography>
               </li>
               <li>
                 <Typography variant={{ base: "body-3" }} color="neutral-700">
-                  Not expired
+                  Tilted or uneven surface
                 </Typography>
               </li>
               <li>
                 <Typography variant={{ base: "body-3" }} color="neutral-700">
-                  Matches the name on your profile
+                  Expired or mismatched name
                 </Typography>
               </li>
             </ul>
@@ -75,40 +75,40 @@ export default function GoodPhoto() {
         <div className="flex flex-col rounded-xl border py-4 px-6 gap-4 border-neutral-100 bg-white">
           {/* TITLE */}
           <div className="inline-flex justify-start items-center gap-[10px]">
-            <Check className="rounded-sm p-[2px] w-5 h-5 text-green-normal bg-green-light"/>
+            <X className="rounded-sm p-[2px] w-5 h-5 text-red-normal bg-red-light"/>
             <Typography variant="title-2" color="neutral-900">
-              Good photo
+              Bad photo
             </Typography>
           </div>
 
-          {/* GOOD PHOTO EXAMPLE */}
+          {/* BAD PHOTO EXAMPLE */}
           <div className="w-[319px] h-[200px] rounded-[10px] border border-neutral-25 bg-neutral-25" />
 
           {/* RULES */}
           <ul className="list-disc pl-4 flex flex-col gap-2">
             <li>
               <Typography variant={{ base: "body-3" }} color="neutral-700">
-                All text is clear and readable
+                Text is blurry or out of focus
               </Typography>
             </li>
             <li>
               <Typography variant={{ base: "body-3" }} color="neutral-700">
-                No glare or shadow
+                Glare makes it unreadable
               </Typography>
             </li>
             <li>
               <Typography variant={{ base: "body-3" }} color="neutral-700">
-                All corners visible
+                Missing corners or cropped edges
               </Typography>
             </li>
             <li>
               <Typography variant={{ base: "body-3" }} color="neutral-700">
-                Not expired
+                Tilted or uneven surface
               </Typography>
             </li>
             <li>
               <Typography variant={{ base: "body-3" }} color="neutral-700">
-                Matches the name on your profile
+                Expired or mismatched name
               </Typography>
             </li>
           </ul>

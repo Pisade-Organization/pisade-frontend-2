@@ -1,8 +1,10 @@
-// TODO: Combine each of these together
-export default function Hero() {
-    return (
-        <div className="w-full flex justify-">
+import Greeting from "./Greeting"
+import NextLessonCard from "./NextLessonCard"
 
-        </div>
-    )
+export default function Hero() {
+  return (
+    <div className="w-full flex justify-center">
+      
+    </div>
+  )
 }

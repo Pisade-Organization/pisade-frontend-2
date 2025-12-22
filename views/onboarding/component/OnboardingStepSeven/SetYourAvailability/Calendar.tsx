@@ -15,11 +15,15 @@ interface ScheduleData {
 
 interface CalendarProps {
   isApplyToAllDaysMode?: boolean;
+  selectedSlots: Record<string, Set<string>>;
+  onSelectedSlotsChange: (slots: Record<string, Set<string>>) => void;
 }
 
-export default function Calendar({ isApplyToAllDaysMode = false }: CalendarProps) {
-  // State to track selected timeslots: { "Mon": Set(["0:00", "1:00"]), ... }
-  const [selectedSlots, setSelectedSlots] = useState<Record<string, Set<string>>>({});
+export default function Calendar({ 
+  isApplyToAllDaysMode = false,
+  selectedSlots,
+  onSelectedSlotsChange
+}: CalendarProps) {
 
   // Get active days (days with at least one selected timeslot)
   const activeDays = useMemo(() => {
@@ -43,59 +47,58 @@ export default function Calendar({ isApplyToAllDaysMode = false }: CalendarProps
   }, [selectedSlots]);
 
   const handleTimeslotClick = (day: string, time: string) => {
-    setSelectedSlots(prev => {
-      // If "apply to all days" mode is active, apply to all days
-      if (isApplyToAllDaysMode) {
-        const newSlots = { ...prev };
+    const prev = selectedSlots
+    let newSlots: Record<string, Set<string>>
+    
+    // If "apply to all days" mode is active, apply to all days
+    if (isApplyToAllDaysMode) {
+      newSlots = { ...prev };
+      
+      // Check if the timeslot is already selected on any day
+      const isTimeSelected = days.some(d => {
+        const daySlots = prev[d] ? new Set(prev[d]) : new Set<string>();
+        return daySlots.has(time);
+      });
+      
+      // Apply toggle to all days
+      days.forEach(d => {
+        const currentDaySlots = newSlots[d] ? new Set(newSlots[d]) : new Set<string>();
         
-        // Check if the timeslot is already selected on any day
-        const isTimeSelected = days.some(d => {
-          const daySlots = prev[d] ? new Set(prev[d]) : new Set<string>();
-          return daySlots.has(time);
-        });
-        
-        // Apply toggle to all days
-        days.forEach(d => {
-          const currentDaySlots = newSlots[d] ? new Set(newSlots[d]) : new Set<string>();
-          
-          if (isTimeSelected) {
-            // Remove from all days
-            currentDaySlots.delete(time);
-            if (currentDaySlots.size > 0) {
-              newSlots[d] = currentDaySlots;
-            } else {
-              delete newSlots[d];
-            }
-          } else {
-            // Add to all days
-            currentDaySlots.add(time);
-            newSlots[d] = currentDaySlots;
-          }
-        });
-        
-        return newSlots;
-      } else {
-        // Normal mode: only affect the clicked day
-        const newSlots = { ...prev };
-        const currentDaySlots = newSlots[day] ? new Set(newSlots[day]) : new Set<string>();
-        
-        if (currentDaySlots.has(time)) {
-          // Remove timeslot
+        if (isTimeSelected) {
+          // Remove from all days
           currentDaySlots.delete(time);
           if (currentDaySlots.size > 0) {
-            newSlots[day] = currentDaySlots;
+            newSlots[d] = currentDaySlots;
           } else {
-            delete newSlots[day];
+            delete newSlots[d];
           }
         } else {
-          // Add timeslot
+          // Add to all days
           currentDaySlots.add(time);
-          newSlots[day] = currentDaySlots;
+          newSlots[d] = currentDaySlots;
         }
-        
-        return newSlots;
+      });
+    } else {
+      // Normal mode: only affect the clicked day
+      newSlots = { ...prev };
+      const currentDaySlots = newSlots[day] ? new Set(newSlots[day]) : new Set<string>();
+      
+      if (currentDaySlots.has(time)) {
+        // Remove timeslot
+        currentDaySlots.delete(time);
+        if (currentDaySlots.size > 0) {
+          newSlots[day] = currentDaySlots;
+        } else {
+          delete newSlots[day];
+        }
+      } else {
+        // Add timeslot
+        currentDaySlots.add(time);
+        newSlots[day] = currentDaySlots;
       }
-    });
+    }
+    
+    onSelectedSlotsChange(newSlots);
   };
 
   const isSlotSelected = (day: string, time: string) => {
