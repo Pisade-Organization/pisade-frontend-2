@@ -1,27 +1,37 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import TimerCard from "./TimerCard"
+
 export default function CountdownTimer({
     lessonTime
 }: {
     lessonTime: Date
 }) {
-    // Calculate the time left until lessonTime
-    const now = new Date();
-    const diff = lessonTime.getTime() - now.getTime();
+    const [timeLeft, setTimeLeft] = useState(0);
 
-    let hours = "00";
-    let minutes = "00";
-    let seconds = "00";
+    useEffect(() => {
+        const calculateTimeLeft = () => {
+            const now = new Date();
+            const diff = lessonTime.getTime() - now.getTime();
+            return Math.max(0, Math.floor(diff / 1000));
+        };
 
-    if (diff > 0) {
-        const totalSeconds = Math.floor(diff / 1000);
-        const h = Math.floor(totalSeconds / 3600);
-        const m = Math.floor((totalSeconds % 3600) / 60);
-        const s = totalSeconds % 60;
+        // Set initial time
+        setTimeLeft(calculateTimeLeft());
 
-        hours = h.toString().padStart(2, "0");
-        minutes = m.toString().padStart(2, "0");
-        seconds = s.toString().padStart(2, "0");
-    }
+        // Update every second
+        const interval = setInterval(() => {
+            setTimeLeft(calculateTimeLeft());
+        }, 1000);
+
+        // Cleanup interval on unmount
+        return () => clearInterval(interval);
+    }, [lessonTime]);
+
+    const hours = Math.floor(timeLeft / 3600).toString().padStart(2, "0");
+    const minutes = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, "0");
+    const seconds = (timeLeft % 60).toString().padStart(2, "0");
     return (
         <div className="flex justify-center items-center gap-4">
             
@@ -38,9 +48,6 @@ export default function CountdownTimer({
             </div>
 
             <TimerCard value={seconds} label="Secs" />
-                
-
-
 
         </div>
     )

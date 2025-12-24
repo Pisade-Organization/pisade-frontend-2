@@ -44,7 +44,41 @@
     linear-gradient(#fff 0 0) content-box, 
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: destination-out;
-  pointer-events: none; /* make sure it doesn’t block clicks */
+  pointer-events: none; /* make sure it doesn't block clicks */
+}
+
+.glass-card {
+  position: relative;
+  border-radius: 12px;
+  background: linear-gradient(135.5deg, rgba(255, 255, 255, 0.04) 42.33%, rgba(255, 255, 255, 0.24) 75.22%);
+  backdrop-filter: blur(32px);
+  box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.1);
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px; /* thickness of outline */
+  background: linear-gradient(
+    110.21deg,
+    rgba(255, 255, 255, 0.4) 2.78%,
+    rgba(255, 250, 203, 0.305574) 58.48%,
+    rgba(255, 57, 57, 0.04) 72.66%,
+    rgba(255, 255, 255, 0.34) 100%
+  ) border-box;
+
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  pointer-events: none; /* make sure it doesn't block clicks */
 }
 
 /* 🌈 Pisade-style scrollbar (no arrows, thin violet) */
@@ -82,6 +116,16 @@
 .dropdown-scroll {
   scrollbar-width: thin;
   scrollbar-color: #a855f7 transparent;
+}
+
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 

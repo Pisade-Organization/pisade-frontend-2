@@ -13,7 +13,7 @@ export default function NextLessonCard({
     lessonTime: Date
 }) {
     return (
-        <div className="flex flex-col justify-center items-start py-6 px-8 gap-3 rounded-[16px] bg-transparent">
+        <div className="hidden lg:flex flex-col justify-center items-start py-6 px-8 gap-3 rounded-[16px] bg-[linear-gradient(90.6deg,rgba(255,255,255,0.02)_0%,rgba(255,255,255,0.12)_100%)] shadow-[0px_1px_4px_0px_rgba(0,0,0,0.1)]">
 
             <NextLessonHeader 
                 lessonTitle={lessonTitle}

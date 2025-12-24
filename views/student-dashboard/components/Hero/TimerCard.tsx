@@ -7,7 +7,7 @@ export default function TimerCard({
     label: "Hours" | "Minutes" | "Secs"
 }) {
     return (
-        <div className="flex flex-col justify-between items-center pt-[10px] pb-3 px-4">
+        <div className="flex flex-col justify-between items-center pt-[10px] pb-3 px-4 glass-card">
 
             <h1 className="text-headline-2 text-white">
                 {value}

@@ -1,6 +1,7 @@
 "use client"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
+import Typography from "@/components/base/Typography"
 
 export default function Card({
     label,
@@ -57,10 +58,10 @@ export default function Card({
         }
     }
     return (
-        <div className="flex flex-col lg:flex-row justify-center items-center gap-2 lg:gap-4 px-4 lg:px-5 py-3 lg:py-4">
+        <div className="w-full h-full lg:h-auto flex flex-col lg:flex-row justify-start items-start lg:items-center gap-2 lg:gap-4 px-4 lg:px-5 py-3 lg:py-4 border border-deep-royal-indigo-50 rounded-xl">
 
             <div className="w-12 h-12 lg:w-[72px] lg:h-[72px] rounded-full bg-electric-violet-50
-                flex justify-center items-center
+                flex justify-center items-center 
             ">
                 <Image 
                     src={icons[label].path}
@@ -73,14 +74,13 @@ export default function Card({
                         lg:w-[${icons[label].desktopSize.width}]
                         lg:h-[${icons[label].desktopSize.height}]
                     `}
-
                 />
             </div>
 
             <div className="flex flex-col justify-between items-start">
-                <h3 className="text-body-2 text-neutral-700">{label}</h3>
+                <Typography variant={{ base: "body-3", lg: "body-2" }} color="neutral-700">{label}</Typography>
 
-                <h2 className="text-headline-3 text-electric-violet-500">{value}</h2>
+                <Typography variant={{ base: "headline-5", lg: "headline-3"}} color="electric-violet-500">{value}{label === "Goal" && "h"}</Typography>
             </div>
 
 
