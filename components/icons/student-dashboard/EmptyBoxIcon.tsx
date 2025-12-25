@@ -9,8 +9,8 @@ interface EmptyBoxIconProps {
 }
 
 export default function EmptyBoxIcon({ 
-  width = 24, 
-  height = 24, 
+  width = 88, 
+  height = 88, 
   className = '', 
   alt = 'Empty box icon' 
 }: EmptyBoxIconProps) {

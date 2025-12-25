@@ -18,7 +18,7 @@ export default function DateNumber({
         : "neutral-900"
       }
       className={
-        isCurrent ? "rounded-full bg-electric-violet-50 p-2" :
+        isCurrent ? "rounded-full bg-electric-violet-50 w-10 h-10 lg:w-11 lg:h-11 flex items-center justify-center" :
         ""
       }
     >

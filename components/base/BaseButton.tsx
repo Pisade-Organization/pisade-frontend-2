@@ -49,6 +49,50 @@ function buildTypeStyleClasses(typeStyle: ResponsiveTypeStyle, variant: "primary
             const prefixedClasses = combinedClass.split(/\s+/).map(cls => `lg:${cls}`).join(" ")
             classes.push(prefixedClasses)
         }
+        
+        // If base and lg are different, override conflicting base classes at lg
+        if (typeStyle.base && typeStyle.base !== typeStyle.lg) {
+            const baseBaseClass = typeStyleClasses[typeStyle.base].base || ""
+            const baseVariantClass = typeStyleClasses[typeStyle.base][variant] || ""
+            
+            // Switching from outline to default
+            if (typeStyle.base === "outline" && typeStyle.lg === "default") {
+                // Remove border
+                classes.push("lg:border-none")
+                // Override text color (outline uses colored text, default uses white)
+                if (baseVariantClass.includes("text-electric-violet-500")) {
+                    classes.push("lg:!text-white")
+                }
+                if (baseVariantClass.includes("text-deep-royal-indigo-700")) {
+                    classes.push("lg:!text-white")
+                }
+                // Remove border color classes
+                classes.push("lg:border-transparent")
+                // Ensure background is applied (default style needs background)
+                const defaultVariantClass = typeStyleClasses["default"][variant] || ""
+                if (defaultVariantClass.includes("bg-electric-violet-500")) {
+                    classes.push("lg:!bg-electric-violet-500")
+                }
+                if (defaultVariantClass.includes("bg-deep-royal-indigo-700")) {
+                    classes.push("lg:!bg-deep-royal-indigo-700")
+                }
+            }
+            // Switching from default to outline
+            if (typeStyle.base === "default" && typeStyle.lg === "outline") {
+                const defaultVariantClass = typeStyleClasses["default"][variant] || ""
+                // Remove background
+                if (defaultVariantClass.includes("bg-electric-violet-500")) {
+                    classes.push("lg:!bg-transparent")
+                }
+                if (defaultVariantClass.includes("bg-deep-royal-indigo-700")) {
+                    classes.push("lg:!bg-transparent")
+                }
+            }
+            // Switching from borderless to default/outline
+            if (typeStyle.base === "borderless" && typeStyle.lg !== "borderless") {
+                classes.push("lg:border")
+            }
+        }
     }
     
     return classes.join(" ")
@@ -78,7 +122,7 @@ export default function BaseButton({
     ...props
 }: BaseButtonProps) {
     const typeStyleClass = buildTypeStyleClasses(typeStyle, variant)
-    const baseClasses = "group inline-flex justify-center items-center gap-2 transition-all duration-200 ease-in-out rounded-[8px] text-label-3 lg:text-label-2 px-4 py-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+    const baseClasses = "group inline-flex justify-center items-center gap-2 transition-all duration-200 ease-in-out rounded-[8px] text-label-3 lg:text-label-2 px-3 py-2 lg:px-4 lg:py-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
     
     return (    
         <button 

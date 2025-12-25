@@ -9,6 +9,10 @@ module.exports = {
 		safelist: [
 			// typography variants
 			{ pattern: /text-(headline|title|label|body)-[1-5]/ },
+			// responsive typography variants - ensure all breakpoints are covered
+			'sm:text-headline-5', 'md:text-headline-5', 'lg:text-headline-5', 'xl:text-headline-5', '2xl:text-headline-5',
+			'sm:text-title-3', 'md:text-title-3', 'lg:text-title-3', 'xl:text-title-3', '2xl:text-title-3',
+			{ pattern: /(sm|md|lg|xl|2xl):text-(headline|title|label|body)-[1-5]/ },
 			// if you use custom colors like "text-primary", "text-muted-foreground"
 		],
   theme: {
@@ -307,5 +311,27 @@ module.exports = {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    function({ addComponents }: any) {
+      addComponents({
+        '.custom-pagination-bullet': {
+          width: '6px',
+          height: '6px',
+          borderRadius: '50%',
+          backgroundColor: '#d2b2f8',
+          opacity: '1',
+          margin: '0 !important',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+        },
+        '.custom-pagination-bullet-active': {
+          width: '24px',
+          height: '6px',
+          borderRadius: '3px',
+          backgroundColor: '#6d08e8',
+        },
+      })
+    },
+  ],
 }

@@ -15,9 +15,11 @@ export default function DayCell({
   isCurrent
 }: DayCellProps) {
   return (
-    <div className="flex flex-col items-center">
+    <div className="w-full flex flex-col justify-center items-center gap-2">
       <DayLabel label={label} isPast={isPast} />
-      <DateNumber date={date} isPast={isPast} isCurrent={isCurrent} />
+      <div className="h-10 lg:h-11 flex items-center justify-center">
+        <DateNumber date={date} isPast={isPast} isCurrent={isCurrent} />
+      </div>
     </div>
   )
 }

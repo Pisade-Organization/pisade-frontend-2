@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import clsx from "clsx";
 import { ElementType, ComponentPropsWithoutRef } from "react";
 
 type Variant =
@@ -87,7 +87,7 @@ export default function Typography<T extends ElementType = "p">({
   const underlineClass = underline ? "underline" : "";
 
   return (
-    <Tag className={`${variantClass} ${textColor} ${underlineClass} ${className}`} {...props}>
+    <Tag className={clsx(variantClass, textColor, underlineClass, className)} {...props}>
       {children}
     </Tag>
   );

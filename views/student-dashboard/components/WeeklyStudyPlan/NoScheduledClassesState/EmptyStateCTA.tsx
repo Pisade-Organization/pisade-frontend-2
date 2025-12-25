@@ -5,6 +5,7 @@ export default function EmptyStateCTA() {
     <BaseButton
       variant="primary"
       typeStyle={{ base: "outline", lg: "default" }}
+      className="w-auto"
     >
       Contact my tutor
     </BaseButton>

@@ -34,8 +34,13 @@ export default function StudentDashboardPage() {
         />
       </div>
 
-      <WeeklyStudyPlan />
-      <FavoriteTutors />
+      <div className="w-full order-3">
+        <WeeklyStudyPlan />
+      </div>
+
+      <div className="w-full order-4">
+        <FavoriteTutors />
+      </div>
       <TransactionHistory />
 
       <div className="w-full order-last">
