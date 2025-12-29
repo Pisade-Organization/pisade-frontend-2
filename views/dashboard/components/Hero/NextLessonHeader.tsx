@@ -1,24 +1,27 @@
 "use client"
+import Typography from "@/components/base/Typography"
 import Image from "next/image"
 export default function NextLessonHeader({
     lessonTitle,
     tutorName,
-    avatarUrl
+    avatarUrl,
+    headerText = "Next lesson"
 }: {
     lessonTitle: string,
     tutorName: string,
-    avatarUrl: string
+    avatarUrl: string,
+    headerText?: string
 }) {
     return (
         <div className="flex flex-col justify-center items-start gap-1">
 
-            <div className="text-body-4 text-white opacity-80">
-                Next lesson
-            </div>
+            <Typography variant="body-4" color="white" className="opacity-80">
+                {headerText}
+            </Typography>
 
-            <h1 className="text-headline-5 text-white">
+            <Typography variant="headline-5" color="white">
                 {lessonTitle} (50-min lesson)
-            </h1>
+            </Typography>
 
             <div className="flex justify-center items-center py-[2px] gap-2">
                 <Image 
@@ -29,9 +32,9 @@ export default function NextLessonHeader({
                     className="w-6 h-6 rounded-full"
                 />
 
-                <h2 className="text-body-3 text-white opacity-80">
+                <Typography variant="body-3" color="white" className="opacity-80">
                     {tutorName}
-                </h2>
+                </Typography>
 
             </div>
 

@@ -16,9 +16,9 @@ interface CardProps {
 
 export default function Card({fullName, subject, flagUrl, avatarUrl, baseRate, isAvailable, tutorRanking}: CardProps) {
     return (
-        <div className="border border-[#CECECE66] flex lg:flex-col justify-start items-center rounded-[12px] min-w-fit relative">
+        <div className="border border-[#CECECE66] flex lg:flex-col justify-start items-stretch lg:items-center rounded-[12px] min-w-fit relative">
             
-            <div className="min-w-[102px] h-full lg:w-[272px] lg:h-[255px] rounded-l-[12px] lg:rounded-t-[12px] lg:rounded-bl-none overflow-hidden relative ">
+            <div className="min-w-[102px] self-stretch lg:w-[272px] lg:h-[255px] rounded-l-[12px] lg:rounded-t-[12px] lg:rounded-bl-none overflow-hidden relative ">
                 <Image 
                     src={avatarUrl} 
                     alt={`${fullName} avatar`} 

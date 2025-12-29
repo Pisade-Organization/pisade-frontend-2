@@ -1,11 +1,16 @@
+"use client"
 import Typography from "@/components/base/Typography"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface DateRangeNavigatorI {
   currentDate: Date
+  onPreviousWeek: () => void
+  onNextWeek: () => void
 }
 export default function DateRangeNavigator({
-  currentDate
+  currentDate,
+  onPreviousWeek,
+  onNextWeek
 }: DateRangeNavigatorI) {
   // Current date is always on the second day or second column
 
@@ -31,11 +36,23 @@ export default function DateRangeNavigator({
 
   return (
     <div className="flex justify-between items-center py-2 px-3 lg:py-3 lg:px-5 border border-neutral-100 rounded-xl">
-      <ChevronLeft size={24} className="lg:order-1"/>
+      <button 
+        onClick={onPreviousWeek}
+        className="cursor-pointer hover:opacity-70 transition-opacity"
+        aria-label="Previous week"
+      >
+        <ChevronLeft size={24} className="lg:order-1"/>
+      </button>
       <Typography variant={{ base: "label-2", lg: "label-1" }} color="neutral-700" className="lg:order-3">
         {formatDateRange(startDate, endDate)}
       </Typography>
-      <ChevronRight size={24} className="order-2" />
+      <button 
+        onClick={onNextWeek}
+        className="cursor-pointer hover:opacity-70 transition-opacity"
+        aria-label="Next week"
+      >
+        <ChevronRight size={24} className="order-2" />
+      </button>
     </div>
   )
 }

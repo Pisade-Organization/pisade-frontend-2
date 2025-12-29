@@ -1,4 +1,4 @@
-import StudentDashboardPage from "@/views/student-dashboard/pages/StudentDashboard"
+import StudentDashboardPage from "@/views/dashboard/pages/StudentDashboard"
 export default function StudentDashboard() {
     return <StudentDashboardPage/>
 }

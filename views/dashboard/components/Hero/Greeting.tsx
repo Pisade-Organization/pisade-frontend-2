@@ -1,8 +1,8 @@
 export default function Greeting({
-    studentName,
+    fullName,
     todayLessonCounts
 }: {
-    studentName: string,
+    fullName: string,
     todayLessonCounts: number
 }) {
     return (
@@ -10,7 +10,7 @@ export default function Greeting({
             
             {/* TITLE */}
             <h1 className="text-white text-headline-3 lg:text-headline-1 text-center lg:text-left"> 
-                Glad to see you, {studentName}
+                Glad to see you, {fullName}
             </h1>
 
             {/* SUBTITLE */}
