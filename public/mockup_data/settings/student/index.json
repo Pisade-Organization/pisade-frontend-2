@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "data": {
+    "personalInfo": {
+      "avatarUrl": null,
+      "fullName": "Somchai Degrey",
+      "email": "somchai.alene@gmail.com",
+      "emailVerified": true,
+      "countryOfBirth": "Thailand",
+      "nationality": "Thailand",
+      "phoneNumber": {
+        "countryCode": "+66",
+        "number": "812345678"
+      },
+      "timezone": "Asia/Bangkok"
+    },
+    "socialNetworks": {
+      "facebook": {
+        "connected": false
+      },
+      "google": {
+        "connected": true,
+        "email": "somchai.alene@gmail.com"
+      }
+    }
+  }
+}

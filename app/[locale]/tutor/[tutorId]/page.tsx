@@ -1,4 +1,4 @@
-import TutorDetailPage from "@/views/tutor-detail/pages/page"
+import TutorDetailPage from "@/views/tutor-detail/pages/TutorDetail"
 
 export default function TutorDetail({
     params,

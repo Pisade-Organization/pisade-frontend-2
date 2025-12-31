@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "data": {
+    "facebook": {
+      "connected": false,
+      "displayName": null
+    },
+    "google": {
+      "connected": true,
+      "displayName": "Somchai Degrey",
+      "email": "somchai.alene@gmail.com"
+    }
+  }
+}
+
