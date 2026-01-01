@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogClose,
+  DialogTitle,
 } from "@/components/ui/dialog"
 
 import ConfirmStep from "./steps/ConfirmStep"
@@ -28,7 +29,10 @@ export default function DeleteAccountFlow({
   /** Close dialog + reset flow */
   const handleClose = () => {
     onOpenChange(false)
-    setStep("confirm")
+    // Reset step after dialog closes to avoid showing confirm step during close animation
+    setTimeout(() => {
+      setStep("confirm")
+    }, 200)
   }
 
   /** Called when user confirms deletion (step 2) */
@@ -43,17 +47,22 @@ export default function DeleteAccountFlow({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent
         className="
-          relative
           [&>button]:hidden
-          max-w-[343px]
-          lg:max-w-[436px]
+          rounded-2xl sm:rounded-2xl
         "
       >
+        {/* Dialog Title for accessibility - visually hidden since each step has its own heading */}
+        <DialogTitle className="sr-only">
+          {step === "confirm" && "Confirm Account Deletion"}
+          {step === "reason" && "Delete Account Reason"}
+          {step === "emailSent" && "Account Deletion Email Sent"}
+        </DialogTitle>
+
         {/* Custom Close Button (top-right, exact position control) */}
         <DialogClose asChild>
           <button
             aria-label="Close"
-            className="absolute top-4 right-4 w-11 h-11 flex justify-center items-center"
+            className="absolute top-4 right-4 w-11 h-11 flex justify-center items-center z-10"
           >
             <X  className="w-6 h-6 text-neutral-700"/>
           </button>
@@ -69,7 +78,7 @@ export default function DeleteAccountFlow({
 
         {step === "reason" && (
           <ReasonStep
-            onBack={() => setStep("confirm")}
+            onBack={handleClose}
             onConfirm={handleDeleteAccount}
           />
         )}

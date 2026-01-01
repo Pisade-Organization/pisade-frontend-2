@@ -1,11 +1,11 @@
 import BaseButton from "@/components/base/BaseButton"
 import type { SocialNetworkRowProps } from "./types"
-import { GoogleIcon, FacebookIcon } from "@/components/icons";
+import { GoogleIcon, FacebookSolidIcon } from "@/components/icons";
 import Typography from "@/components/base/Typography";
 
 const PROVIDER_ICONS: Record<SocialNetworkRowProps["provider"], React.ElementType> = {
   google: GoogleIcon,
-  facebook: FacebookIcon,
+  facebook: FacebookSolidIcon,
 };
 
 export default function SocialNetworkRow({
@@ -19,7 +19,7 @@ export default function SocialNetworkRow({
   const Icon = PROVIDER_ICONS[provider];
 
   return (
-    <div className="w-full flex justify-between items-center">
+    <div className="w-full flex justify-start items-center gap-4">
 
       <Icon width={24} height={24} className="w-6 h-6 lg:w-[30px] lg:h-[30px]" />
       
@@ -29,7 +29,7 @@ export default function SocialNetworkRow({
         </Typography>
       </div>
 
-      <BaseButton typeStyle="outline">
+      <BaseButton variant="secondary" typeStyle="outline">
         {connected ? "Disconnect" : "Connect"}
       </BaseButton>
 

@@ -1,0 +1,7 @@
+import StudentSettingsPage from "@/views/settings/pages/StudentSettings"
+
+export default function StudentPaymentHistorySettings() {
+  // TODO: Auth guard later
+  return <StudentSettingsPage />
+}
+

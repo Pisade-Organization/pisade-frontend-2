@@ -1,15 +1,12 @@
 "use client"
 import { useState } from "react"
 
-import PhoneNumberInput from "@/components/base/PhoneNumberInput";
-import BaseInput from "@/components/base/BaseInput";
-import BaseSelect from "@/components/base/BaseSelect";
-import BaseButton from "@/components/base/BaseButton";
 import AvatarField from "../../../fields/AvatarField";
-import InfoRow from "../../../fields/InfoRow";
-import SectionHeader from "../../../fields/SectionHeader";
 import { countryOptions, CountryOption } from "@/data/countryOptions";
-import { Pencil } from "lucide-react";
+import { getTimezones } from "@/lib/getTimezones";
+import PersonalInfoHeader from "./PersonalInfoHeader";
+import PersonalInfoView from "./PersonalInfoView";
+import PersonalInfoEdit from "./PersonalInfoEdit";
 
 interface PersonalInfoSectionI {
   fullName: string;
@@ -32,7 +29,15 @@ export default function PersonalInfoSection({
 }: PersonalInfoSectionI) {
   
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [name, setName] = useState<string>(fullName);
+  // Parse fullName to extract firstName and lastName
+  const [firstName, setFirstName] = useState<string>(() => {
+    const nameParts = fullName.trim().split(/\s+/);
+    return nameParts[0] || '';
+  });
+  const [lastName, setLastName] = useState<string>(() => {
+    const nameParts = fullName.trim().split(/\s+/);
+    return nameParts.slice(1).join(' ') || '';
+  });
   const [selectedCountryOfBirth, setSelectedCountryOfBirth] = useState<string>(countryOfBirth);
   const [selectedNationality, setSelectedNationality] = useState<string>(nationality);
   const [phoneNumberValue, setPhoneNumberValue] = useState<string>(phoneNumber);
@@ -43,11 +48,9 @@ export default function PersonalInfoSection({
     countryOptions[0]
   );
   const [emailValue, setEmailValue] = useState<string>(email);
+  const [timezone, setTimezone] = useState<string>("Asia/Bangkok");
 
-  const countrySelectOptions = countryOptions.map(country => ({
-    value: country.code,
-    label: country.name
-  }));
+  const timezoneOptions = getTimezones();
 
   // Helper functions to get country names for display
   const getCountryName = (code: string) => {
@@ -61,23 +64,24 @@ export default function PersonalInfoSection({
   const handleSave = () => {
     // Mock save function - replace with actual API call
     console.log("Saving personal info:", {
-      fullName: name,
-      countryOfBirth: selectedCountryOfBirth,
-      nationality: selectedNationality,
+      firstName: firstName,
+      lastName: lastName,
+      fullName: `${firstName} ${lastName}`.trim(),
       phoneNumber: phoneNumberValue,
       phoneCountryCode: phoneCountry.dialCode,
       email: emailValue,
+      timezone: timezone,
     });
 
     // Here you would typically call an API to save the data
     // Example:
     // await updatePersonalInfo({
-    //   fullName: name,
-    //   countryOfBirth: selectedCountryOfBirth,
-    //   nationality: selectedNationality,
+    //   firstName: firstName,
+    //   lastName: lastName,
     //   phoneNumber: phoneNumberValue,
     //   countryCode: parseInt(phoneCountry.dialCode.replace('+', '')),
     //   email: emailValue,
+    //   timezone: timezone,
     // });
 
     // For now, just toggle editing mode off
@@ -85,87 +89,45 @@ export default function PersonalInfoSection({
   };
 
   return (
-    <div className="w-full flex flex-col gap-5 lg:gap-4 lg:px-12 lg:py-8">
-      <SectionHeader
-        title="Personal Info"
-        action={
-          isEditing ? (
-            <BaseButton variant="primary" onClick={handleSave}>
-              Save Changes
-            </BaseButton>
-          ) : (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="rounded-full flex justify-center items-center bg-white w-10 h-10 border-[1.5px] border-neutral-50"
-            >
-              <Pencil className="w-5 h-5 text-neutral-600" />
-            </button>
-          )
-        }
-      />
+    <div className="bg-white w-full flex flex-col gap-5 lg:gap-4 lg:px-12 lg:py-8 rounded-t-2xl">
 
+      <PersonalInfoHeader 
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+        onSave={handleSave}
+      />
 
       <AvatarField src={avatarUrl} />
 
       {isEditing ? (
-        <BaseInput 
-          title="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+        <PersonalInfoEdit
+          firstName={firstName}
+          setFirstName={setFirstName}
+          lastName={lastName}
+          setLastName={setLastName}
+          phoneNumberValue={phoneNumberValue}
+          setPhoneNumberValue={setPhoneNumberValue}
+          phoneCountry={phoneCountry}
+          setPhoneCountry={setPhoneCountry}
+          emailValue={emailValue}
+          setEmailValue={setEmailValue}
+          isEmailVerified={true}
+          timezone={timezone}
+          setTimezone={setTimezone}
+          timezoneOptions={timezoneOptions}
+          onSave={handleSave}
         />
       ) : (
-        <InfoRow label="Name" value={name} />
+        <PersonalInfoView
+          firstName={firstName}
+          lastName={lastName}
+          fullName={fullName}
+          countryOfBirth={getCountryName(selectedCountryOfBirth)}
+          nationality={getCountryName(selectedNationality)}
+          phoneDisplay={getPhoneDisplay()}
+          email={emailValue}
+        />
       )}
-
-      <div className="w-full flex justify-between items-center">
-        {isEditing ? (
-          <>
-            <BaseSelect
-              title="Country of birth"
-              options={countrySelectOptions}
-              value={selectedCountryOfBirth}
-              onChange={(value) => setSelectedCountryOfBirth(value)}
-              placeholder="Choose a country"
-            />
-            <BaseSelect
-              title="Nationality"
-              options={countrySelectOptions}
-              value={selectedNationality}
-              onChange={(value) => setSelectedNationality(value)}
-              placeholder="Choose a country"
-            />
-          </>
-        ) : (
-          <>
-            <InfoRow label="Country of birth" value={getCountryName(selectedCountryOfBirth)} />
-            <InfoRow label="Nationality" value={getCountryName(selectedNationality)} />
-          </>
-        )}
-      </div>
-
-      <div className="w-full flex justify-between items-center">
-        {isEditing ? (
-          <>
-            <PhoneNumberInput
-              phoneNumber={phoneNumberValue}
-              setPhoneNumber={setPhoneNumberValue}
-              country={phoneCountry}
-              setCountry={setPhoneCountry}
-            />
-            <BaseInput
-              title="Email"
-              value={emailValue}
-              onChange={(e) => setEmailValue(e.target.value)}
-              placeholder="Enter your email"
-            />
-          </>
-        ) : (
-          <>
-            <InfoRow label="Phone Number" value={getPhoneDisplay()} />
-            <InfoRow label="Email" value={emailValue} />
-          </>
-        )}
-      </div>
 
     </div>
   )

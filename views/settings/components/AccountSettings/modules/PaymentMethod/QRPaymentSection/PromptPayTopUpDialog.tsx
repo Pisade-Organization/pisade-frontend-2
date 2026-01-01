@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogClose,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { X } from "lucide-react"
 import Typography from "@/components/base/Typography"
@@ -63,17 +64,21 @@ export default function PromptPayTopUpDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="
-          relative
           [&>button]:hidden
-          max-w-[343px]
-          lg:max-w-[477px]
+          rounded-2xl sm:rounded-2xl
+          p-0
         "
       >
+        {/* Dialog Title for accessibility - visually hidden since there's a visible title */}
+        <DialogTitle className="sr-only">
+          PromptPay Top Up
+        </DialogTitle>
+
         {/* Custom Close Button (top-right, exact position control) */}
         <DialogClose asChild>
           <button
             aria-label="Close"
-            className="absolute top-4 right-4 w-11 h-11 flex justify-center items-center"
+            className="absolute top-4 right-4 w-11 h-11 flex justify-center items-center z-10"
           >
             <X className="w-6 h-6 text-neutral-700"/>
           </button>
@@ -121,7 +126,7 @@ export default function PromptPayTopUpDialog({
             </div>
           </div>
 
-          <div className="w-full flex justify-between items-center">
+          <div className="w-full grid grid-cols-4 gap-2">
             {[100, 500, 1000, 2000].map((amountValue) => {
               const isSelected = amount === amountValue.toString()
               return (

@@ -32,8 +32,8 @@ export default function ConfirmStep({
   onContinue,
 }: ConfirmStepProps) {
   return (
-    <div className="pt-6 pb-4 px-4 flex flex-col gap-4 bg-white rounded-2xl border border-neutral-50">
-      <div className="w-full flex flex-col gap-3">
+    <div className="w-full pt-6 pb-4 px-4 flex flex-col gap-4 bg-white">
+      <div className="w-full flex flex-col items-center gap-3">
         <div className="w-14 h-14 bg-red-light rounded-full flex justify-center items-center p-[14px]">
           <UserRoundX className="w-7 h-7 text-red-normal" />
         </div>
@@ -48,13 +48,13 @@ export default function ConfirmStep({
         </Typography>
       </div>
 
-      <ul className="list-disc p-4 flex flex-col gap-3 rounded-xl border border-neutral-50">
+      <ul className="list-disc list-outside p-4 flex flex-col gap-3 rounded-xl border border-neutral-50 pl-6">
         {WARNING_ITEMS.map((item, index) => (
-          <li key={index} className="flex items-center gap-2">
-            <Typography variant={{ base: "label-3" }} color="neutral-900">
-              {item.label}
+          <li key={index}>
+            <Typography variant={{ base: "label-3" }} color="neutral-900" as="span">
+              {item.label}{" "}
             </Typography>
-            <Typography variant={{ base: "body-3" }} color="neutral-400">
+            <Typography variant={{ base: "body-3" }} color="neutral-400" as="span">
               {item.description}
             </Typography>
           </li>
@@ -62,20 +62,20 @@ export default function ConfirmStep({
       </ul>
 
       <div className="w-full flex justify-between items-center">
-        <Typography 
-          variant={{ base: "label-3" }} 
-          color="neutral-900"
-          className="cursor-pointer"
+        <BaseButton 
+          variant="secondary"
+          typeStyle="borderless"
           onClick={onCancel}
         > 
           Keep Account
-        </Typography>
+        </BaseButton>
 
         <BaseButton
           typeStyle="outline"
-          iconRight={<ArrowRight className="w-5 h-5 text-red-normal" />}
+          iconRight={<ArrowRight className="w-5 h-5 text-red-normal group-hover:text-white" />}
           textColor="red-normal"
           borderColor="red-normal"
+          className="hover:bg-red-normal hover:text-white "
           onClick={onContinue}
         >
           Continue

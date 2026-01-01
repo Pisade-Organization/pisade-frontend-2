@@ -14,6 +14,9 @@ module.exports = {
 			'sm:text-title-3', 'md:text-title-3', 'lg:text-title-3', 'xl:text-title-3', '2xl:text-title-3',
 			{ pattern: /(sm|md|lg|xl|2xl):text-(headline|title|label|body)-[1-5]/ },
 			// if you use custom colors like "text-primary", "text-muted-foreground"
+			// BaseButton dynamic colors
+			{ pattern: /text-(red|yellow|orange|green|blue|violet)-(normal|light)/ },
+			{ pattern: /border-(red|yellow|orange|green|blue|violet)-(normal|light)/ },
 		],
   theme: {
   	extend: {

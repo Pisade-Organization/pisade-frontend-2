@@ -25,6 +25,7 @@ interface BaseSelectProps {
   value?: string;
   onChange?: (value: string) => void;
   inputBackground?: string;
+  className?: string;
 }
 
 export default function BaseSelect({
@@ -36,7 +37,8 @@ export default function BaseSelect({
   options,
   value,
   onChange,
-  inputBackground
+  inputBackground,
+  className
 }: BaseSelectProps) {
   const [openMobile, setOpenMobile] = useState(false);
 
@@ -44,7 +46,7 @@ export default function BaseSelect({
   const current = options.find((o) => o.value === value);
   return (
     // TODO: Parent div is still using mb-1, remove mb-1 and fix the problem that this not aligns with @BaseInput
-    <div className="mb-1 w-full flex flex-col gap-1"> 
+    <div className={cn("mb-1 w-full flex flex-col gap-1", className)}> 
       {/* Label */}
       <div className="flex justify-start items-start gap-1">
         <Typography

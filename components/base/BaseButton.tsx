@@ -88,9 +88,14 @@ function buildTypeStyleClasses(typeStyle: ResponsiveTypeStyle, variant: "primary
                     classes.push("lg:!bg-transparent")
                 }
             }
-            // Switching from borderless to default/outline
-            if (typeStyle.base === "borderless" && typeStyle.lg !== "borderless") {
+            // Switching from borderless to outline
+            if (typeStyle.base === "borderless" && typeStyle.lg === "outline") {
                 classes.push("lg:border")
+                classes.push("lg:!border-solid")
+            }
+            // Switching from borderless to default
+            if (typeStyle.base === "borderless" && typeStyle.lg === "default") {
+                classes.push("lg:border-none")
             }
         }
     }
@@ -130,11 +135,13 @@ export default function BaseButton({
             className={cn(
                 baseClasses,
                 typeStyleClass,
-                className
+                className,
+                borderColor && !borderColor.startsWith("#") && `border-${borderColor}`,
+                textColor && !textColor.startsWith("#") && `text-${textColor}`
             )}
             style={{
-                ...(textColor && { color: textColor }),
-                ...(borderColor && { borderColor: borderColor }),
+                ...(borderColor?.startsWith("#") && { borderColor }),
+                ...(textColor?.startsWith("#") && { color: textColor }),
                 ...style
             }}
             {...props}

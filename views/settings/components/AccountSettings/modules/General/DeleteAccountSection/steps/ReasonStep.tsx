@@ -22,13 +22,13 @@ export default function ReasonStep({
   }
 
   return (
-    <div className="pt-6 pb-4 px-4 flex flex-col gap-4 bg-white rounded-2xl border border-neutral-50">
-      <div className="w-full flex flex-col gap-3">
+    <div className="pt-6 pb-4 px-4 flex flex-col gap-4 bg-white">
+      <div className="w-full flex flex-col items-center gap-3">
         <div className="w-14 h-14 bg-red-light rounded-full flex justify-center items-center p-[14px]">
           <UserRoundX className="w-7 h-7 text-red-normal" />
         </div>
 
-        <Typography variant={{ base: "headline-5" }} color="neutral-900">
+        <Typography variant={{ base: "headline-5" }} color="neutral-900" className="text-center">
           We're sorry to see you go. <br />
           Could you briefly tell us why you are leaving?
         </Typography>
@@ -46,19 +46,19 @@ export default function ReasonStep({
 
       
       <div className="w-full flex justify-between items-center">
-        <Typography 
-          variant={{ base: "label-3" }} 
-          color="neutral-900"
-          className="cursor-pointer"
+        <BaseButton 
+          variant="secondary"
+          typeStyle="borderless"
           onClick={onBack}
         > 
           Keep Account
-        </Typography>
+        </BaseButton>
 
         <BaseButton
           textColor="white"
-          borderColor="red-normal"
+          className="bg-red-normal hover:opacity-50 hover:bg-red-normal"
           onClick={handleConfirm}
+
         >
           Delete Account
         </BaseButton>

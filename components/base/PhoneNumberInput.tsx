@@ -11,7 +11,8 @@ export default function PhoneNumberInput({
   phoneNumber,
   setPhoneNumber,
   country,
-  setCountry
+  setCountry,
+  className
 
 }: {
   required?: boolean
@@ -19,11 +20,12 @@ export default function PhoneNumberInput({
   setPhoneNumber: (phoneNumber: string) => void;
   country: CountryOption;
   setCountry: (country: CountryOption) => void;
+  className?: string;
 }) {
   const defaultCountry = countryOptions.find(country => country.code === "TH") || countryOptions[0];
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   return (
-    <div className="mb-1  w-full flex flex-col gap-1">
+    <div className={cn("mb-1 w-full flex flex-col gap-1", className)}>
       <div className="flex justify-start items-center gap-1">
           <Typography variant={{ base: "label-3", lg: "label-2" }} color="neutral-800">
               Phone Number

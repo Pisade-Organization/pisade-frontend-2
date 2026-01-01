@@ -1,5 +1,6 @@
 import SocialNetworkRow from "./SocialNetworkRow"
 import SectionHeader from "../../../fields/SectionHeader";
+import SocialNetworkHeader from "./SocialNetworksHeader";
 
 export default function SocialNetworkSection() {
   const handleFacebookConnect = () => {
@@ -21,7 +22,7 @@ export default function SocialNetworkSection() {
   return (
     <div className="w-full flex flex-col gap-2 lg:gap-4 lg:py-8 lg:px-12 bg-white">
 
-      <SectionHeader title="Social networks"/>
+      <SocialNetworkHeader />
 
       <div className="w-full flex flex-col gap-3 lg:gap-4">
         <SocialNetworkRow

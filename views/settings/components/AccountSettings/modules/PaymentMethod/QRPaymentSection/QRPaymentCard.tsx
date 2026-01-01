@@ -9,7 +9,7 @@ interface QRPaymentCardProps {
 export default function QRPaymentCard({ onClick }: QRPaymentCardProps) {
   return (
     <div 
-      className="rounded-xl border border-neutral-50 p-3 flex justify-between items-center cursor-pointer hover:bg-neutral-50 transition-colors"
+      className="rounded-xl border border-neutral-50 p-3 flex justify-between items-center cursor-pointer hover:bg-neutral-50 transition-colors gap-4"
       onClick={onClick}
     >
       <ScanQrCode  className="w-6 h-6 text-neutral-500"/>
