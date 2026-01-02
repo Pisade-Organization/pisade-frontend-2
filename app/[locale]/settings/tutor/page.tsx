@@ -1,6 +1,5 @@
-import TutorSettingsPage from "@/views/settings/pages/TutorSettings";
+import { redirect } from "next/navigation"
 
 export default function TutorSettings() {
-  // TODO: Auth guard later
-  return <TutorSettingsPage />
+  redirect("/settings/tutor/general")
 }

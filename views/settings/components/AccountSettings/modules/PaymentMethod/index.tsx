@@ -1,5 +1,6 @@
 import PaymentMethodTitle from "./PaymentMethodTitle"
 import QRPaymentSection from "./QRPaymentSection"
+import PaymentHistorySection from "./PaymentHistorySection"
 
 export default function PaymentMethod() {
   return (
@@ -7,6 +8,7 @@ export default function PaymentMethod() {
       <PaymentMethodTitle />
       {/* TODO: Bank account linked missing */}
       <QRPaymentSection />
+      <PaymentHistorySection />
     </div>
   )
 }

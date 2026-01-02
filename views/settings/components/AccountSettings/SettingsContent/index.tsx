@@ -2,8 +2,9 @@ import PaymentMethod from "../modules/PaymentMethod"
 import Notifications from "../modules/Notifications"
 import General from "../modules/General"
 import PaymentHistory from "../modules/PaymentHistory"
+import BillingMethods from "../modules/BillingMethods"
 
-export type SettingsContentType = "general" | "payment-method" | "payment-history" | "notifications"
+export type SettingsContentType = "general" | "payment-method" | "payment-history" | "notifications" | "billing-methods"
 
 interface SettingsContentProps {
   type: SettingsContentType
@@ -16,6 +17,10 @@ interface SettingsContentProps {
     phoneNumber: string
     email: string
     avatarUrl: string
+    teachingInfoProps?: {
+      subject: string
+      languages: string
+    }
   }
   // Notifications props
   notificationsProps?: {
@@ -41,6 +46,9 @@ export default function SettingsContent({
     
     case "payment-history":
       return <PaymentHistory />
+    
+    case "billing-methods":
+      return <BillingMethods />
     
     case "notifications":
       if (!notificationsProps) {

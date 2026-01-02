@@ -28,3 +28,4 @@ export { default as Rocket2Icon } from './Rocket2Icon';
 export { default as SecureIcon } from './SecureIcon';
 export { default as MastercardIcon } from './MastercardIcon';
 export { default as VisaIcon } from './VisaIcon';
+export { default as PaypalIcon } from './PaypalIcon';

@@ -1,5 +1,6 @@
 import PersonalInfoSection from "./PersonalInfoSection"
 import SocialNetworkSection from "./SocialNetworksSection"
+import TeachingInfoSection from "./TeachingInfoSection"
 import DeleteAccountSection from "./DeleteAccountSection"
 
 interface GeneralProps {
@@ -10,6 +11,10 @@ interface GeneralProps {
   phoneNumber: string
   email: string
   avatarUrl: string
+  teachingInfoProps?: {
+    subject: string
+    languages: string
+  }
 }
 
 export default function General({
@@ -20,6 +25,7 @@ export default function General({
   phoneNumber,
   email,
   avatarUrl,
+  teachingInfoProps,
 }: GeneralProps) {
   return (
     <div className="w-full flex flex-col gap-5 lg:gap-0">
@@ -35,7 +41,14 @@ export default function General({
 
       <div className="lg:hidden w-screen border-b border-neutral-50 ml-[calc(-50vw+50%)] mr-[calc(-50vw+50%)]" />
 
-      <SocialNetworkSection />
+      {teachingInfoProps ? (
+        <TeachingInfoSection
+          subject={teachingInfoProps.subject}
+          languages={teachingInfoProps.languages}
+        />
+      ) : (
+        <SocialNetworkSection />
+      )}
 
       <div className="lg:hidden w-screen border-b border-neutral-50 ml-[calc(-50vw+50%)] mr-[calc(-50vw+50%)]" />
 

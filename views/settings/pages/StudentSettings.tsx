@@ -57,9 +57,9 @@ export default function StudentSettingsPage() {
   }
 
   return (
-    <>
+    <div className="lg:bg-neutral-25 lg:min-h-screen">
       <Navbar variant="student_dashboard" />
-      <div className="bg-white lg:bg-neutral-25 border-t border-neutral-25 py-3 px-4 flex flex-col gap-2 lg:gap-0 lg:px-20 lg:pb-8">
+      <div className="bg-white lg:bg-transparent border-t border-neutral-25 py-3 px-4 flex flex-col gap-2 lg:gap-0 lg:px-20 lg:pb-8">
         <AccountSettingsLayout items={studentSidebarItems}>
           <SettingsContent
             type={settingsType}
@@ -68,6 +68,6 @@ export default function StudentSettingsPage() {
           />
         </AccountSettingsLayout>
       </div>
-    </>
+    </div>
   )
 }
