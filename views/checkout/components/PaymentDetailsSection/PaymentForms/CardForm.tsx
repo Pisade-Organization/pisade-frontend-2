@@ -1,17 +1,12 @@
-import Typography from "@/components/base/Typography"
 import { CardIcon, CardDateIcon, CardCvcIcon } from "@/components/icons"
 
 export default function CardForm() {
   return (
     <div className="w-full flex flex-col gap-2">
-      <Typography variant={{ base: "label-2" }} color="neutral-900">
-        Card information
-      </Typography>
-
       <div className="w-full grid grid-rows-2 grid-flow-row">
 
         {/* CARD NUMBER */}
-        <div className="roundedt-xl border border-neutral-50 flex justify-between py-3 px-4">
+        <div className="rounded-t-xl border border-neutral-50 flex justify-between py-3 px-4">
           <input 
             type="text" 
             placeholder="121-3-56911-9"
@@ -22,10 +17,10 @@ export default function CardForm() {
         </div>
 
         {/* EXPIRY DATE + CVC */}
-        <div className="w-full grid grid-cols-2">
+        <div className="w-full grid grid-cols-2 ">
           
           {/* EXPIRY DATE */}
-          <div className="w-full py-3 px-4 rounded-bl-xl border-neutral-50 flex justify-betweem items-center">
+          <div className="w-full py-3 px-4 rounded-bl-xl border border-t-0 border-neutral-50 flex justify-betweem items-center">
             <input 
               type="text"
               placeholder="MM/YY"
@@ -35,7 +30,7 @@ export default function CardForm() {
           </div>
 
           {/* CVC */}
-          <div className="w-full py-3 px-4 rounded-br-xl boder border-neutral-50 flex justify-between items-center">
+          <div className="w-full py-3 px-4 rounded-br-xl border border-t-0 border-l-0 border-neutral-50 flex justify-between items-center">
             <input 
               type="text"
               placeholder="CVC"

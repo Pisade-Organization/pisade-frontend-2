@@ -32,3 +32,5 @@ export { default as PaypalIcon } from './PaypalIcon';
 export { default as CardIcon } from './CardIcon';
 export { default as CardDateIcon } from './CardDateIcon';
 export { default as CardCvcIcon } from './CardCvcIcon';
+export { default as ApplePayIcon } from './ApplePayIcon';
+export { default as GooglePayIcon } from './GooglePayIcon';

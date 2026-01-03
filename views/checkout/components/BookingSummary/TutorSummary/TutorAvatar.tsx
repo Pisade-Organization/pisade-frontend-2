@@ -8,10 +8,13 @@ export default function TutorAvatar({
   avatarUrl
 }: TutorAvatarI) {
   return (
-    <Image 
-      src={avatarUrl}
-      alt="Tutor avatar"
-      className="w-20 h-20 rounded-xl lg:w-[72px] lg:h-[72px] lg:rounded-full"
-    />
+    <div className="relative w-20 h-20 lg:w-[72px] lg:h-[72px] shrink-0 rounded-xl lg:rounded-full overflow-hidden">
+      <Image 
+        src={avatarUrl}
+        alt="Tutor avatar"
+        fill
+        className="object-cover"
+      />
+    </div>
   )
 }
