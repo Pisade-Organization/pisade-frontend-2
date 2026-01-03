@@ -84,9 +84,6 @@ export default function DeleteCardDialog({
 
         </div>
 
-        
-        
-
       </DialogContent>
     </Dialog>
   )

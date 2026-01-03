@@ -29,3 +29,6 @@ export { default as SecureIcon } from './SecureIcon';
 export { default as MastercardIcon } from './MastercardIcon';
 export { default as VisaIcon } from './VisaIcon';
 export { default as PaypalIcon } from './PaypalIcon';
+export { default as CardIcon } from './CardIcon';
+export { default as CardDateIcon } from './CardDateIcon';
+export { default as CardCvcIcon } from './CardCvcIcon';
