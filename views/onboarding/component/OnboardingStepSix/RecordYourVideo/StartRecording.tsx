@@ -117,7 +117,7 @@ export default function StartRecording({ onRecordingComplete, onRecordingStateCh
       mediaRecorder.start(1000) // Collect data every second
       setIsRecording(true)
       setRecordingTime(0)
-      onRecordingStateChange(stream, true)
+      onRecordingStateChange(flippedStream, true)
 
       // Start timer
       timeIntervalRef.current = setInterval(() => {

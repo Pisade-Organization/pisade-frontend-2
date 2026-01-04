@@ -25,7 +25,7 @@ export default function PromptPayForm({
     // Validate with Zod
     const result = phoneNumberSchema.safeParse(numericValue);
     if (!result.success) {
-      setError(result.error.errors[0]?.message || "Invalid phone number");
+      setError(result.error.issues[0]?.message || "Invalid phone number");
     } else {
       setError("");
     }
@@ -40,7 +40,7 @@ export default function PromptPayForm({
       // Re-validate after removing leading 0
       const result = phoneNumberSchema.safeParse(trimmedValue);
       if (!result.success) {
-        setError(result.error.errors[0]?.message || "Invalid phone number");
+        setError(result.error.issues[0]?.message || "Invalid phone number");
       } else {
         setError("");
       }

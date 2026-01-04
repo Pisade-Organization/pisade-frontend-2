@@ -31,7 +31,7 @@ export default function BankTransferForm({
     // Validate with Zod
     const result = accountNumberSchema.safeParse(numericValue);
     if (!result.success) {
-      setError(result.error.errors[0]?.message || "Invalid account number");
+      setError(result.error.issues[0]?.message || "Invalid account number");
     } else {
       setError("");
     }
