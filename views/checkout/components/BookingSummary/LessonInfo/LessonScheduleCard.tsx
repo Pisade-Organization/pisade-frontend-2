@@ -40,7 +40,7 @@ export default function LessonScheduleCard({
   return (
     <div className="w-full rounded-xl p-1 flex justify-start items-center gap-4 bg-white border border-neutral-50">
       
-      <div className="rounded-lg p-4 flex flex-col gap-2 bg-electric-violet-50">
+      <div className="rounded-lg w-[66px] h-[66px] aspect-square shrink-0 p-4 flex flex-col items-center justify-center bg-electric-violet-50">
 
         <Typography variant="label-3" color="deep-royal-indigo-200">
           {month}

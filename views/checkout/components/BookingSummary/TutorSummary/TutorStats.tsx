@@ -16,9 +16,9 @@ export default function TutorStats({
     <div className="w-full flex justify-between items-center">
       
       {/* RATING */}
-      <div className="w-full flex flex-col items-start gap-[2px]">
+      <div className="flex flex-col items-start gap-[2px]">
         
-        <div className="w-full flex lg:flex-row-reverse justify-start items-center gap-1">
+        <div className="flex justify-start items-center gap-1">
           <Star className="w-5 h-5 text-yellow-normal fill-yellow-normal"/>
           
           <Typography variant={{ base: "title-1" }} color="neutral-900">
@@ -35,7 +35,7 @@ export default function TutorStats({
       <div className="h-12 border-l border-neutral-200 mx-6" />
 
       {/* STUDENTS COUNT */}
-      <div className="w-full flex flex-col items-start gap-[2px]">
+      <div className="flex flex-col items-start gap-[2px]">
         <Typography variant={{ base: "title-1" }} color="neutral-900">
           { studentsCount }
         </Typography>
@@ -48,7 +48,7 @@ export default function TutorStats({
       <div className="h-12 border-l border-neutral-200 mx-6" />
 
       {/* LESSONS COUNT */}
-      <div className="w-full flex flex-col items-start gap-[2px]">
+      <div className="flex flex-col items-start gap-[2px]">
         <Typography variant={{ base: "title-1" }} color="neutral-900">
           { lessonsCount }
         </Typography>

@@ -23,7 +23,7 @@ function formatDeadline(date: Date): string {
 
 export default function CancellationNotice({ deadline }: CancellationNoticeProps) {
   return (
-    <div className="w-screen lg:w-full py-2 px-4 lg:px-6 bg-electric-violet-25 text-start lg:text-center -mx-4 lg:mx-0">
+    <div className="w-screen lg:w-[calc(100%+3rem)] py-2 px-4 lg:px-6 bg-electric-violet-25 text-start lg:text-center -mx-4 lg:-mx-6">
       <Typography variant={{ base: "label-4" }} color="deep-royal-indigo-500" as="span">
         Cancel or reschedule for free until{" "}
       </Typography>

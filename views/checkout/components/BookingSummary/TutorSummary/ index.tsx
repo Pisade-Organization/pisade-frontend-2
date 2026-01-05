@@ -14,22 +14,23 @@ export default function TutorSummary({
   lessonsCount
 }: TutorSummaryI) {
   return (
-    <div className="w-full flex lg:flex-col items-center gap-4 lg:gap-5">
-      <TutorAvatar avatarUrl={avatarUrl} />
-
-      <div className="w-full flex flex-col gap-1 lg:gap-5">
+    <div className="w-full flex flex-col gap-3 lg:gap-4">
+      {/* Row 1: Avatar + Name/Subject - same row on both mobile and desktop */}
+      <div className="w-full flex items-start gap-4">
+        <TutorAvatar avatarUrl={avatarUrl} />
         <TutorMeta 
           fullName={tutorName}
           countryUrl={countryUrl}
           subject={subject}
         />
-        <TutorStats 
-          rating={rating}
-          studentsCount={studentsCount}
-          lessonsCount={lessonsCount}
-        />
       </div>
-      
+
+      {/* Row 2: Stats - separate row */}
+      <TutorStats 
+        rating={rating}
+        studentsCount={studentsCount}
+        lessonsCount={lessonsCount}
+      />
     </div>
   )
 }

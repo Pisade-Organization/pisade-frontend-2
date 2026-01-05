@@ -18,7 +18,7 @@ export default function TutorMeta({
         { fullName }
       </Typography>
 
-      <div className="hidden lg:flex justify-start items-center gap-3">
+      <div className="flex justify-start items-center gap-2">
         <Image 
           width={18}
           height={18}
