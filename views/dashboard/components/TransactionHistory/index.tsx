@@ -26,7 +26,8 @@ export default function TransactionHistory({
   return (
     <section className="
       w-full flex flex-col gap-4
-      py-5 px-4 bg-white
+      py-5 px-4 lg:px-20 lg:py-[60px] 
+      bg-white
     ">
       <TransactionHistoryHeader 
         title={config.title}
