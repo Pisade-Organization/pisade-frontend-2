@@ -13,7 +13,7 @@ const typeStyleClasses: Record<TypeStyle, Record<string, string>> = {
     },
     outline: {
         base: "border",
-        "primary": "text-electric-violet-500 border-electric-violet-500 hover:border-electric-violet-500 hover:bg-electric-violet-500",
+        "primary": "text-electric-violet-500 border-electric-violet-500 hover:text-white hover:border-electric-violet-500 hover:bg-electric-violet-500",
         "secondary": "text-deep-royal-indigo-700 border-deep-royal-indigo-700 hover:bg-deep-royal-indigo-700 hover:text-white",
     },
     borderless: {

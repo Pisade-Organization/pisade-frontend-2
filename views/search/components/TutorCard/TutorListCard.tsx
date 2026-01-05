@@ -58,7 +58,7 @@ export default function TutorListCard({
                 <div className="w-full flex flex-col justify-start items-center gap-y-2">
                     <div className="w-full flex justify-between items-start">
                         <TutorHeader fullName={fullName} flagUrl={flagUrl} subject={subject}/>
-                        <TutorActionButtons />
+                        <TutorActionButtons tutorId={id} />
                     </div>
                     <div className="w-full flex justify-between items-center">
                         <TutorRateStatus baseRate={baseRate} isActive={isActive}/>
@@ -128,7 +128,7 @@ export default function TutorListCard({
             <div className="lg:hidden w-full border border-neutral-50"></div>
 
             {/* ACTION BUTTONS */}
-            <TutorActionButtons className={'lg:hidden'} />
+            <TutorActionButtons className={'lg:hidden'} tutorId={id} />
 
 
         </div>

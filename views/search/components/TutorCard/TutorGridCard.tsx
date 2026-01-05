@@ -50,7 +50,7 @@ export default function TutorGridCard({
                     fullName={fullName}
                     tutorRanking={tutorRanking}
                 />
-                <TutorActionButtons className="hidden xl:flex" />
+                <TutorActionButtons className="hidden xl:flex" tutorId={id} />
             </div>
 
         {/* Info */}
@@ -83,7 +83,7 @@ export default function TutorGridCard({
       {/* 🔽 Bottom Section */}
       <div className="xl:hidden w-full flex flex-col justify-center items-start gap-y-3">
         <div className="w-full border border-neutral-50"></div>
-        <TutorActionButtons className="w-full !justify-between" />
+        <TutorActionButtons className="w-full !justify-between" tutorId={id} />
       </div>
     </div>
   )

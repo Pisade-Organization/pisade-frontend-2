@@ -7,6 +7,7 @@ import React from "react";
 import { Noto_Sans_Thai, Rethink_Sans } from "next/font/google";
 import SessionProviderWrapper from "@/components/providers/SessionProviderWrapper";
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider";
+import BookLessonDialogWrapper from "@/components/dialogs/BookLessonDialog/BookLessonDialogWrapper";
 
 const rethink = Rethink_Sans({
   subsets: ["latin"],
@@ -103,6 +104,7 @@ export default async function RootLayout({
           <ReactQueryProvider>
             <NextIntlClientProvider messages={messages} locale={safeLocale}>
               {children}
+              <BookLessonDialogWrapper />
             </NextIntlClientProvider>
           </ReactQueryProvider>
         </SessionProviderWrapper>

@@ -9,6 +9,7 @@ import SendMessageBtn from "./SendMessageBtn"
 
 interface TutorProfileCardProps {
     tutorData: {
+        id: string;
         avatarUrl: string;
         fullName: string;
         flagUrl: string;
@@ -77,7 +78,7 @@ export default function TutorProfileCard({ tutorData }: TutorProfileCardProps) {
             <div className="hidden lg:block w-full border border-neutral-50"></div>
 
             <div className="w-full flex flex-col justify-center items-start gap-2">
-                <BookLessonBtn />
+                <BookLessonBtn tutorId={tutorData.id} />
 
                 <div className="w-full flex justify-start items-center gap-2">
                     <LikeBtn />
