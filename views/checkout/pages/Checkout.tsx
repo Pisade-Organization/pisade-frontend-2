@@ -1,3 +1,5 @@
+"use client";
+
 import CheckoutMobileHeader from "../components/CheckoutMobileHeader";
 import TutorSummary from "../components/BookingSummary/TutorSummary/ index";
 import CancellationNotice from "../components/BookingSummary/CancellationNotice";
