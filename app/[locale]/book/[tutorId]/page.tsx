@@ -225,7 +225,7 @@ export default function Booking() {
 
                 <AvailabilityGrid
                   availability={mockAvailability}
-                  selectedSlot={selectedSlot}
+                  selectedSlot={selectedSlot || undefined}
                   onSlotSelect={(date, startTime) => setSelectedSlot({ date, startTime })}
                 />
 
