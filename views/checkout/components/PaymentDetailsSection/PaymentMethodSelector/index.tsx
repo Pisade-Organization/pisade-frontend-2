@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import PaymentMethodOption from "./PaymentMethodOption"
 import type { PaymentMethodSelectorI } from "./types"
 import { ScanQrCode, CreditCard } from "lucide-react"
@@ -10,9 +9,12 @@ import CardForm from "../PaymentForms/CardForm"
 
 type PaymentMethod = PaymentMethodSelectorI["method"]
 
-export default function PaymentMethodSelector() {
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("CARD")
+interface PaymentMethodSelectorProps {
+  selectedMethod: PaymentMethod;
+  onMethodChange: (method: PaymentMethod) => void;
+}
 
+export default function PaymentMethodSelector({ selectedMethod, onMethodChange }: PaymentMethodSelectorProps) {
   const paymentMethods: Array<{
     method: PaymentMethod;
     label: string;
@@ -49,7 +51,7 @@ export default function PaymentMethodSelector() {
             icon={icon}
             label={label}
             isSelected={selectedMethod === method}
-            onClick={() => setSelectedMethod(method)}
+            onClick={() => onMethodChange(method)}
           />
         ))}
       </div>
@@ -63,4 +65,12 @@ export default function PaymentMethodSelector() {
       )}
     </div>
   )
+}
+
+// Export payment methods mapping for use in parent components
+export const PAYMENT_METHODS: Record<PaymentMethod, string> = {
+  PROMPTPAY: "PromptPay",
+  CARD: "Credit/Debit Card",
+  APPLE_PAY: "Apple Pay",
+  GOOGLE_PAY: "Google Pay",
 }

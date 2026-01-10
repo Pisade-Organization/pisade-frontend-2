@@ -1,20 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import CheckoutMobileHeader from "../components/CheckoutMobileHeader";
 import TutorSummary from "../components/BookingSummary/TutorSummary/ index";
 import CancellationNotice from "../components/BookingSummary/CancellationNotice";
 import LessonInfo from "../components/BookingSummary/LessonInfo";
 import CheckoutInfo from "../components/BookingSummary/CheckoutInfo";
 import GuaranteeNotice from "../components/BookingSummary/GuaranteeNotice";
-import PaymentMethodSelector from "../components/PaymentDetailsSection/PaymentMethodSelector";
+import PaymentMethodSelector, { PAYMENT_METHODS } from "../components/PaymentDetailsSection/PaymentMethodSelector";
 import PaymentMethodSelectorHeader from "../components/PaymentDetailsSection/PaymentMethodSelectorHeader";
 import Navbar from "@/components/Navbar";
+import SaveThisMethodSelect from "../components/SaveThisMethodSelect";
+import PaymentConfirmationNotice from "../components/PaymentConfirmationNotice";
+import PayButton from "../components/PayButton";
+import type { PaymentMethodSelectorI } from "../components/PaymentDetailsSection/PaymentMethodSelector/types";
 
+type PaymentMethod = PaymentMethodSelectorI["method"];
 
 export default function Checkout() {
   // Mock data based on the design
   const cancellationDeadline = new Date("2024-10-16T09:00:00");
   const lessonDate = new Date("2024-09-07T18:00:00"); // September 7, Friday, 6PM
+  
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>("CARD");
 
   return (
     <>
@@ -63,9 +71,15 @@ export default function Checkout() {
           <div className="w-screen border-t border-neutral-100 lg:hidden" />
 
           {/* Right Column - Payment Details */}
-          <div className="w-full lg:flex-1 flex flex-col gap-5 py-2 px-4 lg:py-6 lg:px-[120px] lg:rounded-2xl lg:border lg:border-neutral-50 lg:bg-white">
+          <div className="w-full lg:flex-1 flex flex-col gap-5 py-2 px-4 pb-24 lg:pb-6 lg:py-6 lg:px-[120px] lg:rounded-2xl lg:border lg:border-neutral-50 lg:bg-white">
             <PaymentMethodSelectorHeader />
-            <PaymentMethodSelector />
+            <PaymentMethodSelector 
+              selectedMethod={selectedPaymentMethod}
+              onMethodChange={setSelectedPaymentMethod}
+            />
+            <SaveThisMethodSelect />
+            <PaymentConfirmationNotice totalAmount={20.00} />
+            <PayButton paymentMethod={PAYMENT_METHODS[selectedPaymentMethod]} />
           </div>
         </div>
       </div>
