@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 import CheckoutMobileHeader from "../components/CheckoutMobileHeader";
-import TutorSummary from "../components/BookingSummary/TutorSummary/ index";
-import CancellationNotice from "../components/BookingSummary/CancellationNotice";
-import LessonInfo from "../components/BookingSummary/LessonInfo";
-import CheckoutInfo from "../components/BookingSummary/CheckoutInfo";
-import GuaranteeNotice from "../components/BookingSummary/GuaranteeNotice";
+import BookingSummary from "@/components/shared/BookingSummary";
 import PaymentMethodSelector, { PAYMENT_METHODS } from "../components/PaymentDetailsSection/PaymentMethodSelector";
 import PaymentMethodSelectorHeader from "../components/PaymentDetailsSection/PaymentMethodSelectorHeader";
 import Navbar from "@/components/Navbar";
@@ -40,8 +36,9 @@ export default function Checkout() {
       <div className="w-full py-2 px-4 lg:py-8 lg:px-20">
         <div className="w-full flex flex-col lg:flex-row lg:gap-10">
           {/* Left Column - Booking Summary */}
-          <div className="w-full lg:max-w-[343px] lg:flex-1 flex flex-col gap-5 py-2 px-4 lg:p-6 lg:rounded-2xl lg:border lg:border-neutral-50 lg:bg-white">
-            <TutorSummary 
+          <div className="w-full lg:max-w-[343px] lg:flex-1">
+            <BookingSummary
+              variant="checkout"
               tutorName="Alana Somchai Degrey"
               countryUrl="https://flagcdn.com/w40/th.png"
               avatarUrl="https://t4.ftcdn.net/jpg/03/83/25/83/360_F_383258331_D8imaEMl8Q3lf7EKU2Pi78Cn0R7KkW9o.jpg"
@@ -49,22 +46,16 @@ export default function Checkout() {
               rating={4.5}
               studentsCount={20}
               lessonsCount={200}
-            />
-            <CancellationNotice deadline={cancellationDeadline} />
-            <LessonInfo 
+              cancellationDeadline={cancellationDeadline}
               lessonName="English TEFL Lesson (50-min lessons)"
               date={lessonDate}
               startTime="18:00"
               endTime="21:00"
               timezone="Etc/GMT+11"
-            />
-            <div className="w-full border-t border-neutral-100"/>
-            <CheckoutInfo 
               lessonPrice={20.00}
               processingFee={0.30}
               total={20.00}
             />
-            <GuaranteeNotice />
           </div>
 
           {/* Mobile Divider - only visible on mobile */}

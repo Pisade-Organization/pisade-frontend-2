@@ -11,7 +11,7 @@ export default function GuaranteeNotice() {
         </Typography>
 
         <Typography variant={{ base: "body-3" }} color="neutral-400">
-          If this tutor isn’t a match, try 2 more for free
+          If this tutor isn't a match, try 2 more for free
         </Typography>
       </div>
     </div>

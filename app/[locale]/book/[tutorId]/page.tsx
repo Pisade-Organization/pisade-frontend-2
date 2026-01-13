@@ -9,9 +9,9 @@ import { fetchTutorDetailData } from "@/services/tutor";
 import { TutorDetailData } from "@/services/tutor/types";
 import { BookingDialogI } from "@/components/dialogs/BookLessonDialog/types";
 import Navbar from "@/components/Navbar";
-import TutorSummary from "@/views/checkout/components/BookingSummary/TutorSummary/ index";
-import CancellationNotice from "@/views/checkout/components/BookingSummary/CancellationNotice";
-import LessonInfo from "@/views/checkout/components/BookingSummary/LessonInfo";
+import TutorSummary from "@/components/shared/BookingSummary/TutorSummary/ index";
+import CancellationNotice from "@/components/shared/BookingSummary/CancellationNotice";
+import LessonInfo from "@/components/shared/BookingSummary/LessonInfo";
 import TimezoneSelector from "@/components/dialogs/BookLessonDialog/TimezoneSelector";
 import DateNavigator from "@/components/dialogs/BookLessonDialog/DateNavigator";
 import AvailabilityGrid from "@/components/dialogs/BookLessonDialog/AvailabilityGrid";
@@ -209,6 +209,7 @@ export default function Booking() {
                       startTime={lessonDetails.startTime}
                       endTime={lessonDetails.endTime}
                       timezone={timezone}
+                      variant="checkout"
                     />
                   </>
                 )}
