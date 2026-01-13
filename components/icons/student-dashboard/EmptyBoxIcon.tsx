@@ -16,7 +16,7 @@ export default function EmptyBoxIcon({
 }: EmptyBoxIconProps) {
   return (
     <Image
-      src="/icons/student-dashboard/empty_box.svg"
+      src="/icons/common/empty_box.svg"
       alt={alt}
       width={width}
       height={height}

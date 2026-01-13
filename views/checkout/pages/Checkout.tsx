@@ -73,7 +73,7 @@ export default function Checkout() {
           {/* Right Column - Payment Details */}
           <div className="w-full lg:flex-1 flex flex-col gap-5 py-2 px-4 pb-24 lg:pb-6 lg:py-6 lg:px-[120px] lg:rounded-2xl lg:border lg:border-neutral-50 lg:bg-white">
             <PaymentMethodSelectorHeader />
-            <PaymentMethodSelector 
+            <PaymentMethodSelector
               selectedMethod={selectedPaymentMethod}
               onMethodChange={setSelectedPaymentMethod}
             />
