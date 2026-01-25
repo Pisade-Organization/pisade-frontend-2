@@ -3,7 +3,9 @@ import CancellationNotice from "./CancellationNotice";
 import LessonInfo from "./LessonInfo";
 import CheckoutInfo from "./CheckoutInfo";
 import GuaranteeNotice from "./GuaranteeNotice";
+import BaseButton from "@/components/base/BaseButton";
 import type { BookingSummaryProps } from "./types";
+import Typography from "@/components/base/Typography";
 
 export default function BookingSummary(props: BookingSummaryProps) {
   const {
@@ -46,7 +48,9 @@ export default function BookingSummary(props: BookingSummaryProps) {
         lessonsCount={lessonsCount}
       />
 
-      <CancellationNotice deadline={cancellationDeadline} />
+      {variant !== "cancel" && (
+        <CancellationNotice deadline={cancellationDeadline} />
+      )}
 
       <LessonInfo 
         lessonName={lessonName}
@@ -60,7 +64,7 @@ export default function BookingSummary(props: BookingSummaryProps) {
         rescheduleEndTime={rescheduleProps?.rescheduleEndTime}
       />
 
-      <div className="w-full border border-t border-neutral-100" />
+      <div className="w-full border-t border-neutral-50" />
 
       <CheckoutInfo 
         lessonPrice={lessonPrice}
@@ -68,7 +72,21 @@ export default function BookingSummary(props: BookingSummaryProps) {
         total={total}
       />
 
-      <GuaranteeNotice />
+      {variant !== "cancel" && (
+        <GuaranteeNotice />
+      )}
+
+      {variant === "cancel" && (
+        <BaseButton className="w-full" variant="primary">
+          Cancel Booking
+        </BaseButton>
+      )}
+
+      {variant === "cancel" && (
+        <Typography variant={{ base: "body-3" }} color="neutral-500">
+          The funds will be refunded to your Pisade balance within 12 business hours.
+        </Typography>
+      )}
 
     </div>
   )
