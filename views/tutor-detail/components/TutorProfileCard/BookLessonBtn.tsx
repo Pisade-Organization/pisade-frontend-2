@@ -1,8 +1,9 @@
 "use client";
 
 import BaseButton from "@/components/base/BaseButton";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState, startTransition } from "react";
+import { useRouter } from "next/navigation";
+import { startTransition } from "react";
+import useMediaQuery from "@/hooks/useMediaQuery";
 
 interface BookLessonBtnProps {
     tutorId: string;
@@ -10,17 +11,7 @@ interface BookLessonBtnProps {
 
 export default function BookLessonBtn({ tutorId }: BookLessonBtnProps) {
     const router = useRouter();
-    const pathname = usePathname();
-    const [isDesktop, setIsDesktop] = useState(false);
-
-    useEffect(() => {
-        const checkDesktop = () => {
-            setIsDesktop(window.innerWidth >= 1024);
-        };
-        checkDesktop();
-        window.addEventListener("resize", checkDesktop);
-        return () => window.removeEventListener("resize", checkDesktop);
-    }, []);
+    const isDesktop = useMediaQuery("(min-width: 1024px)")
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent triggering parent card clicks

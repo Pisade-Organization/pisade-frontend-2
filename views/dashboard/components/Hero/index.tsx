@@ -4,7 +4,6 @@ import Banner from "./Banner"
 
 interface HeroProps {
   fullName: string
-  title: string;
   todayLessonCounts: number
   lessonTitle: string
   tutorName: string

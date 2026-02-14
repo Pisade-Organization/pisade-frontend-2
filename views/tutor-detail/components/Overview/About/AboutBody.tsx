@@ -2,22 +2,17 @@
 
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import useMediaQuery from "@/hooks/useMediaQuery"
 
 export default function AboutBody({
     about
 }: {
     about: string
 }) {
-    const [isMobile, setIsMobile] = useState(false)
+    const isDesktop = useMediaQuery("(min-width: 1024px)")
+    const isMobile = !isDesktop
     const [isExpanded, setIsExpanded] = useState(false)
-
-    useEffect(() => {
-        const updateIsMobile = () => setIsMobile(window.innerWidth < 1024)
-        updateIsMobile()
-        window.addEventListener("resize", updateIsMobile)
-        return () => window.removeEventListener("resize", updateIsMobile)
-    }, [])
 
     const shouldTruncate = isMobile && about && about.length > 300 && !isExpanded
     const displayedText = shouldTruncate ? `${about.slice(0, 300)}…` : about

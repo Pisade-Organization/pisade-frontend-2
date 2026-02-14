@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import AuthLayout from "../components/AuthLayout";
-import Loading from "@/components/Loading";
 import { AUTH_TYPES } from "../types/auth.enum";
 import LoadingPage from "@/components/LoadingPage";
 

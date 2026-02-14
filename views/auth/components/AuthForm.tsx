@@ -6,7 +6,7 @@ import AuthTermsNotice from "./AuthTermsNotice";
 import GoogleButton from "./GoogleButton";
 import BaseInput from "@/components/base/BaseInput";
 import BaseButton from "@/components/base/BaseButton";
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 interface AuthFormProps {
     setEmailTo: (email: string) => void;
     setIsEmailSent: (value: boolean) => void;
@@ -19,7 +19,7 @@ export default function AuthForm({ setEmailTo, setIsEmailSent }: AuthFormProps) 
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
 
-    const isTutorSignup = pathname === "/en/tutor/signup" || "/th/tutor/signup"
+    const isTutorSignup = pathname === "/en/tutor/signup" || pathname === "/th/tutor/signup"
     
     
 

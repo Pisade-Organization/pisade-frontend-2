@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PriceRangeSlider from "./PriceRangeSlider";
 import ShowResultsBtn from "./dropdowns/ShowResultsBtn";
+import useMediaQuery from "@/hooks/useMediaQuery";
 
 export default function PriceRangeFilter({
   minPrice,
@@ -18,18 +19,11 @@ export default function PriceRangeFilter({
   maxPrice: number;
   setMaxPrice: (maxPrice: number) => void;
 }) {
-  const [isMobile, setIsMobile] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 1024px)")
+  const isMobile = !isDesktop
   const [open, setOpen] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
-
-  // detect mobile
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 1024);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
 
   // measure content (for mobile sheet height)
   useLayoutEffect(() => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { PageNavigationHeader } from "../components/PageNavigationHeader";
 import ScheduleHeader from "../components/ScheduleHeader";
@@ -8,10 +8,12 @@ import ScheduleContent from "../components/ScheduleContent";
 import BookingSummary from "@/components/shared/BookingSummary";
 import BaseButton from "@/components/base/BaseButton";
 import Navbar from "@/components/Navbar";
+import useMediaQuery from "@/hooks/useMediaQuery";
 
 export default function Reschedule() {
   const router = useRouter();
-  const [isMobile, setIsMobile] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 1024px)")
+  const isMobile = !isDesktop
   const [timezone, setTimezone] = useState("Etc/GMT+11");
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
     // Calculate Monday of current week
@@ -27,16 +29,6 @@ export default function Reschedule() {
     date: string;
     startTime: string;
   } | null>(null);
-
-  // Check if mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
 
   // Calculate start and end dates for the week (Monday to Sunday)
   const { startDate, endDate } = useMemo(() => {
@@ -67,10 +59,10 @@ export default function Reschedule() {
   };
 
   // Mock data - in real app, this would come from props or API
-  const cancellationDeadline = new Date("2025-09-26T13:00:00");
-  const currentLessonDate = new Date("2025-09-27T13:00:00");
-  const currentStartTime = "13:00";
-  const currentEndTime = "15:00";
+  const cancellationDeadline = useMemo(() => new Date("2025-09-26T13:00:00"), [])
+  const currentLessonDate = useMemo(() => new Date("2025-09-27T13:00:00"), [])
+  const currentStartTime = "13:00"
+  const currentEndTime = "15:00"
 
   // Calculate reschedule date/time from selected slot
   const rescheduleDate = useMemo(() => {
@@ -120,6 +112,7 @@ export default function Reschedule() {
               weekStartDate={currentWeekStart}
               onPrevWeek={handlePrevWeek}
               onNextWeek={handleNextWeek}
+              variant="mobile"
             />
 
             {/* Schedule Content */}
@@ -196,6 +189,7 @@ export default function Reschedule() {
               weekStartDate={currentWeekStart}
               onPrevWeek={handlePrevWeek}
               onNextWeek={handleNextWeek}
+              variant="desktop"
             />
 
             <ScheduleContent

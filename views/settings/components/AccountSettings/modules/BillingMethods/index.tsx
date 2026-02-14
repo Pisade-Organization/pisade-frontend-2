@@ -1,5 +1,5 @@
 "use client"
-import { useState, useLayoutEffect, useEffect } from "react"
+import { useState, useEffect } from "react"
 import BillingMethodsHeader from "./BillingMethodsHeader"
 import BillingMethodCard from "./BillingMethodCard"
 import BaseButton from "@/components/base/BaseButton"
@@ -7,6 +7,7 @@ import { Plus } from "lucide-react"
 import DesktopAddBillingMethodDialog from "./AddBillingMethod/DesktopAddBillingMethodDialog"
 import MobileAddBillingMethodPage from "./AddBillingMethod/MobileAddBillingMethodPage"
 import DeleteCardDialog from "./DeleteCardDialog"
+import useMediaQuery from "@/hooks/useMediaQuery"
 
 export default function BillingMethods() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -17,20 +18,17 @@ export default function BillingMethods() {
     cardType: string
     index: number
   } | null>(null)
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window !== "undefined") {
-      return window.innerWidth < 1024
-    }
-    return false
-  })
+  const isDesktop = useMediaQuery("(min-width: 1024px)")
+  const isMobile = !isDesktop
 
-  // Detect mobile - use useLayoutEffect for immediate synchronous update
-  useLayoutEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 1024)
-    check()
-    window.addEventListener("resize", check)
-    return () => window.removeEventListener("resize", check)
-  }, [])
+  // Keep overlays consistent when breakpoint changes
+  useEffect(() => {
+    if (isMobile) {
+      setIsDialogOpen(false)
+    } else {
+      setIsMobilePageOpen(false)
+    }
+  }, [isMobile])
 
   // Prevent body scroll when mobile page is open
   useEffect(() => {

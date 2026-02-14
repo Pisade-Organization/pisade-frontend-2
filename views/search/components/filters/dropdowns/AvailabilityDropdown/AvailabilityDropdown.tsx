@@ -7,9 +7,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import ShowResultsBtn from "../ShowResultsBtn";
+import useMediaQuery from "@/hooks/useMediaQuery";
 
 import Times from "./Times";
 import Days from "./Days";
@@ -18,28 +19,11 @@ import Calendar from "./Calendar";
 export function AvailabilityDropdown() {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("Any availability");
-  const [isMobile, setIsMobile] = useState(false);
-  const [triggerWidth, setTriggerWidth] = useState<number | null>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-
-  // detect mobile
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 1024);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
-  // measure trigger width (desktop)
-  useLayoutEffect(() => {
-    if (triggerRef.current) setTriggerWidth(triggerRef.current.offsetWidth);
-  }, [open]);
-
-  const dropdownHeight = 280;
+  const isDesktop = useMediaQuery("(min-width: 1024px)")
+  const isMobile = !isDesktop
 
   const TriggerButton = (
     <button
-      ref={triggerRef}
       onClick={() => isMobile && setOpen(true)}
       className={cn(
         "flex w-full items-center justify-between rounded-[12px] border px-4 py-2 text-left shadow-sm hover:border-neutral-300 transition-all focus:outline-none h-[44px] lg:h-[56px]",

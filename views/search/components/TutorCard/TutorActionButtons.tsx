@@ -5,8 +5,9 @@ import { Calendar } from "lucide-react"
 import { Heart } from "lucide-react"
 import { MessageCircle } from "lucide-react"
 import BaseButton from "@/components/base/BaseButton"
-import { useRouter, usePathname } from "next/navigation"
-import { useEffect, useState, startTransition } from "react"
+import { useRouter } from "next/navigation"
+import { startTransition } from "react"
+import useMediaQuery from "@/hooks/useMediaQuery"
 
 interface TutorActionButtonsProps {
     className?: string;
@@ -18,17 +19,7 @@ export default function TutorActionButtons({
     tutorId
 }: TutorActionButtonsProps) {
     const router = useRouter();
-    const pathname = usePathname();
-    const [isDesktop, setIsDesktop] = useState(false);
-
-    useEffect(() => {
-        const checkDesktop = () => {
-            setIsDesktop(window.innerWidth >= 1024);
-        };
-        checkDesktop();
-        window.addEventListener("resize", checkDesktop);
-        return () => window.removeEventListener("resize", checkDesktop);
-    }, []);
+    const isDesktop = useMediaQuery("(min-width: 1024px)")
 
     const handleBookLessonClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent triggering parent card clicks
