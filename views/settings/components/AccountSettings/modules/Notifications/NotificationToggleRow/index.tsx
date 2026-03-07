@@ -6,11 +6,15 @@ import { BaseSwitch } from "@/components/base/Switch";
 interface NotificationToggleRowI {
   notificationChannel: NotificationChannel;
   isToggled: boolean;
+  isLoading?: boolean;
+  onToggle: (checked: boolean) => void;
 }
 
 export default function NotificationToggleRow({
   notificationChannel,
-  isToggled
+  isToggled,
+  isLoading,
+  onToggle,
 }: NotificationToggleRowI) {
   return (
     <div className="w-full flex justify-between items-center gap-4">
@@ -33,7 +37,7 @@ export default function NotificationToggleRow({
         </Typography>
       </div>
 
-      <BaseSwitch defaultChecked={isToggled} />
+      <BaseSwitch checked={isToggled} onChange={onToggle} disabled={isLoading} />
 
 
 

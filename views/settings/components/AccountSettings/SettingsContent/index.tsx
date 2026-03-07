@@ -26,6 +26,9 @@ interface SettingsContentProps {
   notificationsProps?: {
     isReceivedEmailNotification: boolean
     isReceivedSMSNotification: boolean
+    isUpdating?: boolean
+    onEmailToggle: (checked: boolean) => void
+    onSMSToggle: (checked: boolean) => void
   }
 }
 

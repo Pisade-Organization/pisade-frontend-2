@@ -1,9 +1,30 @@
 import MyScheduleBtn from "./MyScheduleBtn"
 import CardList from "./CardList"
-import studentDashboardData from "@/public/mockup_data/student_dashboard/student_dashboard.json"
 import Typography from "@/components/base/Typography"
+import { useTodayLessons } from "@/hooks/dashboard/queries"
+
+function formatTime(dateIso: string) {
+  const date = new Date(dateIso)
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
+}
 
 export default function TodayLessons() {
+    const { data: lessons = [] } = useTodayLessons()
+
+    const cards = lessons.map((lesson) => {
+        const start = new Date(lesson.scheduledAt)
+        const end = new Date(start)
+        end.setMinutes(end.getMinutes() + lesson.duration)
+
+        return {
+            avatarUrl: lesson.tutor.user.profile?.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",
+            fromTime: formatTime(start.toISOString()),
+            toTime: formatTime(end.toISOString()),
+            subject: "Lesson",
+            tutorName: lesson.tutor.user.profile?.fullName ?? "Tutor",
+        }
+    })
+
     return (
         <div className="w-full flex flex-col justify-center items-start
         gap-4 px-4 py-5 lg:gap-7 lg:px-20 lg:py-12 bg-electric-violet-25
@@ -18,9 +39,9 @@ export default function TodayLessons() {
             </div>
 
             <div className="w-full">
-                {studentDashboardData.todayLessons.length > 0 && (
+                {cards.length > 0 && (
                     <CardList 
-                        cards={studentDashboardData.todayLessons}
+                        cards={cards}
                     />
                 )}
             </div>

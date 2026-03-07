@@ -8,7 +8,42 @@ import TutorGridCard from "../components/TutorCard/TutorGridCard"
 import Navbar from "@/components/Navbar"
 import { fetchTutorsPaginated } from "@/services/tutor"
 import Footer from "@/components/footer/Footer"
-import LoadingPage from "@/components/LoadingPage"
+
+function TutorListSkeleton() {
+    return (
+        <div className="w-full bg-white border border-neutral-50 p-4 rounded-[15px] animate-pulse">
+            <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 rounded-full bg-neutral-100" />
+                <div className="flex-1 space-y-2">
+                    <div className="h-4 w-1/3 bg-neutral-100 rounded" />
+                    <div className="h-3 w-1/4 bg-neutral-100 rounded" />
+                </div>
+            </div>
+            <div className="space-y-2">
+                <div className="h-3 w-full bg-neutral-100 rounded" />
+                <div className="h-3 w-5/6 bg-neutral-100 rounded" />
+                <div className="h-3 w-2/3 bg-neutral-100 rounded" />
+            </div>
+        </div>
+    )
+}
+
+function TutorGridSkeleton() {
+    return (
+        <div className="border border-deep-royal-indigo-50 rounded-[24px] p-8 animate-pulse">
+            <div className="flex justify-between items-start mb-5">
+                <div className="w-16 h-16 rounded-full bg-neutral-100" />
+                <div className="w-20 h-8 rounded bg-neutral-100" />
+            </div>
+            <div className="space-y-3">
+                <div className="h-4 w-2/3 bg-neutral-100 rounded" />
+                <div className="h-3 w-1/2 bg-neutral-100 rounded" />
+                <div className="h-3 w-full bg-neutral-100 rounded" />
+                <div className="h-3 w-4/5 bg-neutral-100 rounded" />
+            </div>
+        </div>
+    )
+}
 
 export default function SearchPage() {
     const [mode, setMode] = useState<'list' | 'grid'>('list')
@@ -20,6 +55,7 @@ export default function SearchPage() {
     const [currentPage, setCurrentPage] = useState(1)
     const [hasMore, setHasMore] = useState(true)
     const [totalTutors, setTotalTutors] = useState(0)
+    const [loadError, setLoadError] = useState(false)
     const TUTORS_PER_PAGE = 6
 
     useEffect(() => {
@@ -29,9 +65,11 @@ export default function SearchPage() {
                 setTutors(response.tutors as TutorCardProps[])
                 setTotalTutors(response.total)
                 setHasMore(response.hasMore)
+                setLoadError(response.isError)
                 setLoading(false)
             } catch (error) {
                 console.error('Error fetching tutors:', error)
+                setLoadError(true)
                 setLoading(false)
             }
         }
@@ -58,12 +96,6 @@ export default function SearchPage() {
         }
     }
 
-    if (loading) {
-        return (
-            <LoadingPage />
-        )
-    }
-
     return (
         <div className="flex flex-col justify-center items-center">
             <Navbar variant="search" />
@@ -75,14 +107,29 @@ export default function SearchPage() {
             />
             
             {/* TUTOR CARDS */}
-            <div className="lg:block px-4 lg:px-20 lg:py-11 pb-24 lg:pb-0">
+            <div className="w-full lg:block px-4 lg:px-20 lg:py-11 pb-24 lg:pb-0">
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold mb-2">Available Tutors</h1>
                     <p className="text-gray-600">
-                        Showing {tutors.length} of {totalTutors} tutors
+                        {loading
+                            ? `Loading tutors...`
+                            : `Showing ${tutors.length} of ${totalTutors} tutors`}
                     </p>
                 </div>
+                {loadError && (
+                    <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+                        We could not load tutors right now. Please retry in a moment.
+                    </div>
+                )}
                 <div className={`grid gap-6 ${mode === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                    {loading && Array.from({ length: TUTORS_PER_PAGE }).map((_, index) => (
+                        mode === 'grid' ? (
+                            <TutorGridSkeleton key={`skeleton-grid-${index}`} />
+                        ) : (
+                            <TutorListSkeleton key={`skeleton-list-${index}`} />
+                        )
+                    ))}
+
                     {tutors.map((tutor) =>
                         mode === 'grid' ? (
                             <TutorGridCard
@@ -101,11 +148,11 @@ export default function SearchPage() {
                 </div>
                 
                 {/* LOAD MORE BUTTON */}
-                {hasMore && (
+                {hasMore && !loading && (
                     <div className="flex justify-center mt-8">
                         <button
                             onClick={loadMoreTutors}
-                            disabled={loadingMore}
+                            disabled={loadingMore || loading}
                             className="px-8 py-3 bg-electric-violet-500 text-white rounded-lg font-medium hover:bg-electric-violet-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             {loadingMore ? (
@@ -120,14 +167,6 @@ export default function SearchPage() {
                     </div>
                 )}
                 
-                {/* NO MORE TUTORS MESSAGE */}
-                {!hasMore && tutors.length > 0 && (
-                    <div className="flex justify-center mt-8">
-                        <p className="text-gray-500 text-center">
-                            🎉 You've seen all {totalTutors} tutors! 
-                        </p>
-                    </div>
-                )}
             </div>
             <Footer />
         </div>

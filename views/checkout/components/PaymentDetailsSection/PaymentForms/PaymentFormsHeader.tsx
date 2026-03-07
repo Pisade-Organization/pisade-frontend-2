@@ -8,17 +8,13 @@ interface PaymentFormsHeaderProps {
 }
 
 export default function PaymentFormsHeader({ selectedMethod }: PaymentFormsHeaderProps) {
-  // Hide for PROMPTPAY and APPLE_PAY
-  if (selectedMethod !== "CARD" && selectedMethod !== "GOOGLE_PAY") {
+  if (selectedMethod !== "CARD") {
     return null;
   }
 
-  const headerText = selectedMethod === "CARD" ? "Card information" : "Google pay";
-
   return (
     <Typography variant={{ base: "label-2", lg: "title-2" }} color="neutral-900">
-      {headerText}
+      Card information
     </Typography>
   )
 }
-

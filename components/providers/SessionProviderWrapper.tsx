@@ -4,14 +4,25 @@ import { SessionProvider, useSession, signOut } from "next-auth/react";
 import { ReactNode, useEffect } from "react";
 import { AuthHydrationGate } from "./AuthHydrationGate";
 
+const FATAL_AUTH_ERRORS = new Set([
+  "ProfileNotFound",
+  "UserDeletedOrInvalid",
+  "RefreshTokenInvalid",
+]);
+
 function SessionErrorWatcher({ children }: { children: ReactNode }) {
   const { data: session, status, update } = useSession();
 
-  // Auto-logout if backend reports invalid session
+  // Auto-logout only for fatal auth states.
   useEffect(() => {
-    if (status === "authenticated" && (session as any)?.error) {
-      signOut({ callbackUrl: "/signin" });
+    const authError = (session as any)?.error as string | undefined;
+    if (status !== "authenticated" || !authError) return;
+
+    if (FATAL_AUTH_ERRORS.has(authError)) {
+      signOut({ callbackUrl: "/auth/signin" });
+      return;
     }
+
   }, [status, session]);
 
   // Refresh when tab becomes visible

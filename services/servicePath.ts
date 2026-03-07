@@ -5,13 +5,50 @@ export const servicePath = {
       refresh: "/auth/refresh", // GET
     },
     user: {
-      getProfile: "/user/me", // GET
-      updateProfile: "/user/me", // PUT
+      getProfile: "/v1/me", // GET
+      updateProfile: "/v1/me", // PATCH
+    },
+    profile: {
+      getMyProfile: "/v1/me", // GET
+      updateMyProfile: "/v1/me", // PATCH
+      updateMyPhoneNumber: "/v1/me/phone-number", // PATCH
+      getMyNotifications: "/v1/me/notifications", // GET
+      getMyNotificationPreferences: "/v1/me/notification-preferences", // GET
+      updateMyNotificationPreferences: "/v1/me/notification-preferences", // PATCH
+      deleteMyAccount: "/v1/me", // DELETE
     },
     tutor: {
-      getTutor: "/tutors/:id", // GET
-      getAllTutors: "/tutors", // GEt
-      getTutorReviews: "/tutors/:id/reviews", // GET
+      getTutor: "/v1/tutors/:id", // GET
+      getAllTutors: "/v1/tutors", // GET
+      getTutorReviews: "/v1/tutors/:id/reviews", // GET
+      getMyTutorProfile: "/v1/me/tutor-profile", // GET
+      updateMyTutorProfile: "/v1/me/tutor-profile", // PATCH
+      getMyTutorTransactions: "/v1/me/tutor-profile/transactions", // GET
+    },
+    dashboard: {
+      getSummary: "/dashboard/summary", // GET
+      getNextLesson: "/dashboard/next-lesson", // GET
+      getTodayLessons: "/dashboard/today-lessons", // GET
+      getWeeklyPlan: "/dashboard/weekly-plan", // GET
+      getFavoriteTutors: "/dashboard/favorite-tutors", // GET
+      getStudentTransactions: "/dashboard/transactions", // GET
+    },
+    bookings: {
+      create: "/bookings", // POST
+      getAll: "/bookings", // GET
+      getById: "/bookings/:id", // GET
+      checkout: "/bookings/:id/checkout", // POST
+      cancel: "/bookings/:id/cancel", // PATCH
+      reschedule: "/bookings/:id/reschedule", // PATCH
+    },
+    wallet: {
+      getMyWallet: "/wallet/me", // GET
+      getMyWalletTransactions: "/wallet/me/transactions", // GET
+      getMyWalletSummary: "/wallet/me/summary", // GET
+    },
+    tutorWallet: {
+      getWithdrawals: "/tutor-wallet/withdrawals", // GET
+      getSummary: "/tutor-wallet/summary", // GET
     },
     onboarding: {
       getCurrentStep: "/onboarding/current-step", // GET

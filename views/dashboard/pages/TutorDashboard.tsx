@@ -4,57 +4,42 @@ import type { Transaction } from "../components/TransactionHistory/types"
 import { TransactionStatus } from "../components/TransactionHistory/badges/TransactionStatusBadge/types"
 import { PaymentMethod } from "../components/TransactionHistory/badges/PaymentMethodBadge/types"
 import DashboardPage from "./DashboardPage"
+import { useTutorTransactions } from "@/hooks/settings/queries"
+import { useMyProfile } from "@/hooks/settings/queries"
+import { useBookings } from "@/hooks/bookings/queries"
 
-// Mock transaction data for tutor
-const mockTransactions: Transaction[] = [
-  {
-    id: "TXN101",
-    title: "Earnings from Mathematics Lessons",
-    lessonsCount: 8,
-    amount: "4000",
-    date: "2024-01-15",
-    paymentMethod: PaymentMethod.PROMPTPAY,
-    status: TransactionStatus.COMPLETED
-  },
-  {
-    id: "TXN102",
-    title: "Physics Tutoring Earnings",
-    lessonsCount: 5,
-    amount: "2500",
-    date: "2024-01-20",
-    paymentMethod: PaymentMethod.BANK_TRANSFER,
-    status: TransactionStatus.COMPLETED
-  },
-  {
-    id: "TXN103",
-    title: "Chemistry Course Payment",
-    lessonsCount: 12,
-    amount: "6000",
-    date: "2024-01-25",
-    paymentMethod: PaymentMethod.PROMPTPAY,
-    status: TransactionStatus.PROCESSING
-  },
-  {
-    id: "TXN104",
-    title: "English Conversation Earnings",
-    lessonsCount: 4,
-    amount: "2000",
-    date: "2024-02-01",
-    paymentMethod: PaymentMethod.BANK_TRANSFER,
-    status: TransactionStatus.COMPLETED
-  },
-  {
-    id: "TXN105",
-    title: "Biology Study Group Payment",
-    lessonsCount: 6,
-    amount: "3000",
-    date: "2024-02-05",
-    paymentMethod: PaymentMethod.PROMPTPAY,
-    status: TransactionStatus.CANCELLED
-  }
-]
+function mapTutorStatus(status: string): TransactionStatus {
+  if (status === "SUCCESS") return TransactionStatus.COMPLETED
+  if (status === "FAILED" || status === "CANCELLED") return TransactionStatus.CANCELLED
+  return TransactionStatus.PROCESSING
+}
 
 export default function TutorDashboardPage() {
+  const { data: profile } = useMyProfile()
+  const { data: tutorTransactions = [] } = useTutorTransactions()
+  const { data: upcoming } = useBookings({ view: "upcoming", limit: 1 })
+
+  const today = new Date()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
+
+  const { data: todayBookingData } = useBookings({
+    from: today.toISOString(),
+    to: tomorrow.toISOString(),
+    limit: 100,
+  })
+
+  const transactions: Transaction[] = tutorTransactions.map((transaction) => ({
+    id: transaction.id,
+    title: transaction.type,
+    amount: String(transaction.amount),
+    date: transaction.createdAt,
+    paymentMethod: PaymentMethod.PROMPTPAY,
+    status: mapTutorStatus(transaction.status),
+  }))
+
+  const upcomingBooking = upcoming?.data?.[0]
+
   const handleViewAll = () => {
     console.log("View all transactions")
   }
@@ -67,16 +52,19 @@ export default function TutorDashboardPage() {
     <DashboardPage
       navbarVariant="tutor_dashboard"
       role={Role.TUTOR}
-      transactions={mockTransactions}
+      transactions={transactions}
       onViewAll={handleViewAll}
       onShowMore={handleShowMore}
       heroProps={{
-        fullName: "Alex Kim",
-        todayLessonCounts: 3,
-        lessonTitle: "Algebra II: Quadratic Equations",
-        tutorName: "Sophia Lee",
-        avatarUrl: "https://randomuser.me/api/portraits/women/65.jpg",
-        lessonTime: new Date(Date.now() + 60 * 60 * 1000),
+        fullName: profile?.profile?.fullName ?? "Tutor",
+        todayLessonCounts: todayBookingData?.data?.length ?? 0,
+        lessonTitle: "Upcoming class",
+        tutorName: upcomingBooking?.student?.name ?? "Student",
+        avatarUrl:
+          upcomingBooking?.student?.avatarUrl ?? "https://ui-avatars.com/api/?name=Student",
+        lessonTime: upcomingBooking
+          ? new Date(upcomingBooking.schedule.startTime)
+          : new Date(),
         headerText: "Upcoming class",
       }}
     />

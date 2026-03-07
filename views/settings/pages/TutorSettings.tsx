@@ -5,6 +5,12 @@ import { Settings, CreditCard, Clock, Bell } from "lucide-react"
 import SettingsContent, { SettingsContentType } from "../components/AccountSettings/SettingsContent"
 import { usePathname } from "next/navigation"
 import { useMemo } from "react"
+import {
+  useMyNotificationPreferences,
+  useMyProfile,
+  useMyTutorProfile,
+} from "@/hooks/settings/queries"
+import { useUpdateMyNotificationPreferences } from "@/hooks/settings/mutations"
 
 const tutorSidebarItems = [
   {
@@ -26,6 +32,10 @@ const tutorSidebarItems = [
 
 export default function TutorSettingsPage() {
   const pathname = usePathname()
+  const { data: profileData } = useMyProfile()
+  const { data: tutorData } = useMyTutorProfile()
+  const { data: notificationPreferences } = useMyNotificationPreferences()
+  const updateNotificationPreferences = useUpdateMyNotificationPreferences()
 
   // Map pathname to settings type
   const settingsType = useMemo<SettingsContentType>(() => {
@@ -34,24 +44,36 @@ export default function TutorSettingsPage() {
     return "general" // default to general
   }, [pathname])
 
-  // Mock data - replace with actual data from API/state
   const generalProps = {
-    fullName: "John Doe",
+    fullName: profileData?.profile?.fullName ?? "",
     countryOfBirth: "TH",
     nationality: "TH",
     countryCode: 66,
-    phoneNumber: "123456789",
-    email: "john@example.com",
-    avatarUrl: "https://randomuser.me/api/portraits/men/32.jpg",
+    phoneNumber: profileData?.profile?.phoneNumber ?? "",
+    email: profileData?.email ?? "",
+    avatarUrl: profileData?.profile?.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",
     teachingInfoProps: {
-      subject: "Mathematics",
-      languages: "English, Thai",
+      subject: tutorData?.specialties?.join(", ") || "",
+      languages: "",
     },
   }
 
   const notificationsProps = {
-    isReceivedEmailNotification: true,
-    isReceivedSMSNotification: false,
+    isReceivedEmailNotification:
+      notificationPreferences?.isReceivedEmailNotification ?? true,
+    isReceivedSMSNotification:
+      notificationPreferences?.isReceivedSMSNotification ?? false,
+    isUpdating: updateNotificationPreferences.isPending,
+    onEmailToggle: (checked: boolean) => {
+      updateNotificationPreferences.mutate({
+        isReceivedEmailNotification: checked,
+      })
+    },
+    onSMSToggle: (checked: boolean) => {
+      updateNotificationPreferences.mutate({
+        isReceivedSMSNotification: checked,
+      })
+    },
   }
 
   return (

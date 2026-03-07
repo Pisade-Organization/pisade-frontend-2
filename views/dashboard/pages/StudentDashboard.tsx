@@ -4,57 +4,35 @@ import type { Transaction } from "../components/TransactionHistory/types"
 import { TransactionStatus } from "../components/TransactionHistory/badges/TransactionStatusBadge/types"
 import { PaymentMethod } from "../components/TransactionHistory/badges/PaymentMethodBadge/types"
 import DashboardPage from "./DashboardPage"
+import { useDashboardTransactions, useNextLesson, useTodayLessons } from "@/hooks/dashboard/queries"
+import { useMyProfile } from "@/hooks/settings/queries"
 
-// Mock transaction data
-const mockTransactions: Transaction[] = [
-  {
-    id: "TXN001",
-    title: "Mathematics Lesson Package",
-    lessonsCount: 5,
-    amount: "2500",
-    date: "2024-01-15",
-    paymentMethod: PaymentMethod.PROMPTPAY,
-    status: TransactionStatus.COMPLETED
-  },
-  {
-    id: "TXN002",
-    title: "Physics Tutoring Session",
-    lessonsCount: 3,
-    amount: "1500",
-    date: "2024-01-20",
-    paymentMethod: PaymentMethod.BANK_TRANSFER,
-    status: TransactionStatus.COMPLETED
-  },
-  {
-    id: "TXN003",
-    title: "Chemistry Course",
-    lessonsCount: 10,
-    amount: "5000",
-    date: "2024-01-25",
-    paymentMethod: PaymentMethod.PROMPTPAY,
-    status: TransactionStatus.PROCESSING
-  },
-  {
-    id: "TXN004",
-    title: "English Conversation Class",
-    lessonsCount: 2,
-    amount: "1000",
-    date: "2024-02-01",
-    paymentMethod: PaymentMethod.BANK_TRANSFER,
-    status: TransactionStatus.COMPLETED
-  },
-  {
-    id: "TXN005",
-    title: "Biology Study Group",
-    lessonsCount: 4,
-    amount: "2000",
-    date: "2024-02-05",
-    paymentMethod: PaymentMethod.PROMPTPAY,
-    status: TransactionStatus.CANCELLED
-  }
-]
+function mapStatus(status: string): TransactionStatus {
+  if (status === "Completed") return TransactionStatus.COMPLETED
+  if (status === "Cancel") return TransactionStatus.CANCELLED
+  return TransactionStatus.PROCESSING
+}
+
+function mapPaymentMethod(method: string | null): PaymentMethod {
+  if ((method ?? "").toUpperCase().includes("BANK")) return PaymentMethod.BANK_TRANSFER
+  return PaymentMethod.PROMPTPAY
+}
 
 export default function StudentDashboardPage() {
+  const { data: profile } = useMyProfile()
+  const { data: todayLessons = [] } = useTodayLessons()
+  const { data: nextLesson } = useNextLesson()
+  const { data: transactionsRaw = [] } = useDashboardTransactions()
+
+  const transactions: Transaction[] = transactionsRaw.map((transaction) => ({
+    id: transaction.id,
+    title: transaction.transaction,
+    amount: String(transaction.amount),
+    date: transaction.date,
+    paymentMethod: mapPaymentMethod(transaction.paymentMethod),
+    status: mapStatus(transaction.status),
+  }))
+
   const handleViewAll = () => {
     console.log("View all transactions")
   }
@@ -67,16 +45,18 @@ export default function StudentDashboardPage() {
     <DashboardPage
       navbarVariant="student_dashboard"
       role={Role.STUDENT}
-      transactions={mockTransactions}
+      transactions={transactions}
       onViewAll={handleViewAll}
       onShowMore={handleShowMore}
       heroProps={{
-        fullName: "Alex Kim",
-        todayLessonCounts: 3,
-        lessonTitle: "Algebra II: Quadratic Equations",
-        tutorName: "Sophia Lee",
-        avatarUrl: "https://randomuser.me/api/portraits/women/65.jpg",
-        lessonTime: new Date(Date.now() + 60 * 60 * 1000),
+        fullName: profile?.profile?.fullName ?? "Student",
+        todayLessonCounts: todayLessons.length,
+        lessonTitle: "Upcoming lesson",
+        tutorName: nextLesson?.tutor.user.profile?.fullName ?? "Tutor",
+        avatarUrl:
+          nextLesson?.tutor.user.profile?.avatarUrl ??
+          "https://ui-avatars.com/api/?name=Tutor",
+        lessonTime: nextLesson ? new Date(nextLesson.scheduledAt) : new Date(),
         headerText: "Next lesson",
       }}
     />

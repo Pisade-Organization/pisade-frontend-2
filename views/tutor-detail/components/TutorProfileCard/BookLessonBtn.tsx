@@ -1,7 +1,7 @@
 "use client";
 
 import BaseButton from "@/components/base/BaseButton";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { startTransition } from "react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 
@@ -11,7 +11,10 @@ interface BookLessonBtnProps {
 
 export default function BookLessonBtn({ tutorId }: BookLessonBtnProps) {
     const router = useRouter();
+    const pathname = usePathname();
     const isDesktop = useMediaQuery("(min-width: 1024px)")
+    const locale = pathname.split("/")[1] || "en";
+    const bookingPath = `/${locale}/bookings/${tutorId}`;
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent triggering parent card clicks
@@ -19,11 +22,11 @@ export default function BookLessonBtn({ tutorId }: BookLessonBtnProps) {
         if (isDesktop) {
             // On desktop: use startTransition for non-blocking navigation
             startTransition(() => {
-                router.replace(`/book/${tutorId}`);
+                router.replace(bookingPath);
             });
         } else {
             // On mobile: use normal navigation
-            router.push(`/book/${tutorId}`);
+            router.push(bookingPath);
         }
     };
 

@@ -47,4 +47,7 @@ export interface BookingDialogI {
   };
 
   isSubmitting: boolean;
+  onSlotSelect?: (date: string, startTime: string) => void;
+  onContinue?: () => void;
+  continueDisabled?: boolean;
 }

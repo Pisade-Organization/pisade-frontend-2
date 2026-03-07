@@ -5,36 +5,28 @@ import PaymentHistoryRowMobile from "@/views/settings/components/AccountSettings
 import Typography from "@/components/base/Typography"
 import { PaymentHistoryItem } from "@/views/settings/components/AccountSettings/modules/PaymentHistory"
 import { PaymentStatus } from "@/views/onboarding/types/paymentStatus.types"
+import { useStudentTransactions } from "@/hooks/settings/queries"
 
-// Mock data - first 3 items from payment history
-const mockPaymentHistory: PaymentHistoryItem[] = [
-  {
-    date: "Oct 13, 2025",
-    time: "14:30",
-    price: 29.90,
-    lastFourDigits: "1627",
-    cardType: "Mastercard",
-    status: PaymentStatus.COMPLETE
-  },
-  {
-    date: "Oct 12, 2025",
-    time: "16:45",
-    price: 29.90,
-    lastFourDigits: "1627",
-    cardType: "Mastercard",
-    status: PaymentStatus.PROCESSING
-  },
-  {
-    date: "Oct 11, 2025",
-    time: "10:20",
-    price: 29.90,
-    lastFourDigits: "",
-    cardType: "Promptpay Qr",
-    status: PaymentStatus.COMPLETE
-  }
-]
+function mapStatus(status: string): PaymentStatus {
+  if (status === "Completed") return PaymentStatus.COMPLETE
+  if (status === "Cancel") return PaymentStatus.FAILED
+  return PaymentStatus.PROCESSING
+}
 
 export default function PaymentHistorySection() {
+  const { data: transactions = [] } = useStudentTransactions()
+  const history: PaymentHistoryItem[] = transactions.slice(0, 3).map((item) => {
+    const date = new Date(item.date)
+    return {
+      date: date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      time: date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }),
+      price: Number(item.amount),
+      lastFourDigits: "",
+      cardType: item.paymentMethod ?? "Wallet",
+      status: mapStatus(item.status),
+    }
+  })
+
   return (
     <div className="w-full flex flex-col gap-4 lg:hidden">
       <Typography variant={{ base: "title-2" }} color="neutral-900">
@@ -42,7 +34,7 @@ export default function PaymentHistorySection() {
       </Typography>
       
       <div className="w-full flex flex-col">
-        {mockPaymentHistory.map((item, index) => (
+        {history.map((item, index) => (
           <PaymentHistoryRowMobile
             key={index}
             date={item.date}
@@ -67,4 +59,3 @@ export default function PaymentHistorySection() {
     </div>
   )
 }
-

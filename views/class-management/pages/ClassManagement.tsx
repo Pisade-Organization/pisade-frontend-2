@@ -8,75 +8,43 @@ import ClassManagementCard from "../components/ClassManagementCard"
 import EmptyState from "../components/EmptyState"
 import { ClassStatus } from "../components/ClassStatusTabs/types"
 import { LessonStatusType } from "../components/ClassManagementCard/LessonStatus/types"
+import { useBookings } from "@/hooks/bookings/queries"
 
-// Mock data for classes
-const mockClasses = [
-  {
-    id: "1",
-    avatarUrl: "https://randomuser.me/api/portraits/women/65.jpg",
-    date: new Date(2024, 8, 4), // September 4, 2024
-    title: "English TEFL Lesson (50-min lessons)",
-    startTime: new Date(2024, 8, 4, 13, 0), // Sep 4, 2024, 13:00
-    endTime: new Date(2024, 8, 4, 15, 0), // Sep 4, 2024, 15:00
-    status: LessonStatusType.Upcoming,
-    description: "(Description) Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    tutorFullName: "Laura Evelyn",
-    tutorAvatarUrl: "https://randomuser.me/api/portraits/women/65.jpg"
-  },
-  {
-    id: "2",
-    avatarUrl: "https://randomuser.me/api/portraits/men/32.jpg",
-    date: new Date(2024, 8, 5),
-    title: "Mathematics Advanced Calculus",
-    startTime: new Date(2024, 8, 5, 10, 0),
-    endTime: new Date(2024, 8, 5, 11, 30),
-    status: LessonStatusType.Upcoming,
-    description: "Advanced calculus concepts and problem-solving techniques.",
-    tutorFullName: "John Smith",
-    tutorAvatarUrl: "https://randomuser.me/api/portraits/men/32.jpg"
-  },
-  {
-    id: "3",
-    avatarUrl: "https://randomuser.me/api/portraits/women/44.jpg",
-    date: new Date(2024, 7, 28),
-    title: "Spanish Conversation Practice",
-    startTime: new Date(2024, 7, 28, 14, 0),
-    endTime: new Date(2024, 7, 28, 15, 0),
-    status: LessonStatusType.Completed,
-    description: "Conversational Spanish practice with native speaker.",
-    tutorFullName: "Maria Garcia",
-    tutorAvatarUrl: "https://randomuser.me/api/portraits/women/44.jpg"
-  },
-  {
-    id: "4",
-    avatarUrl: "https://randomuser.me/api/portraits/men/45.jpg",
-    date: new Date(2024, 7, 25),
-    title: "Physics: Quantum Mechanics",
-    startTime: new Date(2024, 7, 25, 9, 0),
-    endTime: new Date(2024, 7, 25, 10, 30),
-    status: LessonStatusType.Completed,
-    description: "Introduction to quantum mechanics principles.",
-    tutorFullName: "David Chen",
-    tutorAvatarUrl: "https://randomuser.me/api/portraits/men/45.jpg"
-  }
-]
+function mapLessonStatus(status: string): LessonStatusType {
+  if (status === "CONFIRMED") return LessonStatusType.Upcoming
+  if (status === "COMPLETED") return LessonStatusType.Completed
+  if (status === "CANCELLED") return LessonStatusType.Cancelled
+  if (status === "PENDING_PAYMENT") return LessonStatusType.Processing
+  return LessonStatusType.Upcoming
+}
 
 export default function ClassManagementPage() {
   const [currentStatus, setCurrentStatus] = useState<ClassStatus>(ClassStatus.UPCOMING)
+  const view = currentStatus === ClassStatus.UPCOMING ? "upcoming" : "past"
+  const { data } = useBookings({ view, limit: 100 })
 
-  // Filter classes based on current status
-  const filteredClasses = useMemo(() => {
-    return mockClasses.filter(classItem => {
-      if (currentStatus === ClassStatus.UPCOMING) {
-        return classItem.status === LessonStatusType.Upcoming || 
-               classItem.status === LessonStatusType.Booked ||
-               classItem.status === LessonStatusType.InProgress
-      } else if (currentStatus === ClassStatus.COMPLETED) {
-        return classItem.status === LessonStatusType.Completed
+  const classes = useMemo(() => {
+    return (data?.data ?? []).map((booking) => {
+      const startTime = new Date(booking.schedule.startTime)
+      const endTime = new Date(booking.schedule.endTime)
+      const tutor = booking.tutor
+
+      return {
+        id: booking.id,
+        avatarUrl: tutor?.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",
+        date: startTime,
+        title: "Booked lesson",
+        startTime,
+        endTime,
+        status: mapLessonStatus(booking.status),
+        description: `Payment status: ${booking.payment.status}`,
+        tutorFullName: tutor?.name ?? "Tutor",
+        tutorAvatarUrl: tutor?.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",
       }
-      return false
     })
-  }, [currentStatus])
+  }, [data?.data])
+
+  const filteredClasses = classes
 
   return (
     <div className="w-full min-h-screen flex flex-col">

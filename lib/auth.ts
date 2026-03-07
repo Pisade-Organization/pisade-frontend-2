@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import axiosBase, { AxiosError } from "axios";
 import dayjs from "dayjs";
 import { jwtDecode } from "jwt-decode";
+import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiResponse";
 
 declare module "next-auth" {
   interface User {
@@ -73,7 +74,7 @@ type Decoded = {
 
 // --------- Constants ----------
 const SKEW = 90; // refresh 90s before exp
-const REVALIDATE_EVERY = 60; // re-check user existence every 60s
+const REVALIDATE_EVERY = 5 * 60; // re-check user/profile every 5 minutes
 const MAX_EXP_VALUE = 253402300799; // Year 9999 in seconds (to detect millisecond timestamps)
 const EPOCH_THRESHOLD = 1e12; // Threshold to differentiate seconds vs milliseconds
 
@@ -153,7 +154,11 @@ async function refreshTokenOnce(refresh_token: string): Promise<BackendAuthRespo
   refreshPromise = (async () => {
     try {
       logAuth("info", "Starting token refresh");
-      const { data } = await api.post<BackendAuthResponse>("/auth/refresh", { refresh_token });
+      const response = await api.post<ApiSuccessResponse<BackendAuthResponse> | BackendAuthResponse>(
+        "/auth/refresh",
+        { refresh_token }
+      );
+      const data = unwrapApiResponse(response.data);
       
       // Validate response structure
       if (!data?.access_token || !data?.refresh_token) {
@@ -247,9 +252,10 @@ async function revalidateUser(token: any): Promise<any> {
   
   try {
     logAuth("info", "Revalidating user profile");
-    const { data } = await api.get<BackendUser>("/profile/me", {
+    const response = await api.get<ApiSuccessResponse<BackendUser> | BackendUser>("/profile/me", {
       headers: { Authorization: `Bearer ${token.access_token}` },
     });
+    const data = unwrapApiResponse(response.data);
 
     // ✅ overwrite profile fields so frontend always sees latest info
     const updates: Partial<typeof token> = {};
@@ -269,30 +275,39 @@ async function revalidateUser(token: any): Promise<any> {
     const statusCode = ax.response?.status;
     const errorMessage = ax.response?.data || ax.message || "Unknown error";
     
-    // Differentiate between permanent and temporary errors
-    if (statusCode === 401 || statusCode === 403 || statusCode === 404) {
-      // Permanent: user deleted, disabled, token invalid, or profile not found
-      // 404 means user profile not found - should sign out
-      logAuth("error", "User revalidation failed: permanent error", {
+    if (statusCode === 404) {
+      // Permanent: profile really does not exist anymore.
+      logAuth("error", "User revalidation failed: profile not found", {
         status: statusCode,
         error: errorMessage,
-        reason: statusCode === 404 ? "Profile not found" : "Unauthorized/Forbidden",
       });
-      token.error = statusCode === 404 ? "ProfileNotFound" : "UserDeletedOrInvalid";
+      token.error = "ProfileNotFound";
       delete token.access_token;
       delete token.refresh_token;
       delete token.exp;
       return token;
-    } else {
-      // Temporary: network error, 500, etc. - preserve token but log
-      logAuth("warn", "User revalidation failed: temporary error, preserving token", {
+    }
+
+    if (statusCode === 401 || statusCode === 403) {
+      // Access token may have drifted/expired on backend. Force refresh instead of hard logout.
+      logAuth("warn", "User revalidation unauthorized, forcing token refresh", {
         status: statusCode,
         error: errorMessage,
       });
-      // Extend revalidate time to retry sooner
+      token.error = undefined;
+      token.exp = 0;
       token._revalidateAt = dayjs().add(30, "second").unix();
       return token;
     }
+
+    // Temporary: network error, 5xx, etc. - preserve token and retry soon.
+    logAuth("warn", "User revalidation failed: temporary error, preserving token", {
+      status: statusCode,
+      error: errorMessage,
+    });
+    token.error = undefined;
+    token._revalidateAt = dayjs().add(30, "second").unix();
+    return token;
   }
 }
 
@@ -319,9 +334,10 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
         try {
-          const { data } = await api.get<BackendAuthResponse>("/auth/verify-magic-link", {
+          const response = await api.get<ApiSuccessResponse<BackendAuthResponse> | BackendAuthResponse>("/auth/verify-magic-link", {
             params: { token },
           });
+          const data = unwrapApiResponse(response.data);
           if (!data?.access_token || !data?.refresh_token || !data?.user) {
             logAuth("error", "Magic link authorization: invalid response structure", {
               hasAccessToken: !!data?.access_token,
@@ -355,7 +371,11 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
         try {
-          const { data } = await api.post<BackendAuthResponse>("/auth/google/callback", { googleToken });
+          const response = await api.post<ApiSuccessResponse<BackendAuthResponse> | BackendAuthResponse>(
+            "/auth/google/callback",
+            { googleToken }
+          );
+          const data = unwrapApiResponse(response.data);
           if (!data?.access_token || !data?.refresh_token || !data?.user) {
             logAuth("error", "Google authorization: invalid response structure", {
               hasAccessToken: !!data?.access_token,
@@ -474,7 +494,7 @@ export const authOptions: NextAuthOptions = {
             logAuth("error", "Refresh failed with permanent error, invalidating session", {
               error: errorMessage,
             });
-            token.error = "RefreshAccessTokenError";
+            token.error = "RefreshTokenInvalid";
             delete token.access_token;
             delete token.refresh_token;
             delete token.exp;
@@ -483,7 +503,7 @@ export const authOptions: NextAuthOptions = {
               error: errorMessage,
               status: ax.response?.status,
             });
-            token.error = "RefreshAccessTokenError";
+            token.error = undefined;
             // Don't delete tokens on temporary errors - allow retry
           }
           return token;

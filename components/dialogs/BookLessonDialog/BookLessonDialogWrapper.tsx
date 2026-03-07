@@ -8,6 +8,7 @@ import BookingDialog from "./index";
 import { fetchTutorDetailData } from "@/services/tutor";
 import { TutorDetailData } from "@/services/tutor/types";
 import { BookingDialogI } from "./types";
+import { buildBookingAvailabilityFromTutor } from "@/lib/bookingAvailability";
 
 export default function BookLessonDialogWrapper() {
   const pathname = usePathname();
@@ -84,8 +85,10 @@ export default function BookLessonDialogWrapper() {
             .toISOString()
             .split("T")[0],
         },
-        availability: [],
+        availability: buildBookingAvailabilityFromTutor(tutorData.availability),
         isSubmitting: false,
+        onContinue: () => {},
+        continueDisabled: true,
       }
     : null;
 
@@ -142,4 +145,3 @@ export default function BookLessonDialogWrapper() {
     </AnimatePresence>
   );
 }
-

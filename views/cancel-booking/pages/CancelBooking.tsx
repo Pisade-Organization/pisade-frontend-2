@@ -1,14 +1,31 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { PageNavigationHeader } from "../components/PageNavigationHeader"
 import CancelClassReasonForm from "../components/CancelClassReasonForm"
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/footer/Footer";
 import BookingSummary from "@/components/shared/BookingSummary";
+import { useBookingDetail } from "@/hooks/bookings/queries";
+import { useCancelBooking } from "@/hooks/bookings/mutations";
+import type { CancelReason } from "../components/CancelClassReasonForm/ReasonList/types";
+import {
+  DesktopOnly,
+  MobileOnly,
+  PageContainer,
+  PageRoot,
+  SummaryPanel,
+  TwoColumnLayout,
+} from "@/components/layout/PagePrimitives";
 
 export default function CancelBooking() {
   const router = useRouter();
+  const params = useParams();
+  const bookingId = params?.bookingId as string | undefined;
+  const locale = (params?.locale as string | undefined) ?? "en";
+  const { data: booking } = useBookingDetail(bookingId);
+  const cancelBookingMutation = useCancelBooking(bookingId);
 
   const handleBack = () => {
     router.back();
@@ -18,70 +35,87 @@ export default function CancelBooking() {
     router.back();
   };
 
-  // Mock data - replace with actual booking data from API
-  const cancellationDeadline = new Date("2024-10-16T09:00:00");
-  const lessonDate = new Date("2024-09-07T18:00:00");
+  const lessonDate = booking ? new Date(booking.schedule.startTime) : new Date();
+  const lessonEnd = booking ? new Date(booking.schedule.endTime) : new Date();
+  const cancellationDeadline = lessonDate;
+  const startTime = lessonDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+  const endTime = lessonEnd.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+  const lessonPrice = booking?.pricing.amount ?? 0;
+
+  const handleCancelBooking = (reason: CancelReason) => {
+    if (!bookingId) return;
+
+    cancelBookingMutation.mutate(
+      { reason },
+      {
+        onSuccess: () => {
+          router.push(`/${locale}/class-management`);
+        },
+      },
+    );
+  };
 
   return (
-    <div className="w-full min-h-screen bg-white flex flex-col">
-      {/* Desktop Navbar - only visible on desktop */}
-      <div className="hidden lg:block">
+    <PageRoot className="bg-white">
+      <DesktopOnly>
         <Navbar variant="student_dashboard" />
-      </div>
+      </DesktopOnly>
 
-      {/* Mobile Header */}
-      <div className="lg:hidden px-4">
+      <MobileOnly className="px-4">
         <PageNavigationHeader
           title="Cancel Booking"
           variant="mobile"
           onClose={handleClose}
         />
-      </div>
+      </MobileOnly>
 
-      {/* Desktop Header */}
-      <div className="hidden lg:block px-4 lg:px-20 lg:pt-8">
+      <DesktopOnly className="px-4 lg:px-20 lg:pt-8">
         <PageNavigationHeader
           title="Cancel Booking"
           variant="desktop"
           onBack={handleBack}
         />
-      </div>
+      </DesktopOnly>
 
-      {/* Main Content Container */}
-      <div className="w-full flex-1 py-2 px-4 lg:py-8 lg:px-20">
-        <div className="w-full flex flex-col gap-5 lg:flex-row lg:gap-10">
-          {/* Left Column - Cancel Class Reason Form */}
-          <CancelClassReasonForm />
+      <PageContainer className="flex-1">
+        <TwoColumnLayout>
+          <CancelClassReasonForm
+            onSubmit={handleCancelBooking}
+            isSubmitting={cancelBookingMutation.isPending}
+            errorMessage={
+              cancelBookingMutation.isError
+                ? "Failed to cancel booking. Please try again."
+                : undefined
+            }
+          />
 
-          {/* Right Column - Booking Summary */}
-          <div className="w-full lg:max-w-[343px] lg:flex-1 border border-neutral-50 rounded-2xl">
+          <SummaryPanel className="border border-neutral-50 rounded-2xl">
             <BookingSummary
               variant="cancel"
-              tutorName="Alana Somchai Degrey"
+              tutorName={booking?.tutor.name ?? "Tutor"}
               countryUrl="https://flagcdn.com/w40/th.png"
-              avatarUrl="https://t4.ftcdn.net/jpg/03/83/25/83/360_F_383258331_D8imaEMl8Q3lf7EKU2Pi78Cn0R7KkW9o.jpg"
-              subject="Physic • English"
-              rating={4.5}
-              studentsCount={20}
-              lessonsCount={200}
+              avatarUrl={booking?.tutor.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor"}
+              subject="Lesson"
+              rating={booking?.tutor.rating ?? 0}
+              studentsCount={booking?.tutor.studentCount ?? 0}
+              lessonsCount={booking?.tutor.lessonCount ?? 0}
               cancellationDeadline={cancellationDeadline}
-              lessonName="English TEFL Lesson (50-min lessons)"
+              lessonName="Booked lesson"
               date={lessonDate}
-              startTime="18:00"
-              endTime="21:00"
+              startTime={startTime}
+              endTime={endTime}
               timezone="Etc/GMT+11"
-              lessonPrice={20.00}
-              processingFee={0.30}
-              total={20.00}
+              lessonPrice={lessonPrice}
+              processingFee={0}
+              total={lessonPrice}
             />
-          </div>
-        </div>
-      </div>
+          </SummaryPanel>
+        </TwoColumnLayout>
+      </PageContainer>
 
-      {/* Footer */}
       <div className="w-full mt-auto">
         <Footer />
       </div>
-    </div>
+    </PageRoot>
   );
 }

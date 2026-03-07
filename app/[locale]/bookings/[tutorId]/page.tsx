@@ -16,14 +16,19 @@ import TimezoneSelector from "@/components/dialogs/BookLessonDialog/TimezoneSele
 import DateNavigator from "@/components/dialogs/BookLessonDialog/DateNavigator";
 import AvailabilityGrid from "@/components/dialogs/BookLessonDialog/AvailabilityGrid";
 import BookingFooter from "@/components/dialogs/BookLessonDialog/BookingFooter";
+import { buildBookingAvailabilityFromTutor } from "@/lib/bookingAvailability";
+import { useCreateBooking } from "@/hooks/bookings/mutations";
 
 export default function Booking() {
   const params = useParams();
   const router = useRouter();
   const tutorId = params?.tutorId as string;
+  const locale = (params?.locale as string) || "en";
   const [tutorData, setTutorData] = useState<TutorDetailData | null>(null);
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const createBookingMutation = useCreateBooking();
 
   // Check if mobile
   useEffect(() => {
@@ -54,54 +59,40 @@ export default function Booking() {
   }, [tutorId]);
 
   const handleClose = () => {
-    const locale = params?.locale || "en";
     router.replace(`/${locale}`);
-  };
-
-  // Mock availability generator (same as in BookingDialog)
-  const generateMockAvailability = (weekStartDate: string): BookingDialogI["availability"] => {
-    const weekdays: ("Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun")[] = [
-      "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
-    ];
-    
-    const startDate = new Date(weekStartDate);
-    const availability: BookingDialogI["availability"] = [];
-
-    for (let i = 0; i < 7; i++) {
-      const currentDate = new Date(startDate);
-      currentDate.setDate(startDate.getDate() + i);
-      
-      const dateString = currentDate.toISOString().split("T")[0];
-      const weekday = weekdays[currentDate.getDay() === 0 ? 6 : currentDate.getDay() - 1];
-
-      const timeSlots = [
-        "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "21:30", "22:00"
-      ].map((time) => ({
-        startTime: time,
-        isAvailable: Math.random() > 0.3,
-      }));
-
-      availability.push({
-        date: dateString,
-        weekday,
-        slots: timeSlots,
-      });
-    }
-
-    return availability;
   };
 
   const [selectedSlot, setSelectedSlot] = useState<{ date: string; startTime: string } | null>(null);
   const [timezone, setTimezone] = useState("Etc/GMT+11");
   const [selectedLessonDuration, setSelectedLessonDuration] = useState(50); // Default to 50 minutes
 
-  // Generate availability for current week
-  const mockAvailability = useMemo(() => {
-    const today = new Date();
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() - today.getDay() + 1); // Monday of current week
-    return generateMockAvailability(weekStart.toISOString().split("T")[0]);
-  }, []);
+  const handleContinueToCheckout = async () => {
+    if (!selectedSlot || !tutorData?.id) {
+      return;
+    }
+
+    setSubmitError(null);
+
+    const lessonStart = new Date(`${selectedSlot.date}T${selectedSlot.startTime}:00`);
+    const lessonEnd = new Date(lessonStart.getTime() + selectedLessonDuration * 60 * 1000);
+
+    try {
+      const booking = await createBookingMutation.mutateAsync({
+        tutorId: tutorData.id,
+        startTime: lessonStart.toISOString(),
+        endTime: lessonEnd.toISOString(),
+      });
+
+      router.push(`/${locale}/checkout/${booking.id}`);
+    } catch (error) {
+      console.error("Failed to create booking:", error);
+      setSubmitError("Unable to continue right now. Please try another time slot.");
+    }
+  };
+
+  const bookingAvailability = useMemo<BookingDialogI["availability"]>(() => {
+    return buildBookingAvailabilityFromTutor(tutorData?.availability ?? {});
+  }, [tutorData?.availability]);
 
   // Calculate lesson details from selected slot
   const lessonDetails = useMemo(() => {
@@ -159,9 +150,12 @@ export default function Booking() {
             .toISOString()
             .split("T")[0],
         },
-        availability: mockAvailability,
+        availability: bookingAvailability,
         selectedSlot: selectedSlot || undefined,
-        isSubmitting: false,
+        isSubmitting: createBookingMutation.isPending,
+        onSlotSelect: (date, startTime) => setSelectedSlot({ date, startTime }),
+        onContinue: handleContinueToCheckout,
+        continueDisabled: !selectedSlot || createBookingMutation.isPending,
       }
     : null;
 
@@ -225,12 +219,20 @@ export default function Booking() {
                 <DateNavigator />
 
                 <AvailabilityGrid
-                  availability={mockAvailability}
+                  availability={bookingAvailability}
                   selectedSlot={selectedSlot || undefined}
                   onSlotSelect={(date, startTime) => setSelectedSlot({ date, startTime })}
                 />
 
-                <BookingFooter tutorId={tutorData.id} />
+                {submitError && (
+                  <p className="text-sm text-red-500">{submitError}</p>
+                )}
+
+                <BookingFooter
+                  onContinue={handleContinueToCheckout}
+                  disabled={!selectedSlot || createBookingMutation.isPending}
+                  isLoading={createBookingMutation.isPending}
+                />
               </div>
             </div>
           )}

@@ -10,9 +10,12 @@ import WeeklyStudyPlan from "../components/WeeklyStudyPlan"
 import FavoriteTutors from "../components/FavoriteTutors"
 import TransactionHistory from "../components/TransactionHistory"
 
-import type { Role } from "@/types/role.enum"
+import { Role } from "@/types/role.enum"
 import type { Transaction } from "../components/TransactionHistory/types"
 import useMediaQuery from "@/hooks/useMediaQuery"
+import { useDashboardSummary } from "@/hooks/dashboard/queries"
+import { useTutorWalletSummary } from "@/hooks/settings/queries"
+import { PageRoot } from "@/components/layout/PagePrimitives"
 
 type DashboardNavbarVariant = "student_dashboard" | "tutor_dashboard"
 
@@ -43,36 +46,32 @@ export default function DashboardPage({
 }: DashboardPageProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const layout = isDesktop ? "table" : "card"
+  const { data: studentSummary } = useDashboardSummary()
+  const { data: tutorWalletSummary } = useTutorWalletSummary()
 
-  return (
-    <div className="w-full min-h-screen flex flex-col items-center">
-      <Navbar variant={navbarVariant} />
-      <Hero {...heroProps} />
+  const stats =
+    role === Role.STUDENT
+      ? [
+          { label: "Completed Lessons" as const, value: studentSummary?.completedLessons ?? 0 },
+          { label: "Scheduled Lessons" as const, value: studentSummary?.scheduledLessons ?? 0 },
+          { label: "Skipped Lessons" as const, value: studentSummary?.skippedLessons ?? 0 },
+          { label: "Goal" as const, value: 0 },
+        ]
+      : [
+          { label: "Completed Lessons" as const, value: 0 },
+          { label: "Scheduled Lessons" as const, value: 0 },
+          { label: "Skipped Lessons" as const, value: 0 },
+          { label: "Goal" as const, value: Math.round(tutorWalletSummary?.totalEarnings ?? 0) },
+        ]
 
-      <div className="w-full order-2 lg:order-1">
-        <TodayLessons />
-      </div>
-
-      <div className="w-full order-1 lg:order-2">
-        <StatsOverview
-          stats={[
-            { label: "Completed Lessons", value: 15 },
-            { label: "Scheduled Lessons", value: 4 },
-            { label: "Skipped Lessons", value: 1 },
-            { label: "Goal", value: 20 },
-          ]}
-        />
-      </div>
-
-      <div className="w-full order-3">
-        <WeeklyStudyPlan />
-      </div>
-
-      <div className="w-full order-4">
-        <FavoriteTutors />
-      </div>
-
-      <div className="w-full order-5">
+  const dashboardSections = [
+    { className: "w-full order-2 lg:order-1", content: <TodayLessons /> },
+    { className: "w-full order-1 lg:order-2", content: <StatsOverview stats={stats} /> },
+    { className: "w-full order-3", content: <WeeklyStudyPlan /> },
+    { className: "w-full order-4", content: <FavoriteTutors /> },
+    {
+      className: "w-full order-5",
+      content: (
         <TransactionHistory
           role={role}
           transactions={transactions}
@@ -80,11 +79,24 @@ export default function DashboardPage({
           onViewAll={onViewAll}
           onShowMore={onShowMore}
         />
-      </div>
+      ),
+    },
+  ]
+
+  return (
+    <PageRoot className="items-center">
+      <Navbar variant={navbarVariant} />
+      <Hero {...heroProps} />
+
+      {dashboardSections.map((section) => (
+        <div key={section.className} className={section.className}>
+          {section.content}
+        </div>
+      ))}
 
       <div className="w-full order-last">
         <Footer />
       </div>
-    </div>
+    </PageRoot>
   )
 }

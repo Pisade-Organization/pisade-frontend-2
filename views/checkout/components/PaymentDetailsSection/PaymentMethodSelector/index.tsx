@@ -3,7 +3,6 @@
 import PaymentMethodOption from "./PaymentMethodOption"
 import type { PaymentMethodSelectorI } from "./types"
 import { ScanQrCode, CreditCard } from "lucide-react"
-import { ApplePayIcon, GooglePayIcon } from "@/components/icons/common"
 import PaymentFormsHeader from "../PaymentForms/PaymentFormsHeader"
 import CardForm from "../PaymentForms/CardForm"
 
@@ -29,16 +28,6 @@ export default function PaymentMethodSelector({ selectedMethod, onMethodChange }
       method: "CARD",
       label: "Credit/Debit Card",
       icon: <CreditCard className="w-6 h-6 text-neutral-500" />
-    },
-    {
-      method: "APPLE_PAY",
-      label: "Apple Pay",
-      icon: <ApplePayIcon width={24} height={24} />
-    },
-    {
-      method: "GOOGLE_PAY",
-      label: "Google Pay",
-      icon: <GooglePayIcon width={24} height={24} />
     }
   ]
 
@@ -56,8 +45,7 @@ export default function PaymentMethodSelector({ selectedMethod, onMethodChange }
         ))}
       </div>
 
-      {/* Show CardForm for CARD and GOOGLE_PAY */}
-      {(selectedMethod === "CARD" || selectedMethod === "GOOGLE_PAY") && (
+      {selectedMethod === "CARD" && (
         <div className="w-full flex flex-col gap-2">
           <PaymentFormsHeader selectedMethod={selectedMethod} />
           <CardForm />
@@ -71,6 +59,4 @@ export default function PaymentMethodSelector({ selectedMethod, onMethodChange }
 export const PAYMENT_METHODS: Record<PaymentMethod, string> = {
   PROMPTPAY: "PromptPay",
   CARD: "Credit/Debit Card",
-  APPLE_PAY: "Apple Pay",
-  GOOGLE_PAY: "Google Pay",
 }

@@ -1,0 +1,76 @@
+import apiInstanceClient from "@/services/apiInstanceClient";
+import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiResponse";
+import { servicePath } from "@/services/servicePath";
+import type {
+  DeleteMyAccountResponse,
+  NotificationPreferences,
+  MyProfile,
+  MyNotificationsResponse,
+  UpdateNotificationPreferencesDto,
+  UpdateMyPhoneNumberDto,
+  UpdateMyPhoneNumberResponse,
+  UpdateMyProfileDto,
+  UpdateMyProfileResponse,
+} from "./types";
+
+export const ProfileService = {
+  async getMyProfile(): Promise<MyProfile> {
+    const response = await apiInstanceClient.get<ApiSuccessResponse<MyProfile> | MyProfile>(
+      servicePath.profile.getMyProfile,
+    );
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async updateMyProfile(payload: UpdateMyProfileDto): Promise<UpdateMyProfileResponse> {
+    const response = await apiInstanceClient.patch<
+      ApiSuccessResponse<UpdateMyProfileResponse> | UpdateMyProfileResponse
+    >(servicePath.profile.updateMyProfile, payload);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async updateMyPhoneNumber(
+    payload: UpdateMyPhoneNumberDto,
+  ): Promise<UpdateMyPhoneNumberResponse> {
+    const response = await apiInstanceClient.patch<
+      ApiSuccessResponse<UpdateMyPhoneNumberResponse> | UpdateMyPhoneNumberResponse
+    >(servicePath.profile.updateMyPhoneNumber, payload);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async deleteMyAccount(): Promise<DeleteMyAccountResponse> {
+    const response = await apiInstanceClient.delete<
+      ApiSuccessResponse<DeleteMyAccountResponse> | DeleteMyAccountResponse
+    >(servicePath.profile.deleteMyAccount);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async getMyNotifications(): Promise<MyNotificationsResponse> {
+    const response = await apiInstanceClient.get<
+      ApiSuccessResponse<MyNotificationsResponse> | MyNotificationsResponse
+    >(servicePath.profile.getMyNotifications);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async getMyNotificationPreferences(): Promise<NotificationPreferences> {
+    const response = await apiInstanceClient.get<
+      ApiSuccessResponse<NotificationPreferences> | NotificationPreferences
+    >(servicePath.profile.getMyNotificationPreferences);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async updateMyNotificationPreferences(
+    payload: UpdateNotificationPreferencesDto,
+  ): Promise<NotificationPreferences> {
+    const response = await apiInstanceClient.patch<
+      ApiSuccessResponse<NotificationPreferences> | NotificationPreferences
+    >(servicePath.profile.updateMyNotificationPreferences, payload);
+
+    return unwrapApiResponse(response.data);
+  },
+};

@@ -5,7 +5,7 @@ import { Calendar } from "lucide-react"
 import { Heart } from "lucide-react"
 import { MessageCircle } from "lucide-react"
 import BaseButton from "@/components/base/BaseButton"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { startTransition } from "react"
 import useMediaQuery from "@/hooks/useMediaQuery"
 
@@ -19,7 +19,10 @@ export default function TutorActionButtons({
     tutorId
 }: TutorActionButtonsProps) {
     const router = useRouter();
+    const pathname = usePathname();
     const isDesktop = useMediaQuery("(min-width: 1024px)")
+    const locale = pathname.split("/")[1] || "en";
+    const bookingPath = `/${locale}/bookings/${tutorId}`;
 
     const handleBookLessonClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent triggering parent card clicks
@@ -27,11 +30,11 @@ export default function TutorActionButtons({
         if (isDesktop) {
             // On desktop: use startTransition for non-blocking navigation
             startTransition(() => {
-                router.replace(`/book/${tutorId}`);
+                router.replace(bookingPath);
             });
         } else {
             // On mobile: use normal navigation
-            router.push(`/book/${tutorId}`);
+            router.push(bookingPath);
         }
     };
 

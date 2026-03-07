@@ -10,17 +10,22 @@ interface BaseSwitchProps
     "onCheckedChange" | "onChange"
   > {
   defaultChecked?: boolean;
+  checked?: boolean;
   onChange?: (checked: boolean) => void;
 }
 
 export const BaseSwitch = React.forwardRef<
   React.ElementRef<typeof SwitchPrimitive.Root>,
   BaseSwitchProps
->(({ defaultChecked = false, onChange, className, ...props }, ref) => {
-  const [checked, setChecked] = React.useState(defaultChecked);
+>(({ defaultChecked = false, checked: checkedProp, onChange, className, ...props }, ref) => {
+  const [internalChecked, setInternalChecked] = React.useState(defaultChecked);
+  const isControlled = typeof checkedProp === "boolean";
+  const checked = isControlled ? checkedProp : internalChecked;
 
   const handleChange = (value: boolean) => {
-    setChecked(value);
+    if (!isControlled) {
+      setInternalChecked(value);
+    }
     onChange?.(value);
   };
 

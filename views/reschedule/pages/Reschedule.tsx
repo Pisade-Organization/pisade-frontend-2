@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { PageNavigationHeader } from "../components/PageNavigationHeader";
 import ScheduleHeader from "../components/ScheduleHeader";
 import ScheduleContent from "../components/ScheduleContent";
@@ -9,9 +10,28 @@ import BookingSummary from "@/components/shared/BookingSummary";
 import BaseButton from "@/components/base/BaseButton";
 import Navbar from "@/components/Navbar";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { useBookingDetail } from "@/hooks/bookings/queries";
+import { useRescheduleBooking } from "@/hooks/bookings/mutations";
+import { fetchTutorDetailData } from "@/services/tutor";
+import { TutorDetailData } from "@/services/tutor/types";
+import { buildBookingAvailabilityFromTutor } from "@/lib/bookingAvailability";
+import {
+  DesktopOnly,
+  MobileOnly,
+  PageContainer,
+  PageRoot,
+  PrimaryPanel,
+  SummaryPanel,
+  TwoColumnLayout,
+} from "@/components/layout/PagePrimitives";
 
 export default function Reschedule() {
   const router = useRouter();
+  const params = useParams();
+  const bookingId = params?.bookingId as string | undefined;
+  const locale = (params?.locale as string | undefined) ?? "en";
+  const { data: booking } = useBookingDetail(bookingId);
+  const rescheduleMutation = useRescheduleBooking(bookingId);
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const isMobile = !isDesktop
   const [timezone, setTimezone] = useState("Etc/GMT+11");
@@ -29,14 +49,17 @@ export default function Reschedule() {
     date: string;
     startTime: string;
   } | null>(null);
+  const [tutorData, setTutorData] = useState<TutorDetailData | null>(null);
 
-  // Calculate start and end dates for the week (Monday to Sunday)
-  const { startDate, endDate } = useMemo(() => {
-    const start = new Date(currentWeekStart);
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6); // Sunday (6 days after Monday)
-    return { startDate: start, endDate: end };
-  }, [currentWeekStart]);
+  useEffect(() => {
+    const loadTutorData = async () => {
+      if (!booking?.tutor.id) return;
+      const data = await fetchTutorDetailData(booking.tutor.id);
+      setTutorData(data);
+    };
+
+    void loadTutorData();
+  }, [booking?.tutor.id]);
 
   const handlePrevWeek = () => {
     const newWeekStart = new Date(currentWeekStart);
@@ -58,11 +81,26 @@ export default function Reschedule() {
     router.back();
   };
 
-  // Mock data - in real app, this would come from props or API
-  const cancellationDeadline = useMemo(() => new Date("2025-09-26T13:00:00"), [])
-  const currentLessonDate = useMemo(() => new Date("2025-09-27T13:00:00"), [])
-  const currentStartTime = "13:00"
-  const currentEndTime = "15:00"
+  const currentLessonDate = useMemo(() => {
+    return booking ? new Date(booking.schedule.startTime) : new Date()
+  }, [booking])
+  const currentLessonEnd = useMemo(() => {
+    return booking ? new Date(booking.schedule.endTime) : new Date()
+  }, [booking])
+  const cancellationDeadline = useMemo(() => new Date(currentLessonDate), [currentLessonDate])
+  const currentStartTime = useMemo(
+    () => currentLessonDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }),
+    [currentLessonDate],
+  )
+  const currentEndTime = useMemo(
+    () => currentLessonEnd.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }),
+    [currentLessonEnd],
+  )
+
+  const availability = useMemo(
+    () => buildBookingAvailabilityFromTutor(tutorData?.availability ?? {}, currentWeekStart),
+    [currentWeekStart, tutorData?.availability],
+  )
 
   // Calculate reschedule date/time from selected slot
   const rescheduleDate = useMemo(() => {
@@ -89,11 +127,60 @@ export default function Reschedule() {
     setSelectedSlot({ date, startTime });
   };
 
+  const handleReschedule = () => {
+    if (!bookingId || !selectedSlot || !booking) return;
+
+    const oldStart = new Date(booking.schedule.startTime)
+    const oldEnd = new Date(booking.schedule.endTime)
+    const durationMinutes = Math.max(1, Math.round((oldEnd.getTime() - oldStart.getTime()) / 60000))
+
+    const newStart = new Date(`${selectedSlot.date}T${selectedSlot.startTime}:00`)
+    const newEnd = new Date(newStart)
+    newEnd.setMinutes(newEnd.getMinutes() + durationMinutes)
+
+    rescheduleMutation.mutate(
+      {
+        startTime: newStart.toISOString(),
+        endTime: newEnd.toISOString(),
+      },
+      {
+        onSuccess: () => {
+          router.push(`/${locale}/class-management`)
+        },
+      },
+    )
+  }
+
+  const summaryProps = {
+    variant: "reschedule" as const,
+    tutorName: booking?.tutor.name ?? "Tutor",
+    countryUrl: "https://flagcdn.com/w40/th.png",
+    avatarUrl: booking?.tutor.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",
+    subject: "Lesson",
+    rating: booking?.tutor.rating ?? 0,
+    studentsCount: booking?.tutor.studentCount ?? 0,
+    lessonsCount: booking?.tutor.lessonCount ?? 0,
+    cancellationDeadline,
+    lessonName: "Booked lesson",
+    date: currentLessonDate,
+    startTime: currentStartTime,
+    endTime: currentEndTime,
+    timezone,
+    lessonPrice: booking?.pricing.amount ?? 0,
+    processingFee: 0,
+    total: 0,
+    rescheduleDate,
+    rescheduleStartTime,
+    rescheduleEndTime,
+  }
+
+  const actionLabel = rescheduleMutation.isPending ? "Rescheduling..." : "Reschedule"
+  const actionDisabled = !selectedSlot || rescheduleMutation.isPending
+
   // Mobile: Full-screen layout
   if (isMobile) {
     return (
-      <div className="w-full min-h-screen bg-white flex flex-col">
-        {/* Header */}
+      <PageRoot className="bg-white">
         <div className="w-full px-4 pt-3 pb-2 border-b border-neutral-50">
           <PageNavigationHeader
             title="Reschedule"
@@ -102,10 +189,8 @@ export default function Reschedule() {
           />
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto">
           <div className="w-full flex flex-col gap-5 px-4 py-5">
-            {/* Schedule Header */}
             <ScheduleHeader
               timezone={timezone}
               onTimezoneChange={setTimezone}
@@ -115,68 +200,47 @@ export default function Reschedule() {
               variant="mobile"
             />
 
-            {/* Schedule Content */}
             <ScheduleContent
+              availability={availability}
               weekStartDate={currentWeekStart}
               selectedSlot={selectedSlot}
               onSlotSelect={handleSlotSelect}
             />
 
-            {/* Instructor and Lesson Details */}
             <div className="w-full flex flex-col gap-5 py-2 px-4 rounded-2xl border border-neutral-50 bg-white">
-              <BookingSummary
-                variant="reschedule"
-                tutorName="Alana Somchai Degrey"
-                countryUrl="https://flagcdn.com/w40/th.png"
-                avatarUrl="https://t4.ftcdn.net/jpg/03/83/25/83/360_F_383258331_D8imaEMl8Q3lf7EKU2Pi78Cn0R7KkW9o.jpg"
-                subject="Physic • English"
-                rating={4.5}
-                studentsCount={20}
-                lessonsCount={200}
-                cancellationDeadline={cancellationDeadline}
-                lessonName="English TEFL Lesson (50-min lessons)"
-                date={currentLessonDate}
-                startTime={currentStartTime}
-                endTime={currentEndTime}
-                timezone={timezone}
-                lessonPrice={20.00}
-                processingFee={0.30}
-                total={0}
-                rescheduleDate={rescheduleDate}
-                rescheduleStartTime={rescheduleStartTime}
-                rescheduleEndTime={rescheduleEndTime}
-              />
+              <BookingSummary {...summaryProps} />
             </div>
 
-            {/* Reschedule Button */}
             <div className="w-full pb-6">
               <BaseButton
                 className="w-full"
                 variant="primary"
-                disabled={!selectedSlot}
+                disabled={actionDisabled}
+                onClick={handleReschedule}
               >
-                Reschedule
+                {actionLabel}
               </BaseButton>
             </div>
+
+            {rescheduleMutation.isError ? (
+              <p className="text-sm text-red-500">Failed to reschedule. Please try again.</p>
+            ) : null}
           </div>
         </div>
-      </div>
+      </PageRoot>
     );
   }
 
   // Desktop: Two-column layout
   return (
-    <>
-      {/* Desktop Navbar */}
-      <div className="hidden lg:block">
+    <PageRoot>
+      <DesktopOnly>
         <Navbar variant="student_dashboard" />
-      </div>
+      </DesktopOnly>
 
-      {/* Main Content Container */}
-      <div className="w-full py-2 px-4 lg:py-8 lg:px-20">
-        <div className="w-full flex flex-col lg:flex-row lg:gap-10">
-          {/* Left Column - Schedule Calendar */}
-          <div className="w-full lg:flex-1 flex flex-col gap-5 py-2 px-4 lg:py-6 lg:px-[120px] lg:rounded-2xl lg:border lg:border-neutral-50 lg:bg-white">
+      <PageContainer>
+        <TwoColumnLayout className="gap-0 lg:gap-10">
+          <PrimaryPanel>
             <PageNavigationHeader
               title="Reschedule"
               variant="desktop"
@@ -193,50 +257,33 @@ export default function Reschedule() {
             />
 
             <ScheduleContent
+              availability={availability}
               weekStartDate={currentWeekStart}
               selectedSlot={selectedSlot}
               onSlotSelect={handleSlotSelect}
             />
 
-            {/* Reschedule Button */}
             <div className="w-full pt-4">
               <BaseButton
                 className="w-full"
                 variant="primary"
-                disabled={!selectedSlot}
+                disabled={actionDisabled}
+                onClick={handleReschedule}
               >
-                Reschedule
+                {actionLabel}
               </BaseButton>
             </div>
-          </div>
 
-          {/* Right Column - Booking Summary */}
-          <div className="w-full lg:max-w-[343px] lg:flex-1">
-            <BookingSummary
-              variant="reschedule"
-              tutorName="Alana Somchai Degrey"
-              countryUrl="https://flagcdn.com/w40/th.png"
-              avatarUrl="https://t4.ftcdn.net/jpg/03/83/25/83/360_F_383258331_D8imaEMl8Q3lf7EKU2Pi78Cn0R7KkW9o.jpg"
-              subject="Physic • English"
-              rating={4.5}
-              studentsCount={20}
-              lessonsCount={200}
-              cancellationDeadline={cancellationDeadline}
-              lessonName="English TEFL Lesson (50-min lessons)"
-              date={currentLessonDate}
-              startTime={currentStartTime}
-              endTime={currentEndTime}
-              timezone={timezone}
-              lessonPrice={20.00}
-              processingFee={0.30}
-              total={0}
-              rescheduleDate={rescheduleDate}
-              rescheduleStartTime={rescheduleStartTime}
-              rescheduleEndTime={rescheduleEndTime}
-            />
-          </div>
-        </div>
-      </div>
-    </>
+            {rescheduleMutation.isError ? (
+              <p className="text-sm text-red-500">Failed to reschedule. Please try again.</p>
+            ) : null}
+          </PrimaryPanel>
+
+          <SummaryPanel>
+            <BookingSummary {...summaryProps} />
+          </SummaryPanel>
+        </TwoColumnLayout>
+      </PageContainer>
+    </PageRoot>
   );
 }

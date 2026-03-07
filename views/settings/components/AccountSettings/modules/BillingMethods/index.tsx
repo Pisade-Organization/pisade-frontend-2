@@ -9,6 +9,13 @@ import MobileAddBillingMethodPage from "./AddBillingMethod/MobileAddBillingMetho
 import DeleteCardDialog from "./DeleteCardDialog"
 import useMediaQuery from "@/hooks/useMediaQuery"
 
+const billingMethods: Array<{
+  fullName: string
+  lastFourDigits: string
+  isDefault: boolean
+  cardType: string
+}> = []
+
 export default function BillingMethods() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isMobilePageOpen, setIsMobilePageOpen] = useState(false)
@@ -51,7 +58,8 @@ export default function BillingMethods() {
   }
 
   const handleDeleteCard = (index: number) => {
-    const card = mockBillingMethods[index]
+    const card = billingMethods[index]
+    if (!card) return
     setSelectedCardForDelete({
       lastFourDigits: card.lastFourDigits,
       cardType: card.cardType,
@@ -62,37 +70,15 @@ export default function BillingMethods() {
 
   const handleConfirmDelete = () => {
     if (selectedCardForDelete) {
-      // TODO: Call API to delete card
       console.log("Deleting card:", selectedCardForDelete)
-      // await deleteBillingMethod(selectedCardForDelete.index)
-      
-      // For now, just close the dialog
       setIsDeleteDialogOpen(false)
       setSelectedCardForDelete(null)
     }
   }
 
   const handleSetDefault = (index: number) => {
-    // TODO: Call API to set card as default
     console.log("Setting card as default:", index)
-    // await setDefaultBillingMethod(index)
   }
-
-  // Mock data - replace with actual data from API/state
-  const mockBillingMethods = [
-    {
-      fullName: "John Doe",
-      lastFourDigits: "1627",
-      isDefault: true,
-      cardType: "Mastercard",
-    },
-    {
-      fullName: "John Doe",
-      lastFourDigits: "4532",
-      isDefault: false,
-      cardType: "Visacard",
-    },
-  ]
 
   return (
     <>
@@ -101,7 +87,7 @@ export default function BillingMethods() {
         <BillingMethodsHeader />
 
         <div className="w-full flex flex-col gap-3">
-          { mockBillingMethods.map((card, index) => (
+          { billingMethods.map((card, index) => (
             <BillingMethodCard
               key={index}
               fullName={card.fullName}

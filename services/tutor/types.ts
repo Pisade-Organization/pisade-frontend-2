@@ -39,3 +39,46 @@ export interface TutorDetailData extends Tutor {
   reviews: TutorReview[];
   summary: TutorReviewsSummary;
 }
+
+export interface MyTutorSubject {
+  id: string;
+  tutorId: string;
+  subjectId: string;
+}
+
+export interface MyTutorAvailability {
+  id: string;
+  tutorId: string;
+  dayOfWeek: string;
+  startTime: string;
+  endTime: string;
+  timezone: string;
+  isActive: boolean;
+}
+
+export interface MyTutorProfile {
+  videoUrl: string | null;
+  specialties: string[];
+  subjects: MyTutorSubject[];
+  baseRate: number;
+  availabilities: MyTutorAvailability[];
+}
+
+export interface UpdateMyTutorProfileDto {
+  videoUrl?: string;
+  specialties?: string[];
+  subjects?: string[];
+  baseRate?: number;
+  availability?: string;
+  bio?: string;
+}
+
+export interface TutorTransaction {
+  id: string;
+  type: string;
+  status: string;
+  amount: number;
+  fee: number;
+  reference: string | null;
+  createdAt: string;
+}
