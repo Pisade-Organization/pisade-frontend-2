@@ -6,7 +6,6 @@ import { Search } from "lucide-react"
 
 import BaseButton from "../base/BaseButton"
 import MobileMenu from "../MobileMenu/MobileMenu"
-import { PisadeLogo } from "../icons"
 import Logo from "./Logo"
 import AuthButtons from "./AuthButtons"
 import DashboardActions from "./DashboardActions"
@@ -37,7 +36,7 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
         <div className="hidden lg:flex items-center gap-2">
           {isAuth ? (
             <>
-              <UserAvatar avatarUrl={data?.user?.avatarUrl} fullName={data?.user?.fullName} />
+              <UserAvatar avatarUrl={data?.user?.avatarUrl} fullName={data?.user?.fullName} size={44} />
             </>
           ) : (
             <>
@@ -80,7 +79,7 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
         {variant === "student_dashboard" && (
           <>
             <DashboardActions />
-            <PisadeLogo width={44} height={44} className="w-11 h-11 rounded-full" alt="Profile picture" />
+            <UserAvatar avatarUrl={data?.user?.avatarUrl} fullName={data?.user?.fullName} size={44} />
           </>
         )}
       </div>
