@@ -3,27 +3,44 @@
 import BaseButton from "@/components/base/BaseButton"
 import Typography from "@/components/base/Typography"
 import useMediaQuery from "@/hooks/useMediaQuery"
-import { Eye, Info } from "lucide-react"
+import { Eye, EyeOff, Info } from "lucide-react"
+import { useState } from "react"
 import type { WalletRole } from "@/views/wallet/types"
 
 interface BalanceCardProps {
   availableBalance: number
   temporarilyHold: number
   role: WalletRole
+  onCtaClick?: () => void
 }
 
 export default function BalanceCard({
   availableBalance,
   temporarilyHold,
   role,
+  onCtaClick,
 }: BalanceCardProps) {
   const ctaLabel = role === "student" ? "Top-up" : "Withdraw"
   const isDesktop = useMediaQuery("(min-width: 1024px)")
+  const [isBalanceHidden, setIsBalanceHidden] = useState(false)
+
+  const displayAvailableBalance = isBalanceHidden ? "***" : `฿${availableBalance}`
+  const displayTemporarilyHold = isBalanceHidden ? "***" : `฿${temporarilyHold}`
 
   if (isDesktop) {
     return (
       <section className="flex w-full items-center gap-6 rounded-[12px] border border-deep-royal-indigo-50 px-7 py-4">
-        <Eye className="h-7 w-7 text-neutral-100" />
+        <button
+          type="button"
+          onClick={() => setIsBalanceHidden((prev) => !prev)}
+          aria-label={isBalanceHidden ? "Show balance" : "Hide balance"}
+        >
+          {isBalanceHidden ? (
+            <EyeOff className="h-7 w-7 text-neutral-100" />
+          ) : (
+            <Eye className="h-7 w-7 text-neutral-100" />
+          )}
+        </button>
 
         <div className="h-[54px] w-px rounded-[12px] bg-deep-royal-indigo-50" />
 
@@ -32,7 +49,7 @@ export default function BalanceCard({
             Available balance
           </Typography>
           <Typography variant="headline-4" color="neutral-800">
-            ฿{availableBalance}
+            {displayAvailableBalance}
           </Typography>
         </div>
 
@@ -46,11 +63,11 @@ export default function BalanceCard({
             <Info className="h-4 w-4 text-neutral-100" />
           </div>
           <Typography variant="headline-4" color="neutral-800">
-            ฿{temporarilyHold}
+            {displayTemporarilyHold}
           </Typography>
         </div>
 
-        <BaseButton className="ml-auto" variant="secondary">
+        <BaseButton className="ml-auto" variant="secondary" onClick={onCtaClick}>
           {ctaLabel}
         </BaseButton>
       </section>
@@ -65,7 +82,7 @@ export default function BalanceCard({
             Current balance
           </Typography>
           <Typography variant="headline-4" color="neutral-800">
-            ฿{availableBalance}
+            {displayAvailableBalance}
           </Typography>
         </div>
 
@@ -79,12 +96,12 @@ export default function BalanceCard({
             <Info className="h-4 w-4 text-neutral-100" />
           </div>
           <Typography variant="headline-4" color="neutral-800">
-            ฿{temporarilyHold}
+            {displayTemporarilyHold}
           </Typography>
         </div>
       </div>
 
-      <BaseButton className="w-full lg:w-fit" variant="secondary">
+      <BaseButton className="w-full lg:w-fit" variant="secondary" onClick={onCtaClick}>
         {ctaLabel}
       </BaseButton>
     </section>

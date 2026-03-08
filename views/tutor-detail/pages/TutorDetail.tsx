@@ -9,6 +9,7 @@ import Overview from "../components/Overview"
 import Footer from "@/components/footer/Footer"
 import BackBtn from "../components/BackBtn"
 import Review from "../components/Reviews"
+import AvailabilityCalendar from "../components/AvailabilityCalendar"
 import { TutorDetailData } from "@/services/tutor/types"
 import { fetchTutorDetailData } from "@/services/tutor"
 import Loading from "@/components/Loading"
@@ -84,32 +85,38 @@ export default function TutorDetailPage({
                     setCurrentTab={setCurrentTab}
                 />
 
-                {currentTab === 'Overview' && (
-                    <Overview
-                        videoThumbnailUrl={tutorData.videoThumbnailUrl}
-                        videoUrl={tutorData.videoUrl}
-                        fullName={tutorData.fullName}
-                        tutorRanking={tutorData.tutorRanking}
-                        hoursTaught={tutorData.lessonsCount}
-                        about={tutorData.bio}
-                        languages={tutorData.languages}
-                        avgRating={tutorData.avgRating}
-                        studentReviewsCount={tutorData.studentsCount}
-                        reviews={tutorData.reviews.map(review => ({
-                            avatarUrl: review.avatarUrl,
-                            fullName: review.fullName,
-                            review: review.review
-                        }))}
-                        specialties={tutorData.specialties}
-                    />
-                )}
+                <div className="w-full">
+                    {currentTab === 'Overview' && (
+                        <Overview
+                            videoThumbnailUrl={tutorData.videoThumbnailUrl}
+                            videoUrl={tutorData.videoUrl}
+                            fullName={tutorData.fullName}
+                            tutorRanking={tutorData.tutorRanking}
+                            hoursTaught={tutorData.lessonsCount}
+                            about={tutorData.bio}
+                            languages={tutorData.languages}
+                            avgRating={tutorData.avgRating}
+                            studentReviewsCount={tutorData.studentsCount}
+                            reviews={tutorData.reviews.map(review => ({
+                                avatarUrl: review.avatarUrl,
+                                fullName: review.fullName,
+                                review: review.review
+                            }))}
+                            specialties={tutorData.specialties}
+                        />
+                    )}
 
-                {currentTab === "Reviews & ratings" && (
-                    <Review 
-                        reviews={tutorData.reviews}
-                        summary={tutorData.summary}
-                    />
-                )}
+                    {currentTab === "Availability calendar" && (
+                        <AvailabilityCalendar availability={tutorData.availability} />
+                    )}
+
+                    {currentTab === "Reviews & ratings" && (
+                        <Review 
+                            reviews={tutorData.reviews}
+                            summary={tutorData.summary}
+                        />
+                    )}
+                </div>
             </div>
             
             {/* DESKTOP */}
@@ -134,31 +141,37 @@ export default function TutorDetailPage({
                         setCurrentTab={setCurrentTab}
                     />
 
-                    {currentTab === 'Overview' && (
-                        <Overview
-                            videoThumbnailUrl={tutorData.videoThumbnailUrl}
-                            videoUrl={tutorData.videoUrl}
-                            fullName={tutorData.fullName}
-                            tutorRanking={tutorData.tutorRanking}
-                            hoursTaught={tutorData.lessonsCount}
-                            about={tutorData.bio}
-                            languages={tutorData.languages}
-                            avgRating={tutorData.avgRating}
-                            studentReviewsCount={tutorData.studentsCount}
-                            reviews={tutorData.reviews.map(review => ({
-                                avatarUrl: review.avatarUrl,
-                                fullName: review.fullName,
-                                review: review.review
-                            }))}
-                            specialties={tutorData.specialties}
-                        />)}
+                    <div className="w-full">
+                        {currentTab === 'Overview' && (
+                            <Overview
+                                videoThumbnailUrl={tutorData.videoThumbnailUrl}
+                                videoUrl={tutorData.videoUrl}
+                                fullName={tutorData.fullName}
+                                tutorRanking={tutorData.tutorRanking}
+                                hoursTaught={tutorData.lessonsCount}
+                                about={tutorData.bio}
+                                languages={tutorData.languages}
+                                avgRating={tutorData.avgRating}
+                                studentReviewsCount={tutorData.studentsCount}
+                                reviews={tutorData.reviews.map(review => ({
+                                    avatarUrl: review.avatarUrl,
+                                    fullName: review.fullName,
+                                    review: review.review
+                                }))}
+                                specialties={tutorData.specialties}
+                            />)}
 
-                    {currentTab === "Reviews & ratings" && (
-                        <Review 
-                            reviews={tutorData.reviews}
-                            summary={tutorData.summary}
-                    />
-                )}
+                        {currentTab === "Availability calendar" && (
+                            <AvailabilityCalendar availability={tutorData.availability} />
+                        )}
+
+                        {currentTab === "Reviews & ratings" && (
+                            <Review 
+                                reviews={tutorData.reviews}
+                                summary={tutorData.summary}
+                        />
+                    )}
+                    </div>
 
                 </div>
 

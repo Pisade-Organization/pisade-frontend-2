@@ -24,8 +24,12 @@ export default function DateRangeLabel({
   const label = `${startFormatted} - ${endFormatted}, ${year}`;
 
   return (
-    <Typography variant={{ base: "label-3", lg: "label-1" }} color="neutral-700">
-      { label }
+    <Typography
+      variant={{ base: "label-3", lg: "label-1" }}
+      color="neutral-700"
+      className="max-w-[131px]"
+    >
+      {label}
     </Typography>
   )
 }

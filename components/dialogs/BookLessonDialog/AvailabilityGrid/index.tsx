@@ -12,6 +12,7 @@ export default function AvailabilityGrid({
   availability,
   selectedSlot,
   onSlotSelect,
+  indicatorSegmentClassName,
 }: AvailabilityGridProps) {
   const today = useMemo(() => {
     const now = new Date();
@@ -112,12 +113,26 @@ export default function AvailabilityGrid({
       </div>
 
       {/* Desktop: Grid */}
-      <div className="hidden lg:grid lg:grid-cols-7 lg:gap-6">
-        {availability.map((day) => (
-          <DayColumn key={day.date} day={day} />
-        ))}
+      <div className="hidden w-full lg:flex lg:flex-col lg:gap-1">
+        <div className="w-full flex gap-1">
+          {availability.map((day) => (
+            <div
+              key={`indicator-${day.date}`}
+              className={cn(
+                "w-full h-[2px] rounded-full flex-1",
+                indicatorSegmentClassName,
+                isDateInPast(day.date) ? "bg-neutral-100" : "bg-electric-violet-500"
+              )}
+            />
+          ))}
+        </div>
+
+        <div className="w-full grid grid-cols-7 gap-6">
+          {availability.map((day) => (
+            <DayColumn key={day.date} day={day} />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
-

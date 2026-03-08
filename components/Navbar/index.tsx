@@ -23,6 +23,7 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
 
   const onLogoClick = () => router.push("/")
   const onSigninClick = () => router.push("/signin")
+  const onBecomeTutorClick = () => router.push("/tutor/signup")
 
   // Prevent hydration flicker - rely on hydration gate
   if (status === "loading") return null
@@ -41,7 +42,10 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
           ) : (
             <>
               <LanguageSwitcher dark />
-              <AuthButtons onSigninClick={onSigninClick} />
+              <AuthButtons
+                onSigninClick={onSigninClick}
+                onBecomeTutorClick={onBecomeTutorClick}
+              />
             </>
           )}
         </div>
@@ -69,7 +73,7 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
       </div>
 
       <div className="hidden lg:flex items-center gap-3">
-        <LanguageSwitcher />
+        <LanguageSwitcher studentStyle={variant === "student_dashboard"} />
         {variant === "tutor_detail" && (
           <>
             <BaseButton variant="secondary" typeStyle="borderless">Sign Up</BaseButton>

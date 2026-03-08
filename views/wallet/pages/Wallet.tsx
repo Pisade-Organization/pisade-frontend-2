@@ -24,6 +24,8 @@ export default function WalletPage({ role }: WalletPageProps) {
   const temporarilyHold = 0
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const [activeMobileSection, setActiveMobileSection] = useState<MobileWalletSection>("overview")
+  const [isStudentTopUpOpen, setIsStudentTopUpOpen] = useState(false)
+  const [isTutorWithdrawOpen, setIsTutorWithdrawOpen] = useState(false)
   const bankAccounts: WalletBankAccount[] = [
     {
       id: "bank-1",
@@ -42,6 +44,14 @@ export default function WalletPage({ role }: WalletPageProps) {
   const isMobileDetailView = !isDesktop && activeMobileSection !== "overview"
   const mobileDetailTitle =
     activeMobileSection === "held-funds" ? "Held Funds" : "Transaction history"
+  const handleBalanceCtaClick = () => {
+    if (role === "student") {
+      setIsStudentTopUpOpen(true)
+      return
+    }
+
+    setIsTutorWithdrawOpen(true)
+  }
 
   return (
     <>
@@ -77,6 +87,7 @@ export default function WalletPage({ role }: WalletPageProps) {
                   availableBalance={availableBalance}
                   temporarilyHold={temporarilyHold}
                   role={role}
+                  onCtaClick={handleBalanceCtaClick}
                 />
               </div>
             ) : (
@@ -89,6 +100,7 @@ export default function WalletPage({ role }: WalletPageProps) {
                     availableBalance={availableBalance}
                     temporarilyHold={temporarilyHold}
                     role={role}
+                    onCtaClick={handleBalanceCtaClick}
                   />
                 </div>
               </>
@@ -104,7 +116,17 @@ export default function WalletPage({ role }: WalletPageProps) {
             <TransactionHistorySection
               onRequestMobileViewAll={() => setActiveMobileSection("transaction-history")}
             />
-            {role === "student" ? <StudentTopUpSection /> : <TutorWithdrawSection />}
+            {role === "student" ? (
+              <StudentTopUpSection
+                open={isStudentTopUpOpen}
+                onOpenChange={setIsStudentTopUpOpen}
+              />
+            ) : (
+              <TutorWithdrawSection
+                open={isTutorWithdrawOpen}
+                onOpenChange={setIsTutorWithdrawOpen}
+              />
+            )}
             <TransactionList />
           </>
         )}

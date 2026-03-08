@@ -1,14 +1,23 @@
 import BaseButton from "../base/BaseButton"
 
-export default function AuthButtons({ onSigninClick }: { onSigninClick: () => void }) {
+interface AuthButtonsProps {
+  onSigninClick: () => void
+  onBecomeTutorClick: () => void
+}
+
+export default function AuthButtons({ onSigninClick, onBecomeTutorClick }: AuthButtonsProps) {
   return (
     <>
-      <BaseButton variant="secondary" typeStyle="outline" className="text-white border-white/50 hover:bg-transparent">
+      <BaseButton
+        variant="secondary"
+        typeStyle="outline"
+        className="text-white border-white/50 hover:bg-transparent"
+        onClick={onBecomeTutorClick}
+      >
         Become a tutor
       </BaseButton>
       <BaseButton onClick={onSigninClick}>Sign In</BaseButton>
     </>
   )
 }
-
 

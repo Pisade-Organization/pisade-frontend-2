@@ -15,6 +15,49 @@ const DEFAULT_AVATAR_URL = "https://ui-avatars.com/api/?name=Tutor";
 
 type RawTutor = Record<string, unknown>;
 
+interface TutorMockResponse {
+  tutors: RawTutor[];
+  total: number;
+  page: number;
+  totalPages: number;
+}
+
+let tutorMockCache: TutorMockResponse | null = null;
+
+async function loadMockTutors(): Promise<TutorMockResponse> {
+  if (tutorMockCache) {
+    return tutorMockCache;
+  }
+
+  try {
+    const baseUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3001";
+    const mockUrl = typeof window === "undefined"
+      ? `${baseUrl}/mockup_data/tutors.json`
+      : "/mockup_data/tutors.json";
+    const response = await fetch(mockUrl);
+    const data = await response.json() as Partial<TutorMockResponse>;
+
+    const tutors = Array.isArray(data.tutors) ? data.tutors : [];
+    tutorMockCache = {
+      tutors,
+      total: tutors.length,
+      page: 1,
+      totalPages: tutors.length > 0 ? 1 : 0,
+    };
+
+    return tutorMockCache;
+  } catch (error) {
+    console.error("Error loading tutor mock data:", error);
+
+    return {
+      tutors: [],
+      total: 0,
+      page: 1,
+      totalPages: 0,
+    };
+  }
+}
+
 function toDayKey(day: unknown): string {
   if (typeof day === "number") {
     const map = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -130,7 +173,9 @@ export async function fetchTutorData(tutorId: string): Promise<Tutor | null> {
     return normalizeTutor(rawTutor);
   } catch (error) {
     console.error("Error fetching tutor data:", error);
-    return null;
+    const mockData = await loadMockTutors();
+    const fallbackTutor = mockData.tutors.find((tutor) => String(tutor.id) === tutorId);
+    return fallbackTutor ? normalizeTutor(fallbackTutor) : null;
   }
 }
 
@@ -155,7 +200,24 @@ export async function fetchTutorDetailData(tutorId: string): Promise<TutorDetail
     };
   } catch (error) {
     console.error("Error fetching tutor detail data:", error);
-    return null;
+    const mockData = await loadMockTutors();
+    const fallbackTutor = mockData.tutors.find((tutor) => String(tutor.id) === tutorId);
+
+    if (!fallbackTutor) {
+      return null;
+    }
+
+    const normalizedTutor = normalizeTutor(fallbackTutor);
+    const reviews = normalizedTutor.reviews ?? [];
+
+    return {
+      ...normalizedTutor,
+      reviews,
+      summary: {
+        avgRating: normalizedTutor.avgRating,
+        totalReviews: reviews.length,
+      },
+    };
   }
 }
 
@@ -170,6 +232,24 @@ export async function fetchTutorsPaginated(page: number = 1, limit: number = 6):
   hasMore: boolean;
   isError: boolean;
 }> {
+  const mockData = await loadMockTutors();
+  if (mockData.tutors.length > 0) {
+    const safePage = Math.max(1, page);
+    const safeLimit = Math.max(1, limit);
+    const start = (safePage - 1) * safeLimit;
+    const end = start + safeLimit;
+    const paginatedTutors = mockData.tutors.slice(start, end);
+
+    return {
+      tutors: paginatedTutors.map(normalizeTutor),
+      total: mockData.total,
+      page: safePage,
+      limit: safeLimit,
+      hasMore: end < mockData.total,
+      isError: false,
+    };
+  }
+
   try {
     const response = await apiInstancePublic.get<
       | ApiSuccessResponse<{ tutors: RawTutor[]; total: number; page: number; totalPages: number }>
@@ -189,6 +269,7 @@ export async function fetchTutorsPaginated(page: number = 1, limit: number = 6):
     };
   } catch (error) {
     console.error("Error fetching tutors:", error);
+
     return {
       tutors: [],
       total: 0,

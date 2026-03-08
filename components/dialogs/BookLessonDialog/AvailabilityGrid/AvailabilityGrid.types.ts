@@ -7,5 +7,5 @@ export interface AvailabilityGridProps {
     startTime: string;
   };
   onSlotSelect?: (date: string, startTime: string) => void;
+  indicatorSegmentClassName?: string;
 }
-
