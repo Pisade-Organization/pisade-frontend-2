@@ -66,8 +66,10 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
 
         {variant === "student_dashboard" && (
           <div className="flex gap-7">
-            <div>Class</div>
-            <div>Schedule</div>
+            <button>Home</button>
+            <button>Tutors</button>
+            <button>Class</button>
+            <button>Schedule</button>
           </div>
         )}
       </div>
