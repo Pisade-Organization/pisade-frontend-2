@@ -1,0 +1,128 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { TutorCardProps } from '@/views/search/types';
+import TutorAvatar from '@/views/search/components/TutorCard/TutorAvatar';
+import TutorHeader from '@/views/search/components/TutorCard/TutorHeader';
+import TutorActionButtons from '@/views/search/components/TutorCard/TutorActionButtons';
+import TutorRateStatus from '@/views/search/components/TutorCard/TutorRateStatus';
+import TutorStats from '@/views/search/components/TutorCard/TutorStats';
+import SpecialtyBadges from '@/views/search/components/TutorCard/SpecialtyBadges';
+import TutorBio from '@/views/search/components/TutorCard/TutorBio';
+import TutorLanguages from '@/views/search/components/TutorCard/TutorLanguages';
+
+export default function TutorCard({
+  id,
+  fullName,
+  avatarUrl,
+  flagUrl,
+  isActive,
+  bio,
+  baseRate,
+  specialties,
+  subject,
+  languages,
+  avgRating,
+  studentsCount,
+  lessonsCount,
+  tutorRanking,
+}: TutorCardProps) {
+  const router = useRouter();
+
+  const onCardClick = () => {
+    router.push(`/tutor/${id}`);
+  };
+
+  return (
+    <div
+      onClick={onCardClick}
+      className="cursor-pointer w-full bg-white border border-neutral-50 lg:border-none p-4 lg:p-0 flex flex-col lg:flex-row lg:gap-x-5 gap-y-4 lg:gap-y-0 rounded-[15px] lg:rounded-none"
+    >
+      {/* DESKTOP */}
+
+      {/* AVATAR */}
+      <TutorAvatar
+        fullName={fullName}
+        avatarUrl={avatarUrl}
+        isActive={isActive}
+        tutorRanking={tutorRanking}
+        className="hidden lg:block"
+      />
+
+      {/* RIGHT OF AVATAR */}
+      <div className="hidden lg:flex w-full flex-col justify-start items-center gap-y-3">
+        {/* TOP 1/4 */}
+        <div className="w-full flex flex-col justify-start items-center gap-y-2">
+          <div className="w-full flex justify-between items-start">
+            <TutorHeader fullName={fullName} flagUrl={flagUrl} subject={subject} />
+            <TutorActionButtons tutorId={id} />
+          </div>
+          <div className="w-full flex justify-between items-center">
+            <TutorRateStatus baseRate={baseRate} isActive={isActive} />
+            <TutorStats
+              avgRating={avgRating}
+              studentsCount={studentsCount}
+              lessonsCount={lessonsCount}
+            />
+          </div>
+        </div>
+
+        {/* TOP 2/4 */}
+        <div className="w-full">
+          <SpecialtyBadges specialties={specialties} />
+        </div>
+
+        {/* TOP 3/4 */}
+        <div className="w-full">
+          <TutorBio bio={bio} />
+        </div>
+
+        {/* TOP 4/4 */}
+        <div className="w-full">
+          <TutorLanguages languages={languages} />
+        </div>
+      </div>
+
+      {/* MOBILE */}
+
+      {/* TUTOR AVATAR + HEADER */}
+      <div className="lg:hidden w-full flex justify-start items-center gap-x-4">
+        <TutorAvatar
+          fullName={fullName}
+          avatarUrl={avatarUrl}
+          isActive={isActive}
+          tutorRanking={tutorRanking}
+        />
+
+        <div className="flex flex-col justify-center items-start gap-y-1">
+          <TutorHeader fullName={fullName} flagUrl={flagUrl} subject={subject} />
+          <TutorRateStatus baseRate={baseRate} isActive={isActive} />
+        </div>
+      </div>
+
+      {/* DIVIDER */}
+      <div className="lg:hidden w-full border border-neutral-50"></div>
+
+      {/* STATS + SPECIALTIES + BIO + LANGUAGES */}
+      <div className="lg:hidden w-full flex flex-col justify-center items-start gap-y-2">
+        <TutorStats
+          avgRating={avgRating}
+          studentsCount={studentsCount}
+          lessonsCount={lessonsCount}
+        />
+
+        <SpecialtyBadges specialties={specialties} />
+
+        <TutorBio bio={bio} />
+
+        <TutorLanguages languages={languages} />
+      </div>
+
+      {/* DIVIDER */}
+      <div className="lg:hidden w-full border border-neutral-50"></div>
+
+      {/* ACTION BUTTONS */}
+      <TutorActionButtons className="lg:hidden" tutorId={id} />
+    </div>
+  );
+}

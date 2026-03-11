@@ -8,6 +8,7 @@ import CTA from "./CTA"
 import { LessonStatusType } from "./LessonStatus/types"
 
 interface ClassManagementCardProps {
+  bookingId: string
   avatarUrl: string
   date: Date
   title: string
@@ -20,6 +21,7 @@ interface ClassManagementCardProps {
 }
 
 export default function ClassManagementCard({
+  bookingId,
   avatarUrl,
   date,
   title,
@@ -30,6 +32,9 @@ export default function ClassManagementCard({
   tutorFullName,
   tutorAvatarUrl
 }: ClassManagementCardProps) {
+  const canReschedule = status === LessonStatusType.Upcoming || status === LessonStatusType.Processing
+  const canCancel = status === LessonStatusType.Upcoming || status === LessonStatusType.Processing
+
   return (
     <div className="border-b border-neutral-50 pb-4 flex flex-col lg:flex-row gap-4 lg:gap-6">
       {/* Image section with date overlay */}
@@ -48,7 +53,7 @@ export default function ClassManagementCard({
 
       {/* CTA buttons section */}
       <div className="lg:flex-shrink-0">
-        <CTA />
+        <CTA bookingId={bookingId} canReschedule={canReschedule} canCancel={canCancel} />
       </div>
     </div>    
   )

@@ -6,7 +6,7 @@ export default function ClassStatusTabs({
   setCurrentStatus
 }: ClassStatusTabsI) {
   return (
-    <div className="w-full grid grid-cols-2">
+    <div className="flex w-full lg:px-[60px] lg:border-b lg:border-neutral-50">
       <StatusTab 
         label={ClassStatus.UPCOMING}
         isActive={currentStatus === ClassStatus.UPCOMING}

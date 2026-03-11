@@ -5,7 +5,7 @@ import PrimaryActionButton from "./PrimaryActionButton"
 
 export default function ScheduleEmptyState() {
   return (
-    <section className="py-12 w-full flex flex-col gap-3">
+    <section className="py-12 w-full flex flex-col gap-3 lg:items-center lg:text-center">
       <EmptyIllustration />
       
       <div className="flex flex-col gap-2">

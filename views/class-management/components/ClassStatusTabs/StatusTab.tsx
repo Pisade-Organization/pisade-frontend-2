@@ -10,12 +10,19 @@ export default function StatusTab({
   return (
     <button 
       onClick={onClick}
-      className="w-full flex flex-col gap-3 lg:pt-3 cursor-pointer"
+      className="relative flex-1 cursor-pointer pt-3 lg:max-w-[145px]"
     >
-      <Typography variant={{ base: "body-3", lg: "body-2" }} color={isActive ? "electric-violet-500" : "neutral-700"}>
-        {label.charAt(0).toUpperCase() + label.slice(1).toLowerCase()}
-      </Typography>
-      <div className={clsx("w-full h-[2px]", isActive ? "bg-electric-violet-500" : "bg-neutral-50")} />
+      <div className="flex flex-col items-center gap-3">
+        <Typography variant={{ base: "body-3", lg: "body-2" }} color={isActive ? "electric-violet-500" : "neutral-700"}>
+          {label.charAt(0).toUpperCase() + label.slice(1).toLowerCase()}
+        </Typography>
+        <div
+          className={clsx(
+            "h-[2px] w-full rounded-full",
+            isActive ? "bg-electric-violet-500" : "bg-neutral-50 lg:bg-transparent"
+          )}
+        />
+      </div>
     </button>
   )
 }

@@ -57,8 +57,11 @@ function buildVariantClasses(variant: TypographyVariant): string {
     return variantClasses[variant];
   }
 
-  return Object.entries(variant)
-    .map(([bp, v]) => {
+  const breakpointOrder: Array<"base" | Breakpoint> = ["base", "sm", "md", "lg", "xl", "2xl"];
+
+  return breakpointOrder
+    .map((bp) => {
+      const v = variant[bp];
       if (!v) return "";
       return bp === "base"
         ? variantClasses[v]

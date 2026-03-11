@@ -36,7 +36,7 @@ export default function TimezoneSelector({
     <DropdownMenu>
       <DropdownMenuTrigger
         className={cn(
-          "w-full border border-neutral-50 rounded-[12px] py-3 px-4 flex justify-between items-center bg-white hover:bg-neutral-50 transition-colors"
+          "w-full lg:w-fit border border-neutral-50 rounded-[12px] py-3 px-4 flex justify-between items-center bg-white hover:bg-neutral-50 transition-colors whitespace-nowrap"
         )}
       >
         <div className="flex items-center gap-2">

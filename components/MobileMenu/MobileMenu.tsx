@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import SearchMenuButton from "./SearchMenuButton";
 import TutorDetailMenuButton from "./TutorDetailMenuButton";
+import DashboardMenuButton from "./DashboardMenuButton";
 import MobileMenuOverlay from "./MobileMenuOverlay";
 
 // ------------------ Main ------------------ //
@@ -20,9 +21,8 @@ export default function MobileMenu({
         return <SearchMenuButton onClick={() => setOpen(true)} />;
       case "tutor_detail":
         return <TutorDetailMenuButton />;
-      // future variants:
-      // case "student_dashboard": return <StudentDashboardButton />
-      // case "tutor_dashboard": return <TutorDashboardButton />
+      case "student_dashboard":
+        return <DashboardMenuButton onClick={() => setOpen(true)} />;
       default:
         return null;
     }

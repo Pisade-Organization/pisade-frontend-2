@@ -11,11 +11,11 @@ export default function WeekNavigator({
   onNextWeek,
 }: WeekNavigatorProps) {
   return (
-    <div className="w-full 
+    <div className="w-full lg:w-fit
       flex items-center justify-between
       lg:gap-[10px]
       py-3 px-4 lg:py-3 lg:px-3
-      border border-neutral-100
+      border border-neutral-50
       rounded-xl
     ">
 

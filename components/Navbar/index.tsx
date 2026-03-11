@@ -1,8 +1,8 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { Search } from "lucide-react"
+import { Bell, MessageCircle, Search } from "lucide-react"
 
 import BaseButton from "../base/BaseButton"
 import MobileMenu from "../MobileMenu/MobileMenu"
@@ -19,6 +19,10 @@ type NavbarProps = {
 // ------------------ Main Navbar ------------------ //
 export default function Navbar({ variant = "search" }: NavbarProps) {
   const router = useRouter()
+  const pathname = usePathname()
+  // preserve current locale when programmatically navigating
+  const currentLocale = pathname?.split('/')?.[1] || ''
+  const localePrefix = currentLocale ? `/${currentLocale}` : ''
   const { data, status } = useSession()
 
   const onLogoClick = () => router.push("/")
@@ -60,16 +64,40 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
   }
 
   return (
-    <nav className="w-full flex justify-between items-center py-4 px-4 lg:px-20 border-b border-gray-200 bg-white">
+    <nav
+      className={`w-full flex justify-between items-center py-4 px-4 lg:px-20 bg-white ${
+        variant === "student_dashboard" ? "border-b-0 lg:border-b border-gray-200" : "border-b border-gray-200"
+      }`}
+    >
       <div className="flex items-center gap-x-20">
         <Logo dark onClick={onLogoClick} />
 
         {variant === "student_dashboard" && (
-          <div className="flex gap-7">
-            <button>Home</button>
-            <button>Tutors</button>
-            <button>Class</button>
-            <button>Schedule</button>
+          <div className="hidden lg:flex gap-7">
+              <button
+                className={pathname?.endsWith("/student/dashboard") ? "text-electric-violet-600" : "text-neutral-900"}
+                onClick={() => router.push(`${localePrefix}/student/dashboard`)}
+              >
+                Home
+              </button>
+              <button
+                className={pathname?.includes("/student/tutors") ? "text-electric-violet-600" : "text-neutral-900"}
+                onClick={() => router.push(`${localePrefix}/student/tutors`)}
+              >
+                Tutors
+              </button>
+              <button
+                className={pathname?.includes("/class-management") ? "text-electric-violet-600" : "text-neutral-900"}
+                onClick={() => router.push(`${localePrefix}/class-management`)}
+              >
+                Class
+              </button>
+              <button
+                className={pathname?.includes("/student/schedule") ? "text-electric-violet-600" : "text-neutral-900"}
+                onClick={() => router.push(`${localePrefix}/student/schedule`)}
+              >
+                Schedule
+              </button>
           </div>
         )}
       </div>
@@ -90,9 +118,21 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
         )}
       </div>
 
-      <div className="lg:hidden flex items-center">
-        <MobileMenu variant={variant} />
-      </div>
+      {variant === "student_dashboard" ? (
+        <div className="lg:hidden flex items-center gap-2">
+          <button className="w-11 h-11 flex items-center justify-center" aria-label="Messages">
+            <MessageCircle size={20} className="text-neutral-700" />
+          </button>
+          <button className="w-11 h-11 flex items-center justify-center" aria-label="Notifications">
+            <Bell size={20} className="text-neutral-700" />
+          </button>
+          <MobileMenu variant={variant} />
+        </div>
+      ) : (
+        <div className="lg:hidden flex items-center">
+          <MobileMenu variant={variant} />
+        </div>
+      )}
     </nav>
   )
 }

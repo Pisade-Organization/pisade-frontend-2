@@ -39,7 +39,11 @@ export default function ScheduleContent({
   };
 
   if (!hasAvailableSlots) {
-    return <ScheduleEmptyState />;
+    return (
+      <div className="w-full lg:min-h-[420px] lg:flex lg:items-center lg:justify-center">
+        <ScheduleEmptyState />
+      </div>
+    );
   }
 
   return (

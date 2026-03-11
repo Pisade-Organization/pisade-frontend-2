@@ -8,11 +8,10 @@ module.exports = {
     ],
 		safelist: [
 			// typography variants
-			{ pattern: /text-(headline|title|label|body)-[1-5]/ },
-			// responsive typography variants - ensure all breakpoints are covered
-			'sm:text-headline-5', 'md:text-headline-5', 'lg:text-headline-5', 'xl:text-headline-5', '2xl:text-headline-5',
-			'sm:text-title-3', 'md:text-title-3', 'lg:text-title-3', 'xl:text-title-3', '2xl:text-title-3',
-			{ pattern: /(sm|md|lg|xl|2xl):text-(headline|title|label|body)-[1-5]/ },
+			{
+				pattern: /text-(headline-[1-5]|title-[1-4]|label-[1-4]|body-[1-4])/,
+				variants: ['sm', 'md', 'lg', 'xl', '2xl'],
+			},
 			// if you use custom colors like "text-primary", "text-muted-foreground"
 			// BaseButton dynamic colors
 			{ pattern: /text-(red|yellow|orange|green|blue|violet)-(normal|light)/ },

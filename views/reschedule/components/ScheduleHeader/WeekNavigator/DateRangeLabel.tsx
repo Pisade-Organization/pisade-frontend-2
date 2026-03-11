@@ -27,7 +27,6 @@ export default function DateRangeLabel({
     <Typography
       variant={{ base: "label-3", lg: "label-1" }}
       color="neutral-700"
-      className="max-w-[131px]"
     >
       {label}
     </Typography>
