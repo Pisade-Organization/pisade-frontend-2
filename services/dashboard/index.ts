@@ -3,11 +3,17 @@ import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiRespon
 import { servicePath } from "@/services/servicePath";
 import type {
   FavoriteTutor,
+  PaginatedTutorCards,
   StudentDashboardSummary,
   StudentLesson,
   StudentTransaction,
   WeeklyPlanDay,
 } from "./types";
+
+interface GetTutorCardsParams {
+  page?: number;
+  limit?: number;
+}
 
 export const DashboardService = {
   async getSummary(): Promise<StudentDashboardSummary> {
@@ -48,6 +54,30 @@ export const DashboardService = {
     const response = await apiInstanceClient.get<
       ApiSuccessResponse<FavoriteTutor[]> | FavoriteTutor[]
     >(servicePath.dashboard.getFavoriteTutors);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async getFavoriteTutorsPaginated(
+    params: GetTutorCardsParams = {},
+  ): Promise<PaginatedTutorCards> {
+    const response = await apiInstanceClient.get<
+      ApiSuccessResponse<PaginatedTutorCards> | PaginatedTutorCards
+    >(servicePath.dashboard.getFavoriteTutorsPaginated, {
+      params,
+    });
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async getCurrentTutors(
+    params: GetTutorCardsParams = {},
+  ): Promise<PaginatedTutorCards> {
+    const response = await apiInstanceClient.get<
+      ApiSuccessResponse<PaginatedTutorCards> | PaginatedTutorCards
+    >(servicePath.dashboard.getCurrentTutors, {
+      params,
+    });
 
     return unwrapApiResponse(response.data);
   },

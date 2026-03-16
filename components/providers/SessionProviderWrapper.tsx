@@ -1,7 +1,8 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { SessionProvider, useSession, signOut } from "next-auth/react";
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import { AuthHydrationGate } from "./AuthHydrationGate";
 
 const FATAL_AUTH_ERRORS = new Set([
@@ -12,39 +13,65 @@ const FATAL_AUTH_ERRORS = new Set([
 
 function SessionErrorWatcher({ children }: { children: ReactNode }) {
   const { data: session, status, update } = useSession();
+  const pathname = usePathname();
+  const signOutInProgress = useRef(false);
+  const lastRetriedFatalError = useRef<string | null>(null);
+  const lastSessionUpdateAt = useRef(0);
+  const MIN_SESSION_UPDATE_INTERVAL = 30_000;
+  const authError = (session as any)?.error as string | undefined;
 
-  // Auto-logout only for fatal auth states.
   useEffect(() => {
-    const authError = (session as any)?.error as string | undefined;
-    if (status !== "authenticated" || !authError) return;
+    if (!authError) {
+      lastRetriedFatalError.current = null;
+    }
+  }, [authError]);
 
-    if (FATAL_AUTH_ERRORS.has(authError)) {
-      signOut({ callbackUrl: "/auth/signin" });
+  // For fatal auth states, retry session update once before forcing sign out.
+  useEffect(() => {
+    if (status !== "authenticated" || !authError || signOutInProgress.current) return;
+    if (!FATAL_AUTH_ERRORS.has(authError)) return;
+
+    const onAuthPage = pathname?.includes("/signin") || pathname?.includes("/signout");
+    if (onAuthPage) return;
+
+    if (lastRetriedFatalError.current !== authError) {
+      lastRetriedFatalError.current = authError;
+      void update();
       return;
     }
 
-  }, [status, session]);
+    signOutInProgress.current = true;
+    void signOut({ callbackUrl: "/signin" });
+  }, [status, authError, pathname, update]);
 
-  // Refresh when tab becomes visible
+  // Refresh session on visibility/focus with throttling to avoid refresh races.
   useEffect(() => {
+    const maybeUpdateSession = () => {
+      if (status !== "authenticated") return;
+      const now = Date.now();
+      if (now - lastSessionUpdateAt.current < MIN_SESSION_UPDATE_INTERVAL) return;
+      lastSessionUpdateAt.current = now;
+      void update();
+    };
+
     const handleVisibility = () => {
-      if (document.visibilityState === "visible" && status === "authenticated") {
-        update();
+      if (document.visibilityState === "visible") {
+        maybeUpdateSession();
       }
     };
+
+    const handleFocus = () => {
+      maybeUpdateSession();
+    };
+
     document.addEventListener("visibilitychange", handleVisibility);
-    return () => document.removeEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, [status, update]);
-
-  // 🔥 THE REAL FIX: keep-alive ping even in background tabs
-  // Persistent keep-alive to refresh tokens even in inactive tabs
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetch("/api/auth/session");
-    }, 2 * 60 * 1000); // every 2 minutes
-
-    return () => clearInterval(interval);
-  }, []);
 
   return <>{children}</>;
 }

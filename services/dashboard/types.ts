@@ -64,3 +64,32 @@ export interface FavoriteTutor {
     level: string;
   }>;
 }
+
+export interface DashboardTutorCardItem {
+  id: string;
+  fullName: string;
+  avatarUrl: string | null;
+  bio: string | null;
+  baseRate: number;
+  specialties: string[];
+  subjects: string[];
+  languages: string[];
+  avgRating: number;
+  studentsCount: number;
+  lessonsCount: number;
+  availability: Array<{
+    dayOfWeek: number;
+    startTime: string;
+    endTime: string;
+  }>;
+  videoUrl: string | null;
+  videoThumbnailUrl: string | null;
+}
+
+export interface PaginatedTutorCards {
+  data: DashboardTutorCardItem[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}

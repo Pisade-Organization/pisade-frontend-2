@@ -5,8 +5,7 @@ import BaseButton from "@/components/base/BaseButton"
 export default function StudentInfoCard() {
   return (
     <div
-      className="border border-neutral-50 bg-white p-4 gap-3 flex flex-col rounded-xl"
-      style={{ boxShadow: '0px 1px 4px 0px #0000001A' }}
+      className="border border-neutral-50 bg-white p-4 gap-3 flex flex-col rounded-xl lg:rounded-t-xl lg:rounded-b-none shadow-[0px_1px_4px_0px_#0000001A] lg:shadow-none"
     >
 
 

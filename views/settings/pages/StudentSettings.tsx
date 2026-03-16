@@ -47,12 +47,13 @@ export default function StudentSettingsPage() {
 
   const generalProps = {
     fullName: profileData?.profile?.fullName ?? "",
-    countryOfBirth: "TH",
-    nationality: "TH",
-    countryCode: 66,
-    phoneNumber: profileData?.profile?.phoneNumber ?? "",
+    countryOfBirth: profileData?.profile?.countryOfBirth ?? "TH",
+    nationality: profileData?.profile?.nationality ?? "TH",
+    phoneNumber: profileData?.phoneNumber ?? "",
     email: profileData?.email ?? "",
+    emailVerified: profileData?.emailVerified ?? false,
     avatarUrl: profileData?.profile?.avatarUrl ?? "https://ui-avatars.com/api/?name=User",
+    timezone: profileData?.profile?.timezone ?? "Asia/Bangkok",
   }
 
   const notificationsProps = {

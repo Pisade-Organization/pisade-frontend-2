@@ -18,6 +18,18 @@ function mapStatus(status: string): PaymentStatus {
   return PaymentStatus.PROCESSING;
 }
 
+function normalizePaymentMethod(paymentMethod: string | null | undefined): string {
+  if (!paymentMethod) {
+    return "Wallet";
+  }
+
+  if (paymentMethod.startsWith("pi_")) {
+    return "PromptPay QR";
+  }
+
+  return paymentMethod;
+}
+
 export default function PaymentHistory() {
   const { data: transactions = [] } = useStudentTransactions();
   const paymentHistory: PaymentHistoryItem[] = transactions.map((item) => {
@@ -27,7 +39,7 @@ export default function PaymentHistory() {
       time: date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }),
       price: Number(item.amount),
       lastFourDigits: "",
-      cardType: item.paymentMethod ?? "Wallet",
+      cardType: normalizePaymentMethod(item.paymentMethod),
       status: mapStatus(item.status),
     };
   });

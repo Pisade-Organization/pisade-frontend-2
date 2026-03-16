@@ -4,11 +4,16 @@ import Navbar from "@/components/Navbar"
 import SidebarLayout from "../components/SidebarLayout"
 import MobileBackground from "../components/MobileBackground"
 import StudentInfoCard from "../components/StudentInfoCard"
+import ScheduleContent from "../components/ScheduleContent"
 
-export default function SchedulePage() {
+type SchedulePageProps = {
+  navbarVariant?: "student_dashboard" | "tutor_dashboard"
+}
+
+export default function SchedulePage({ navbarVariant = "student_dashboard" }: SchedulePageProps) {
   return (
     <div className="w-full min-h-screen bg-[#efeff3]">
-      <Navbar variant="student_dashboard" />
+      <Navbar variant={navbarVariant} />
 
       <main className="w-full lg:px-4 lg:py-4">
         <section className="relative lg:hidden">
@@ -24,7 +29,7 @@ export default function SchedulePage() {
         <section className="mt-24 hidden w-full lg:mt-0 lg:grid lg:grid-cols-[276px_minmax(0,1fr)] lg:gap-4">
           <SidebarLayout />
 
-          <div className="min-h-[720px] rounded-xl border border-neutral-50 bg-white" />
+          <ScheduleContent />
         </section>
       </main>
     </div>

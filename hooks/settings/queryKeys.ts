@@ -8,6 +8,7 @@ export const settingsQueryKeys = {
   notifications: () => [...settingsQueryKeys.all, "notifications"] as const,
   notificationPreferences: () =>
     [...settingsQueryKeys.all, "notification-preferences"] as const,
+  providers: () => [...settingsQueryKeys.all, "providers"] as const,
   tutorProfile: () => [...settingsQueryKeys.all, "tutor-profile"] as const,
 
   studentTransactions: () => [...settingsQueryKeys.all, "student-transactions"] as const,

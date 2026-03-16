@@ -8,16 +8,21 @@ interface Tab {
   path: string;
 }
 
-export default function TutorTabs() {
+interface TutorTabsProps {
+  basePath?: string;
+}
+
+export default function TutorTabs({ basePath = "/student/tutors" }: TutorTabsProps) {
   const pathname = usePathname();
 
   // get current locale from path: e.g. '/en/...' => 'en'
   const currentLocale = pathname?.split('/')?.[1] || '';
   const localePrefix = currentLocale ? `/${currentLocale}` : '';
+  const normalizedBasePath = basePath.startsWith("/") ? basePath : `/${basePath}`;
 
   const tabs: Tab[] = [
-    { name: 'Favorite Tutors', path: `${localePrefix}/student/tutors/favorites` },
-    { name: 'Current Tutors', path: `${localePrefix}/student/tutors/current` },
+    { name: 'Favorite Tutors', path: `${localePrefix}${normalizedBasePath}/favorites` },
+    { name: 'Current Tutors', path: `${localePrefix}${normalizedBasePath}/current` },
   ];
 
   const isActive = (fullPath: string) => {

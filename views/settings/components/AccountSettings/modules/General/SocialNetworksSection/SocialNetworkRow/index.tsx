@@ -17,6 +17,7 @@ export default function SocialNetworkRow({
   onDisconnect,
 }: SocialNetworkRowProps) {
   const Icon = PROVIDER_ICONS[provider];
+  const actionLabel = loading ? (connected ? "Disconnecting..." : "Connecting...") : connected ? "Disconnect" : "Connect";
 
   return (
     <div className="w-full flex justify-start items-center gap-4">
@@ -29,8 +30,13 @@ export default function SocialNetworkRow({
         </Typography>
       </div>
 
-      <BaseButton variant="secondary" typeStyle="outline">
-        {connected ? "Disconnect" : "Connect"}
+      <BaseButton
+        variant="secondary"
+        typeStyle="outline"
+        disabled={loading}
+        onClick={connected ? onDisconnect : onConnect}
+      >
+        {actionLabel}
       </BaseButton>
 
     </div>

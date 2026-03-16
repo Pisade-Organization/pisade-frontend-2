@@ -13,10 +13,11 @@ interface SettingsContentProps {
     fullName: string
     countryOfBirth: string
     nationality: string
-    countryCode: number
     phoneNumber: string
     email: string
+    emailVerified: boolean
     avatarUrl: string
+    timezone: string
     teachingInfoProps?: {
       subject: string
       languages: string

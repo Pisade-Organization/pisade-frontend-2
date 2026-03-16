@@ -2,7 +2,11 @@ import apiInstanceClient from "@/services/apiInstanceClient";
 import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiResponse";
 import { servicePath } from "@/services/servicePath";
 import type {
+  CreateTopupDto,
+  CreateTopupResponse,
   GetWalletTransactionsParams,
+  VerifyTopupDto,
+  VerifyTopupResponse,
   Wallet,
   WalletSummary,
   WalletTransactionsResponse,
@@ -33,6 +37,22 @@ export const WalletService = {
     >(servicePath.wallet.getMyWalletTransactions, {
       params,
     });
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async createTopup(payload: CreateTopupDto): Promise<CreateTopupResponse> {
+    const response = await apiInstanceClient.post<
+      ApiSuccessResponse<CreateTopupResponse> | CreateTopupResponse
+    >(servicePath.wallet.topup, payload);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async verifyTopup(payload: VerifyTopupDto): Promise<VerifyTopupResponse> {
+    const response = await apiInstanceClient.post<
+      ApiSuccessResponse<VerifyTopupResponse> | VerifyTopupResponse
+    >(servicePath.wallet.verifyTopup, payload);
 
     return unwrapApiResponse(response.data);
   },

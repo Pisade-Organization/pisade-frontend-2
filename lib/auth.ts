@@ -32,9 +32,11 @@ declare module "next-auth/jwt" {
     avatarUrl?: string;
     access_token?: string;
     refresh_token?: string;
-    exp?: number;
+    accessTokenExp?: number;
     error?: string;
     _revalidateAt?: number;
+    _refreshFailureCount?: number;
+    _refreshFailureWindowStart?: number;
   }
 }
 
@@ -75,6 +77,8 @@ type Decoded = {
 // --------- Constants ----------
 const SKEW = 90; // refresh 90s before exp
 const REVALIDATE_EVERY = 5 * 60; // re-check user/profile every 5 minutes
+const REFRESH_FAILURE_WINDOW = 15 * 60; // failure counting window: 15 minutes
+const MAX_REFRESH_FAILURES = 5; // only hard logout after repeated permanent failures
 const MAX_EXP_VALUE = 253402300799; // Year 9999 in seconds (to detect millisecond timestamps)
 const EPOCH_THRESHOLD = 1e12; // Threshold to differentiate seconds vs milliseconds
 
@@ -183,8 +187,8 @@ async function refreshTokenOnce(refresh_token: string): Promise<BackendAuthRespo
         message: ax.message,
       });
       
-      // Clear tokens on permanent failures (401, 403, 400)
-      if (statusCode === 401 || statusCode === 403 || statusCode === 400) {
+      // Clear tokens on permanent failures (401, 403)
+      if (statusCode === 401 || statusCode === 403) {
         throw new Error(`RefreshTokenPermanentFailure: ${statusCode}`);
       }
       
@@ -252,7 +256,7 @@ async function revalidateUser(token: any): Promise<any> {
   
   try {
     logAuth("info", "Revalidating user profile");
-    const response = await api.get<ApiSuccessResponse<BackendUser> | BackendUser>("/profile/me", {
+    const response = await api.get<ApiSuccessResponse<BackendUser> | BackendUser>("/v1/me", {
       headers: { Authorization: `Bearer ${token.access_token}` },
     });
     const data = unwrapApiResponse(response.data);
@@ -284,7 +288,7 @@ async function revalidateUser(token: any): Promise<any> {
       token.error = "ProfileNotFound";
       delete token.access_token;
       delete token.refresh_token;
-      delete token.exp;
+      delete token.accessTokenExp;
       return token;
     }
 
@@ -295,7 +299,7 @@ async function revalidateUser(token: any): Promise<any> {
         error: errorMessage,
       });
       token.error = undefined;
-      token.exp = 0;
+      token.accessTokenExp = 0;
       token._revalidateAt = dayjs().add(30, "second").unix();
       return token;
     }
@@ -405,7 +409,7 @@ export const authOptions: NextAuthOptions = {
         hasUser: !!user,
         hasRefreshToken: !!token.refresh_token,
         hasAccessToken: !!token.access_token,
-        currentExp: token.exp,
+        currentAccessTokenExp: token.accessTokenExp,
       });
 
       // Initial sign-in from either credentials provider
@@ -432,14 +436,16 @@ export const authOptions: NextAuthOptions = {
 
         token.access_token = access_token;
         token.refresh_token = refresh_token;
-        token.exp = normalizedExp;
+        token.accessTokenExp = normalizedExp;
         token.error = undefined;
         token._revalidateAt = dayjs().add(REVALIDATE_EVERY, "second").unix();
+        token._refreshFailureCount = 0;
+        token._refreshFailureWindowStart = undefined;
         
         logAuth("info", "Initial sign-in token set", {
           userId: token.id,
           email: token.email,
-          exp: token.exp,
+          accessTokenExp: token.accessTokenExp,
         });
         
         return token;
@@ -447,8 +453,8 @@ export const authOptions: NextAuthOptions = {
 
       // Early refresh if close to expiry OR if token is already expired but refresh token exists
       const needsRefresh = token.refresh_token && (
-        shouldRefresh(token.exp) || 
-        (token.exp && normalizeExp(token.exp) && dayjs().unix() >= normalizeExp(token.exp)!)
+        shouldRefresh(token.accessTokenExp) ||
+        (token.accessTokenExp && normalizeExp(token.accessTokenExp) && dayjs().unix() >= normalizeExp(token.accessTokenExp)!)
       );
       
       if (needsRefresh) {
@@ -466,8 +472,10 @@ export const authOptions: NextAuthOptions = {
 
           token.access_token = data.access_token;
           token.refresh_token = data.refresh_token;
-          token.exp = normalizedExp;
+          token.accessTokenExp = normalizedExp;
           token.error = undefined;
+          token._refreshFailureCount = 0;
+          token._refreshFailureWindowStart = undefined;
 
           // ✅ hydrate profile fields from backend refresh response (if user object exists)
           if (data.user) {
@@ -477,12 +485,12 @@ export const authOptions: NextAuthOptions = {
             token.fullName = data.user.fullName ?? token.fullName;
             token.avatarUrl = data.user.avatarUrl ?? token.avatarUrl;
             logAuth("info", "Token refreshed with user data", {
-              exp: token.exp,
+              accessTokenExp: token.accessTokenExp,
               updatedFields: Object.keys(data.user),
             });
           } else {
             logAuth("info", "Token refreshed but no user data in response, preserving existing", {
-              exp: token.exp,
+              accessTokenExp: token.accessTokenExp,
             });
           }
         } catch (err) {
@@ -491,13 +499,36 @@ export const authOptions: NextAuthOptions = {
           
           // Check if this is a permanent failure
           if (errorMessage.includes("RefreshTokenPermanentFailure")) {
-            logAuth("error", "Refresh failed with permanent error, invalidating session", {
+            const now = dayjs().unix();
+            const windowStart = token._refreshFailureWindowStart ?? now;
+            const isWindowExpired = now - windowStart > REFRESH_FAILURE_WINDOW;
+            const previousCount = isWindowExpired ? 0 : (token._refreshFailureCount ?? 0);
+            const currentCount = previousCount + 1;
+
+            token._refreshFailureWindowStart = isWindowExpired ? now : windowStart;
+            token._refreshFailureCount = currentCount;
+
+            if (currentCount >= MAX_REFRESH_FAILURES) {
+              logAuth("error", "Refresh failed repeatedly with permanent error, invalidating session", {
+                error: errorMessage,
+                refreshFailureCount: currentCount,
+                refreshFailureWindowStart: token._refreshFailureWindowStart,
+              });
+              token.error = "RefreshTokenInvalid";
+              delete token.access_token;
+              delete token.refresh_token;
+              delete token.accessTokenExp;
+              return token;
+            }
+
+            logAuth("warn", "Refresh failed with permanent error, preserving session for retry", {
               error: errorMessage,
+              refreshFailureCount: currentCount,
+              maxRefreshFailures: MAX_REFRESH_FAILURES,
             });
-            token.error = "RefreshTokenInvalid";
-            delete token.access_token;
-            delete token.refresh_token;
-            delete token.exp;
+            token.error = undefined;
+            token.accessTokenExp = 0;
+            token._revalidateAt = dayjs().add(30, "second").unix();
           } else {
             logAuth("error", "Refresh failed with temporary error, preserving token for retry", {
               error: errorMessage,
@@ -550,9 +581,9 @@ export const authOptions: NextAuthOptions = {
         logAuth("info", "Session expiry extended due to valid refresh token", {
           expires: session.expires,
         });
-      } else if (token.exp) {
+      } else if (token.accessTokenExp) {
         // No refresh token: use JWT expiry
-        const normalizedExp = normalizeExp(token.exp);
+        const normalizedExp = normalizeExp(token.accessTokenExp);
         if (normalizedExp) {
           const expTime = normalizedExp * 1000;
           const now = Date.now();
@@ -583,7 +614,7 @@ export const authOptions: NextAuthOptions = {
     
 
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/signin",
     signOut: "/auth/signout"
     // error: "/auth/error",
   },

@@ -14,7 +14,7 @@ export default function StatusTab({
     >
       <div className="flex flex-col items-center gap-3">
         <Typography variant={{ base: "body-3", lg: "body-2" }} color={isActive ? "electric-violet-500" : "neutral-700"}>
-          {label.charAt(0).toUpperCase() + label.slice(1).toLowerCase()}
+          {label}
         </Typography>
         <div
           className={clsx(

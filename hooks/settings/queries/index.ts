@@ -1,6 +1,7 @@
 export * from "./useMyProfile";
 export * from "./useMyNotifications";
 export * from "./useMyNotificationPreferences";
+export * from "./useMyProviders";
 export * from "./useMyTutorProfile";
 export * from "./useStudentTransactions";
 export * from "./useTutorTransactions";

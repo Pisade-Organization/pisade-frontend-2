@@ -1,11 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { getSession, signIn } from "next-auth/react";
+import { getPostAuthPath } from "@/lib/getPostAuthPath";
 
 export default function VerifyPage() {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -21,7 +23,8 @@ export default function VerifyPage() {
 
         if (result?.error) throw new Error(result.error);
         setStatus("success");
-        router.replace("/");
+        const session = await getSession();
+        router.replace(getPostAuthPath(pathname ?? "/", session?.user?.role));
       } catch (err) {
         console.error(err);
         setStatus("error");
@@ -29,7 +32,7 @@ export default function VerifyPage() {
     };
 
     verify();
-  }, [token, router]);
+  }, [token, pathname, router]);
 
   return (
     <div className="flex items-center justify-center min-h-screen text-center">

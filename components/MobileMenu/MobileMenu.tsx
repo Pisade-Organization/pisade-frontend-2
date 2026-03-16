@@ -22,6 +22,7 @@ export default function MobileMenu({
       case "tutor_detail":
         return <TutorDetailMenuButton />;
       case "student_dashboard":
+      case "tutor_dashboard":
         return <DashboardMenuButton onClick={() => setOpen(true)} />;
       default:
         return null;

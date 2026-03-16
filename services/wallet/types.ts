@@ -55,3 +55,29 @@ export interface WalletTransactionsResponse {
   limit?: number;
   [key: string]: unknown;
 }
+
+export interface CreateTopupDto {
+  amount: number;
+}
+
+export interface CreateTopupResponse {
+  transactionId: string;
+  providerRef: string;
+  status: WalletTransactionStatus;
+  amount: number;
+  qrCodeUrl: string;
+  expiresAt?: string | null;
+}
+
+export interface VerifyTopupDto {
+  providerRef: string;
+}
+
+export interface VerifyTopupResponse {
+  transactionId: string;
+  providerRef: string;
+  status: WalletTransactionStatus;
+  amount: number;
+  walletBalance: number;
+  isFinal: boolean;
+}

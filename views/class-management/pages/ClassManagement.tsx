@@ -3,11 +3,19 @@
 import { useState, useMemo } from "react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/footer/Footer"
+import BaseButton from "@/components/base/BaseButton"
 import ClassStatusTabs from "../components/ClassStatusTabs"
 import ClassManagementCard from "../components/ClassManagementCard"
 import EmptyState from "../components/EmptyState"
 import { ClassStatus } from "../components/ClassStatusTabs/types"
 import { LessonStatusType } from "../components/ClassManagementCard/LessonStatus/types"
+import { useInfiniteBookings } from "@/hooks/bookings/queries"
+import type { BookingListItem, GetBookingsParams } from "@/services/bookings/types"
+
+type ClassManagementPageProps = {
+  navbarVariant?: "student_dashboard" | "tutor_dashboard"
+  role?: "student" | "tutor"
+}
 
 const MOCK_CLASSES = [
   {
@@ -60,29 +68,131 @@ const MOCK_CLASSES = [
   },
 ]
 
-export default function ClassManagementPage() {
-  const [currentStatus, setCurrentStatus] = useState<ClassStatus>(ClassStatus.UPCOMING)
+interface ClassCardItem {
+  id: string
+  avatarUrl: string
+  date: Date
+  title: string
+  startTime: Date
+  endTime: Date
+  status: LessonStatusType
+  description: string
+  tutorFullName: string
+  tutorAvatarUrl: string
+}
 
-  const filteredClasses = useMemo(() => {
-    return currentStatus === ClassStatus.UPCOMING
-      ? MOCK_CLASSES.filter((classItem) => [LessonStatusType.Upcoming, LessonStatusType.Processing].includes(classItem.status))
-      : MOCK_CLASSES.filter((classItem) => [LessonStatusType.Completed, LessonStatusType.Cancelled].includes(classItem.status))
+function mapLessonStatus(status: string): LessonStatusType | null {
+  if (status === "CONFIRMED") return LessonStatusType.Upcoming
+  if (status === "PENDING_PAYMENT") return LessonStatusType.Processing
+  if (status === "COMPLETED") return LessonStatusType.Completed
+  return null
+}
+
+function buildDescription(status: string): string {
+  if (status === "CONFIRMED") {
+    return "Your class is confirmed. Please join on time."
+  }
+
+  if (status === "PENDING_PAYMENT") {
+    return "Payment pending. Please complete checkout to secure your class."
+  }
+
+  if (status === "COMPLETED") {
+    return "Completed successfully."
+  }
+
+  return ""
+}
+
+function mapBookingToClassCard(booking: BookingListItem): ClassCardItem | null {
+  const mappedStatus = mapLessonStatus(booking.status)
+  if (!mappedStatus) {
+    return null
+  }
+
+  const tutorName = booking.tutor?.name ?? "Tutor"
+  const avatarUrl = booking.tutor?.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor"
+
+  return {
+    id: booking.id,
+    avatarUrl,
+    date: new Date(booking.schedule.startTime),
+    title: `Class with ${tutorName}`,
+    startTime: new Date(booking.schedule.startTime),
+    endTime: new Date(booking.schedule.endTime),
+    status: mappedStatus,
+    description: buildDescription(booking.status),
+    tutorFullName: tutorName,
+    tutorAvatarUrl: avatarUrl,
+  }
+}
+
+export default function ClassManagementPage({
+  navbarVariant = "student_dashboard",
+  role = "student",
+}: ClassManagementPageProps) {
+  const [currentStatus, setCurrentStatus] = useState<ClassStatus>(ClassStatus.UPCOMING)
+  const statusLabels =
+    role === "tutor"
+      ? {
+          upcoming: "Active students",
+          completed: "Past students",
+        }
+      : undefined
+
+  const bookingParams = useMemo<GetBookingsParams>(() => {
+    if (currentStatus === ClassStatus.UPCOMING) {
+      return { view: "upcoming", limit: 10 }
+    }
+
+    return { view: "past", status: "COMPLETED", limit: 10 }
   }, [currentStatus])
+
+  const {
+    data,
+    isLoading,
+    isError,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useInfiniteBookings(bookingParams, role === "student")
+
+  const studentClasses = useMemo(() => {
+    const allBookings = (data?.pages ?? []).flatMap((page) => page.data)
+    return allBookings
+      .map(mapBookingToClassCard)
+      .filter((item): item is ClassCardItem => item !== null)
+  }, [data?.pages])
+
+  const filteredClasses = role === "student" ? studentClasses : MOCK_CLASSES
 
   return (
     <div className="w-full min-h-screen flex flex-col">
-      <Navbar variant="student_dashboard" />
+      <Navbar variant={navbarVariant} />
 
       <div className="flex flex-1 flex-col">
         <div className="w-full">
           <ClassStatusTabs
             currentStatus={currentStatus}
             setCurrentStatus={setCurrentStatus}
+            labels={statusLabels}
           />
         </div>
 
         <div className="w-full flex flex-1 flex-col px-4 py-6 lg:px-20 lg:py-8">
-          {filteredClasses.length > 0 ? (
+          {role === "student" && isLoading ? (
+            <div className="flex flex-1 items-center justify-center text-neutral-400">
+              Loading classes...
+            </div>
+          ) : null}
+
+          {role === "student" && isError ? (
+            <div className="mb-4 rounded-lg border border-red-100 bg-red-25 p-4 text-red-normal">
+              Unable to load classes right now. Please try again.
+            </div>
+          ) : null}
+
+          {!isLoading && filteredClasses.length > 0 ? (
             <div className="w-full flex flex-col gap-4">
               {filteredClasses.map((classItem) => (
                 <ClassManagementCard
@@ -99,12 +209,23 @@ export default function ClassManagementPage() {
                   tutorAvatarUrl={classItem.tutorAvatarUrl}
                 />
               ))}
+
+              {role === "student" && hasNextPage ? (
+                <div className="mt-2 flex justify-center">
+                  <BaseButton
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                  >
+                    {isFetchingNextPage ? "Loading..." : "Load more"}
+                  </BaseButton>
+                </div>
+              ) : null}
             </div>
-          ) : (
+          ) : !isLoading ? (
             <div className="flex flex-1 items-center justify-center">
               <EmptyState />
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 

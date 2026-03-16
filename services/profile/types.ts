@@ -3,13 +3,15 @@ export interface UserProfile {
   avatarUrl: string | null;
   bio: string | null;
   timezone: string | null;
-  phoneNumber: string | null;
-  emailVerified: boolean;
+  countryOfBirth: string | null;
+  nationality: string | null;
 }
 
 export interface MyProfile {
   id: string;
   email: string;
+  emailVerified: boolean;
+  phoneNumber: string | null;
   status: string;
   createdAt: string;
   updatedAt: string;
@@ -21,6 +23,8 @@ export interface UpdateMyProfileDto {
   avatarUrl?: string;
   bio?: string;
   timezone?: string;
+  countryOfBirth?: string;
+  nationality?: string;
 }
 
 export interface UpdateMyProfileResponse {
@@ -31,6 +35,8 @@ export interface UpdateMyProfileResponse {
     avatarUrl?: string | null;
     bio?: string | null;
     timezone?: string | null;
+    countryOfBirth?: string | null;
+    nationality?: string | null;
     createdAt?: string;
     updatedAt?: string;
     user?: {
@@ -80,4 +86,25 @@ export interface NotificationPreferences {
 export interface UpdateNotificationPreferencesDto {
   isReceivedEmailNotification?: boolean;
   isReceivedSMSNotification?: boolean;
+}
+
+export interface LinkedProvider {
+  id: string;
+  provider: "GOOGLE" | "LOCAL" | "FACEBOOK" | string;
+  providerId?: string | null;
+  email?: string | null;
+  createdAt?: string;
+}
+
+export interface LinkGoogleProviderDto {
+  googleToken: string;
+}
+
+export interface LinkGoogleProviderResponse {
+  message: string;
+  provider: LinkedProvider;
+}
+
+export interface UnlinkProviderResponse {
+  message: string;
 }

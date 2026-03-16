@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import MobileMenuHeader from "./MobileMenuHeader";
 import SearchOverlay from "./Overlays/SearchOverlay";
+import TutorDashboardOverlay from "./Overlays/TutorDashboardOverlay";
 
 export default function MobileMenuOverlay({ 
   setOpen, 
@@ -20,9 +21,9 @@ export default function MobileMenuOverlay({
     >
       <MobileMenuHeader setOpen={setOpen} />
       { variant === "search" && <SearchOverlay />}
-      
+      { variant === "tutor_dashboard" && <TutorDashboardOverlay />}
+       
     </motion.div>
   );
 }
-
 

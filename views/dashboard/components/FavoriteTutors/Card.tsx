@@ -3,6 +3,7 @@ import Image from "next/image";
 import { TUTOR_RANKING } from "@/types/tutorRanking.enum";
 import { Zap, Heart, Calendar, MessageCircle } from "lucide-react";
 import BaseButton from "@/components/base/BaseButton";
+import { getTutorRankingBadgeSrc } from "@/lib/tutorRanking";
 
 interface CardProps {
     fullName: string;
@@ -15,6 +16,8 @@ interface CardProps {
 }
 
 export default function Card({fullName, subject, flagUrl, avatarUrl, baseRate, isAvailable, tutorRanking}: CardProps) {
+    const tutorRankingBadgeSrc = getTutorRankingBadgeSrc(tutorRanking)
+
     return (
         <div className="border border-[#CECECE66] flex lg:flex-col justify-start items-stretch lg:items-center rounded-[12px] min-w-fit relative">
             
@@ -34,14 +37,16 @@ export default function Card({fullName, subject, flagUrl, avatarUrl, baseRate, i
 
             </div>
 
-            <div className="hidden lg:flex justify-center items-center rounded-full bg-electric-violet-25 w-9 h-9 absolute right-2 top-[59%] -translate-y-1/2 z-30">
-                <Image
-                    src={`/icons/tutor-ranking/${tutorRanking}.svg`}
-                    alt={`${tutorRanking} badge`}
-                    width={28}
-                    height={28}
-                />
-            </div>
+            {tutorRankingBadgeSrc ? (
+                <div className="hidden lg:flex justify-center items-center rounded-full bg-electric-violet-25 w-9 h-9 absolute right-2 top-[59%] -translate-y-1/2 z-30">
+                    <Image
+                        src={tutorRankingBadgeSrc}
+                        alt={`${tutorRanking} badge`}
+                        width={28}
+                        height={28}
+                    />
+                </div>
+            ) : null}
 
 
             <div className="h-full flex flex-col py-3 px-4 lg:pt-4 lg:pb-5 lg:px-5 gap-2 lg:gap-3 flex-1">

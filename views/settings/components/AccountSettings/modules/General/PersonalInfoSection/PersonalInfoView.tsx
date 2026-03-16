@@ -8,6 +8,7 @@ interface PersonalInfoViewI {
   nationality: string;
   phoneDisplay: string;
   email: string;
+  timezone: string;
 }
 
 export default function PersonalInfoView({
@@ -17,7 +18,8 @@ export default function PersonalInfoView({
   countryOfBirth,
   nationality,
   phoneDisplay,
-  email
+  email,
+  timezone,
 }: PersonalInfoViewI) {
   const displayName = `${firstName} ${lastName}`.trim() || fullName;
 
@@ -34,6 +36,8 @@ export default function PersonalInfoView({
         <InfoRow label="Phone Number" value={phoneDisplay} />
         <InfoRow label="Email" value={email} />
       </div>
+
+      <InfoRow label="Timezone" value={timezone} />
     </>
   )
 }

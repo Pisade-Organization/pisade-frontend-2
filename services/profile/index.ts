@@ -3,9 +3,13 @@ import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiRespon
 import { servicePath } from "@/services/servicePath";
 import type {
   DeleteMyAccountResponse,
+  LinkGoogleProviderDto,
+  LinkGoogleProviderResponse,
+  LinkedProvider,
   NotificationPreferences,
   MyProfile,
   MyNotificationsResponse,
+  UnlinkProviderResponse,
   UpdateNotificationPreferencesDto,
   UpdateMyPhoneNumberDto,
   UpdateMyPhoneNumberResponse,
@@ -70,6 +74,32 @@ export const ProfileService = {
     const response = await apiInstanceClient.patch<
       ApiSuccessResponse<NotificationPreferences> | NotificationPreferences
     >(servicePath.profile.updateMyNotificationPreferences, payload);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async getMyProviders(): Promise<LinkedProvider[]> {
+    const response = await apiInstanceClient.get<
+      ApiSuccessResponse<LinkedProvider[]> | LinkedProvider[]
+    >(servicePath.profile.getMyProviders);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async linkGoogleProvider(
+    payload: LinkGoogleProviderDto,
+  ): Promise<LinkGoogleProviderResponse> {
+    const response = await apiInstanceClient.post<
+      ApiSuccessResponse<LinkGoogleProviderResponse> | LinkGoogleProviderResponse
+    >(servicePath.profile.linkGoogleProvider, payload);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async unlinkProvider(providerId: string): Promise<UnlinkProviderResponse> {
+    const response = await apiInstanceClient.delete<
+      ApiSuccessResponse<UnlinkProviderResponse> | UnlinkProviderResponse
+    >(servicePath.profile.unlinkProvider.replace(':providerId', providerId));
 
     return unwrapApiResponse(response.data);
   },

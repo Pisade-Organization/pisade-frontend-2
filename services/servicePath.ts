@@ -15,6 +15,9 @@ export const servicePath = {
       getMyNotifications: "/v1/me/notifications", // GET
       getMyNotificationPreferences: "/v1/me/notification-preferences", // GET
       updateMyNotificationPreferences: "/v1/me/notification-preferences", // PATCH
+      getMyProviders: "/v1/me/providers", // GET
+      linkGoogleProvider: "/v1/me/providers/link-google", // POST
+      unlinkProvider: "/v1/me/providers/:providerId", // DELETE
       deleteMyAccount: "/v1/me", // DELETE
     },
     tutor: {
@@ -31,6 +34,8 @@ export const servicePath = {
       getTodayLessons: "/dashboard/today-lessons", // GET
       getWeeklyPlan: "/dashboard/weekly-plan", // GET
       getFavoriteTutors: "/dashboard/favorite-tutors", // GET
+      getFavoriteTutorsPaginated: "/dashboard/favorite-tutors/paginated", // GET
+      getCurrentTutors: "/dashboard/current-tutors", // GET
       getStudentTransactions: "/dashboard/transactions", // GET
     },
     bookings: {
@@ -45,6 +50,8 @@ export const servicePath = {
       getMyWallet: "/wallet/me", // GET
       getMyWalletTransactions: "/wallet/me/transactions", // GET
       getMyWalletSummary: "/wallet/me/summary", // GET
+      topup: "/wallet/topup", // POST
+      verifyTopup: "/wallet/topup/verify", // POST
     },
     tutorWallet: {
       getWithdrawals: "/tutor-wallet/withdrawals", // GET

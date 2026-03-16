@@ -7,10 +7,11 @@ interface GeneralProps {
   fullName: string
   countryOfBirth: string
   nationality: string
-  countryCode: number
   phoneNumber: string
   email: string
+  emailVerified: boolean
   avatarUrl: string
+  timezone: string
   teachingInfoProps?: {
     subject: string
     languages: string
@@ -21,10 +22,11 @@ export default function General({
   fullName,
   countryOfBirth,
   nationality,
-  countryCode,
   phoneNumber,
   email,
+  emailVerified,
   avatarUrl,
+  timezone,
   teachingInfoProps,
 }: GeneralProps) {
   return (
@@ -33,10 +35,11 @@ export default function General({
         fullName={fullName}
         countryOfBirth={countryOfBirth}
         nationality={nationality}
-        countryCode={countryCode}
         phoneNumber={phoneNumber}
         email={email}
+        emailVerified={emailVerified}
         avatarUrl={avatarUrl}
+        timezone={timezone}
       />
 
       <div className="lg:hidden w-screen border-b border-neutral-50 ml-[calc(-50vw+50%)] mr-[calc(-50vw+50%)]" />
@@ -46,9 +49,9 @@ export default function General({
           subject={teachingInfoProps.subject}
           languages={teachingInfoProps.languages}
         />
-      ) : (
-        <SocialNetworkSection />
-      )}
+      ) : null}
+
+      <SocialNetworkSection />
 
       <div className="lg:hidden w-screen border-b border-neutral-50 ml-[calc(-50vw+50%)] mr-[calc(-50vw+50%)]" />
 

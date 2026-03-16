@@ -13,14 +13,19 @@ interface PersonalInfoEditI {
   setLastName: (value: string) => void;
   phoneNumberValue: string;
   setPhoneNumberValue: (value: string) => void;
+  selectedCountryOfBirth: string;
+  setSelectedCountryOfBirth: (value: string) => void;
+  selectedNationality: string;
+  setSelectedNationality: (value: string) => void;
+  countryOptions: { value: string; label: string }[];
   phoneCountry: CountryOption;
   setPhoneCountry: (country: CountryOption) => void;
   emailValue: string;
-  setEmailValue: (value: string) => void;
   isEmailVerified: boolean;
   timezone: string;
   setTimezone: (value: string) => void;
   timezoneOptions: { value: string; label: string }[];
+  isSaving?: boolean;
   onSave: () => void;
 }
 
@@ -31,14 +36,19 @@ export default function PersonalInfoEdit({
   setLastName,
   phoneNumberValue,
   setPhoneNumberValue,
+  selectedCountryOfBirth,
+  setSelectedCountryOfBirth,
+  selectedNationality,
+  setSelectedNationality,
+  countryOptions,
   phoneCountry,
   setPhoneCountry,
   emailValue,
-  setEmailValue,
   isEmailVerified,
   timezone,
   setTimezone,
   timezoneOptions,
+  isSaving,
   onSave,
 }: PersonalInfoEditI) {
   return (
@@ -64,8 +74,8 @@ export default function PersonalInfoEdit({
         <BaseInput
           title="Email"
           value={emailValue}
-          onChange={(e) => setEmailValue(e.target.value)}
-          placeholder="Enter your email"
+          disabled
+          readOnly
         />
         {isEmailVerified && (
           <div className="flex items-center gap-2 px-3 py-2 bg-green-50 rounded-lg">
@@ -77,7 +87,25 @@ export default function PersonalInfoEdit({
         )}
       </div>
 
-      <div className="w-full flex flex-col gap-4 lg:grid lg:grid-cols-2 ">
+      <div className="w-full flex flex-col gap-4 lg:grid lg:grid-cols-2">
+        <BaseSelect
+          title="Country of birth"
+          options={countryOptions}
+          value={selectedCountryOfBirth}
+          onChange={(value) => setSelectedCountryOfBirth(value)}
+          placeholder="Choose a country"
+          required
+        />
+
+        <BaseSelect
+          title="Nationality"
+          options={countryOptions}
+          value={selectedNationality}
+          onChange={(value) => setSelectedNationality(value)}
+          placeholder="Choose a country"
+          required
+        />
+
         <PhoneNumberInput
           phoneNumber={phoneNumberValue}
           setPhoneNumber={setPhoneNumberValue}
@@ -99,9 +127,10 @@ export default function PersonalInfoEdit({
       <BaseButton
         variant="primary"
         onClick={onSave}
+        disabled={isSaving}
         className="lg:hidden w-full"
       >
-        Save Changes
+        {isSaving ? "Saving..." : "Save Changes"}
       </BaseButton>
     </div>
   )

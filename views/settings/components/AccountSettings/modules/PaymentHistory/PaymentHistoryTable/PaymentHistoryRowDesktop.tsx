@@ -12,11 +12,16 @@ interface PaymentHistoryRowDesktopI {
   status: PaymentStatus;
 }
 
+function isPromptPayMethod(cardType: string) {
+  const normalizedType = cardType.toUpperCase().trim();
+  return normalizedType.includes('PROMPTPAY') || normalizedType.includes('QR');
+}
+
 function getCardIcon(cardType: string) {
   const normalizedType = cardType.toUpperCase().trim();
   
-  if (normalizedType.includes('PROMPTPAY') || normalizedType.includes('QR')) {
-    return <ScanQrCode className="w-6 h-6 text-neutral-500" />;
+  if (isPromptPayMethod(cardType)) {
+    return <ScanQrCode className="w-6 h-6 text-neutral-700" />;
   }
   if (normalizedType.includes('VISA')) {
     return <VisaIcon width={35} height={24} />;
@@ -56,6 +61,7 @@ export default function PaymentHistoryRowDesktop({
   status
 }: PaymentHistoryRowDesktopI) {
   const cardIcon = getCardIcon(cardType);
+  const isPromptPay = isPromptPayMethod(cardType);
   
   return (
     <tr className="border-b border-neutral-50">
@@ -78,7 +84,10 @@ export default function PaymentHistoryRowDesktop({
             </div>
           )}
           <div className="inline-flex gap-1">
-            <Typography variant="body-3" color="neutral-700">
+            <Typography
+              variant={isPromptPay ? "label-3" : "body-3"}
+              color={isPromptPay ? "neutral-900" : "neutral-700"}
+            >
               { cardType }
             </Typography>
             {lastFourDigits && (
@@ -123,4 +132,3 @@ export default function PaymentHistoryRowDesktop({
     </tr>
   )
 }
-

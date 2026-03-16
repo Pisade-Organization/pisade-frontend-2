@@ -9,6 +9,9 @@ import TutorStats from "./TutorStats"
 import SpecialtyBadges from "./SpecialtyBadges"
 import TutorBio from "./TutorBio"
 import TutorLanguages from "./TutorLanguages"
+import { MouseEvent } from "react"
+import Image from "next/image"
+import BaseButton from "@/components/base/BaseButton"
 
 export default function TutorListCard({
     id,
@@ -28,9 +31,18 @@ export default function TutorListCard({
     videoThumbnailUrl,
   }: TutorCardProps) { 
     const router = useRouter()
+    const firstName = fullName.trim().split(/\s+/)[0] || "Tutor"
+    const thumbnailSrc = videoThumbnailUrl || avatarUrl
+
     const onCardClick = () => {
         router.push(`/tutor/${id}`)
     }
+
+    const handleSeeProfileClick = (e: MouseEvent) => {
+        e.stopPropagation()
+        router.push(`/tutor/${id}`)
+    }
+
     return (
         <div 
         onClick={onCardClick}
@@ -82,6 +94,25 @@ export default function TutorListCard({
                     <TutorLanguages languages={languages} />
                 </div>
 
+            </div>
+
+            <div className="hidden lg:block w-px self-stretch bg-neutral-50" />
+
+            <div className="hidden lg:flex flex-col gap-6">
+                <div className="relative w-[311px] overflow-hidden rounded-[8px]">
+                    <Image
+                        src={thumbnailSrc}
+                        alt={`${fullName} video thumbnail`}
+                        width={311}
+                        height={175}
+                        className="h-[175px] w-[311px] object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/20" />
+                </div>
+
+                <BaseButton typeStyle="outline" onClick={handleSeeProfileClick}>
+                    {`See ${firstName}'s Profile`}
+                </BaseButton>
             </div>
             
 

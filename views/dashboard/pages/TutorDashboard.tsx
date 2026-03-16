@@ -1,5 +1,6 @@
 "use client"
 import { Role } from "@/types/role.enum"
+import { useMemo } from "react"
 import type { Transaction } from "../components/TransactionHistory/types"
 import { TransactionStatus } from "../components/TransactionHistory/badges/TransactionStatusBadge/types"
 import { PaymentMethod } from "../components/TransactionHistory/badges/PaymentMethodBadge/types"
@@ -19,13 +20,22 @@ export default function TutorDashboardPage() {
   const { data: tutorTransactions = [] } = useTutorTransactions()
   const { data: upcoming } = useBookings({ view: "upcoming", limit: 1 })
 
-  const today = new Date()
-  const tomorrow = new Date(today)
-  tomorrow.setDate(today.getDate() + 1)
+  const todayRange = useMemo(() => {
+    const start = new Date()
+    start.setHours(0, 0, 0, 0)
+
+    const end = new Date(start)
+    end.setDate(end.getDate() + 1)
+
+    return {
+      from: start.toISOString(),
+      to: end.toISOString(),
+    }
+  }, [])
 
   const { data: todayBookingData } = useBookings({
-    from: today.toISOString(),
-    to: tomorrow.toISOString(),
+    from: todayRange.from,
+    to: todayRange.to,
     limit: 100,
   })
 

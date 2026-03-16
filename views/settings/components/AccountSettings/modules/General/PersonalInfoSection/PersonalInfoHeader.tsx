@@ -5,12 +5,14 @@ import BaseButton from "@/components/base/BaseButton"
 
 interface PersonalInfoHeaderI {
   isEditing: boolean;
+  isSaving?: boolean;
   setIsEditing: Dispatch<SetStateAction<boolean>>;
   onSave: () => void;
 }
 
 export default function PersonalInfoHeader({
   isEditing,
+  isSaving,
   setIsEditing,
   onSave
 }: PersonalInfoHeaderI) {
@@ -25,9 +27,10 @@ export default function PersonalInfoHeader({
         <BaseButton 
           variant="primary" 
           onClick={onSave}
+          disabled={isSaving}
           className="hidden lg:flex"
         >
-          Save Changes
+          {isSaving ? "Saving..." : "Save Changes"}
         </BaseButton>
       ) : (
         <button

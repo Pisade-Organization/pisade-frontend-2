@@ -6,10 +6,14 @@ export enum ClassStatus {
 export interface ClassStatusTabsI {
   currentStatus: ClassStatus
   setCurrentStatus: (status: ClassStatus) => void
+  labels?: {
+    upcoming: string
+    completed: string
+  }
 }
 
 export interface StatusTabI {
-  label: ClassStatus
+  label: string
   isActive: boolean
   onClick: () => void
 }

@@ -1,21 +1,22 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import AuthLayout from "../components/AuthLayout";
 import LoadingPage from "@/components/LoadingPage";
+import { getPostAuthPath } from "@/lib/getPostAuthPath";
 
 export default function SigninPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    // If already logged in → redirect to home
     if (status === "authenticated") {
-      router.replace("/");
+      router.replace(getPostAuthPath(pathname ?? "/", session?.user?.role));
     }
-  }, [status, router]);
+  }, [status, session?.user?.role, pathname, router]);
 
   // While loading session, render nothing (or a spinner)
   if (status === "loading") {
