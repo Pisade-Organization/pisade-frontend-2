@@ -29,16 +29,38 @@ const roleProtectedRoutes: Record<string, Role[]> = {
   "/checkout": [Role.STUDENT],
 };
 
+const tutorAllowedWhenNotApproved: string[] = [
+  "/",
+  "/tutor/onboarding",
+  "/signout",
+];
+
 function matchesRoute(pathname: string, route: string): boolean {
   return pathname === route || pathname.startsWith(`${route}/`);
 }
 
-function getRoleHome(locale: string, role?: Role): string {
+function isTutorApproved(onboardingStatus?: string): boolean {
+  return onboardingStatus === "APPROVED";
+}
+
+function canUnapprovedTutorAccessRoute(pathname: string): boolean {
+  if (pathname === "") {
+    return true;
+  }
+
+  return tutorAllowedWhenNotApproved.some((route) => matchesRoute(pathname, route));
+}
+
+function getRoleHome(locale: string, role?: Role, onboardingStatus?: string): string {
   if (role === Role.STUDENT) {
     return `/${locale}/student/dashboard`;
   }
 
   if (role === Role.TUTOR) {
+    if (!isTutorApproved(onboardingStatus)) {
+      return `/${locale}/tutor/onboarding`;
+    }
+
     return `/${locale}/tutor/dashboard`;
   }
 
@@ -60,17 +82,30 @@ export async function middleware(request: NextRequest) {
 
   const locale = pathname.split("/")[1] || routing.defaultLocale;
   const withoutLocale = pathname.replace(/^\/(en|th)/, "");
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+  const userRole = token?.role as Role | undefined;
+  const onboardingStatus =
+    typeof token?.onboardingStatus === "string" ? token.onboardingStatus : undefined;
+
+  if (
+    token &&
+    userRole === Role.TUTOR &&
+    !isTutorApproved(onboardingStatus) &&
+    !canUnapprovedTutorAccessRoute(withoutLocale)
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${locale}/tutor/onboarding`;
+    return NextResponse.redirect(url);
+  }
 
   const matchedRoleRoute = Object.keys(roleProtectedRoutes).find((route) =>
     matchesRoute(withoutLocale, route),
   );
 
   if (matchedRoleRoute) {
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-
     if (!token) {
       const url = request.nextUrl.clone();
       url.pathname = `/${locale}/signin`;
@@ -78,11 +113,10 @@ export async function middleware(request: NextRequest) {
     }
 
     const allowed = roleProtectedRoutes[matchedRoleRoute];
-    const userRole = token.role as Role | undefined;
 
     if (!userRole || !allowed.includes(userRole)) {
       const url = request.nextUrl.clone();
-      url.pathname = getRoleHome(locale, userRole);
+      url.pathname = getRoleHome(locale, userRole, onboardingStatus);
       return NextResponse.redirect(url);
     }
   }
@@ -92,11 +126,6 @@ export async function middleware(request: NextRequest) {
   );
 
   if (isAuthOnlyRoute) {
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET,
-    });
-
     if (!token) {
       const url = request.nextUrl.clone();
       url.pathname = `/${locale}/signin`;

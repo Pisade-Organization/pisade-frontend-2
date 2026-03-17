@@ -59,7 +59,7 @@ export interface OnboardingStepOnePostResponse {
 
 // STEP 2
 export interface OnboardingStepTwoDto {
-  key?: string;
+  key: string;
 }
 
 // GET RESPONSE
@@ -116,17 +116,18 @@ export interface OnboardingStepThreePostResponse {
   currentStep: number;
   message: string;
   hasTeachingCertificate: boolean;
-  certificationsCount: boolean;
+  certificationsCount: number;
   certifications: CertificationResponse[];
 }
 
 export enum Degree {
+  HIGH_SCHOOL = "HIGH_SCHOOL",
+  ASSOCIATE = "ASSOCIATE",
   BACHELOR = "BACHELOR",
   MASTER = "MASTER",
   DOCTORATE = "DOCTORATE",
-  ASSOCIATE = "ASSOCIATE",
-  DIPLOMA = "DIPLOMA",
-  CERTIFICATE = "CERTIFICATE",
+  PROFESSIONAL = "PROFESSIONAL",
+  OTHER = "OTHER",
 }
 
 export interface EducationDto {
@@ -137,8 +138,8 @@ export interface EducationDto {
   yearStart: number;
   yearEnd?: number;
   currentlyStudying?: boolean;
-  fileUrl?: string;
   diplomaFileKey?: string;
+  diplomaFileUrl?: string;
 }
 
 // STEP 4
@@ -197,13 +198,15 @@ export interface OnboardingStepFivePostResponse {
 // POST DTO
 export interface OnboardingStepSixDto {
   videoKey?: string;
+  videoLink?: string | null;
   thumbnailKey?: string | null;
 }
 
 //GET RESPONSE
 export interface OnboardingStepSixGetResponse {
-  videoUrl?: string;
-  thumbnailUrl?: string;
+  videoUrl?: string | null;
+  thumbnailUrl?: string | null;
+  videoLink?: string | null;
 }
 
 // POST RESPONSE
@@ -212,7 +215,8 @@ export interface OnboardingStepSixPostResponse {
   tutorId: string;
   currentStep: number;
   message: string;
-  videoUrl: string;
+  videoUrl: string | null;
+  videoLink?: string | null;
   thumbnailUrl: string | null;
 }
 

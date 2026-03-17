@@ -6,9 +6,11 @@ import { useStepNine } from "@/hooks/tutors/onboarding/queries/useStepNine"
 import { useSaveStepNine } from "@/hooks/tutors/onboarding/mutations/useUpdateStepNine"
 import { useOnboardingNavigation } from "../../hooks/useOnboardingNavigation"
 import { getPresignedUrl, uploadFileToPresignedUrl } from "@/services/upload"
+import { TutorOnboardingService } from "@/services/tutor/onboarding"
 import { DocumentType } from "../../types/document.types"
 import type { DocumentTypeApi } from "../../types/document.types"
 import { DocumentType as ApiDocumentType } from "@/services/tutor/onboarding/types"
+import Typography from "@/components/base/Typography"
 import WhyDoWeNeed from "./WhyDoWeNeed"
 import SelectDocumentType from "./SelectDocumentType"
 import Upload from "./Upload"
@@ -37,6 +39,7 @@ export default function OnboardingStepNine() {
   const [passportKey, setPassportKey] = useState<string | null>(null)
   const [isUploadingIdCard, setIsUploadingIdCard] = useState(false)
   const [isUploadingPassport, setIsUploadingPassport] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   
   const { data: session } = useSession()
   const { data: stepNineData, isLoading } = useStepNine()
@@ -45,6 +48,7 @@ export default function OnboardingStepNine() {
   
   // Use refs to access latest values without including them in dependencies
   const saveStepNineRef = useRef(saveStepNine)
+  const stepNineDataRef = useRef(stepNineData)
   const sessionRef = useRef(session)
   const documentTypeRef = useRef(documentType)
   const idCardKeyRef = useRef(idCardKey)
@@ -53,6 +57,7 @@ export default function OnboardingStepNine() {
   // Keep refs in sync
   useEffect(() => {
     saveStepNineRef.current = saveStepNine
+    stepNineDataRef.current = stepNineData
     sessionRef.current = session
     documentTypeRef.current = documentType
     idCardKeyRef.current = idCardKey
@@ -184,23 +189,94 @@ export default function OnboardingStepNine() {
   // Register step actions
   useEffect(() => {
     const validate = async () => {
+      setSubmitError(null)
+
       // Check if document type is selected
       if (!documentTypeRef.current) {
         return false
       }
+
+      const hasIdCardDocument = Boolean(idCardKeyRef.current || stepNineDataRef.current?.idCardUrl)
+      const hasPassportDocument = Boolean(passportKeyRef.current || stepNineDataRef.current?.passportUrl)
       
       // Check if the selected document type has a file uploaded
       if (documentTypeRef.current === "ID Card") {
-        if (!idCardKeyRef.current) {
+        if (!hasIdCardDocument) {
           return false
         }
       } else if (documentTypeRef.current === "Passport") {
-        if (!passportKeyRef.current) {
+        if (!hasPassportDocument) {
           return false
         }
       }
       
       return true
+    }
+
+    const getMissingSteps = async () => {
+      const [step1, step2, step3, step4, step5, step6, step7, step8, step9] = await Promise.all([
+        TutorOnboardingService.getOnboardingStepOne(),
+        TutorOnboardingService.getOnboardingStepTwo(),
+        TutorOnboardingService.getOnboardingStepThree(),
+        TutorOnboardingService.getOnboardingStepFour(),
+        TutorOnboardingService.getOnboardingStepFive(),
+        TutorOnboardingService.getOnboardingStepSix(),
+        TutorOnboardingService.getOnboardingStepSeven(),
+        TutorOnboardingService.getOnboardingStepEight(),
+        TutorOnboardingService.getOnboardingStepNine(),
+      ])
+
+      const missingSteps: number[] = []
+
+      const step1Done =
+        Boolean(step1?.firstName?.trim()) &&
+        Boolean(step1?.lastName?.trim()) &&
+        Boolean(step1?.subject?.trim()) &&
+        Boolean(step1?.languages?.length)
+      if (!step1Done) missingSteps.push(1)
+
+      const step2Done = Boolean(step2?.avatarUrl)
+      if (!step2Done) missingSteps.push(2)
+
+      const step3Done =
+        step3?.hasTeachingCertificate === false ||
+        Boolean(step3?.certifications && step3.certifications.length > 0)
+      if (!step3Done) missingSteps.push(3)
+
+      const step4Done =
+        step4?.hasDiploma === false ||
+        Boolean(step4?.diplomas && step4.diplomas.length > 0)
+      if (!step4Done) missingSteps.push(4)
+
+      const step5Done =
+        Boolean(step5?.introduceYourself?.trim()) &&
+        Boolean(step5?.teachingExperience?.trim()) &&
+        Boolean(step5?.motivatePotentialStudents?.trim()) &&
+        Boolean(step5?.catchyHeadline?.trim())
+      if (!step5Done) missingSteps.push(5)
+
+      const step6Done = Boolean(step6?.videoUrl || step6?.videoLink)
+      if (!step6Done) missingSteps.push(6)
+
+      const step7Done = Boolean(step7?.timezone?.trim()) && Boolean(step7?.availabilities?.length)
+      if (!step7Done) missingSteps.push(7)
+
+      const hasPromptPay = step8?.withdrawalMethod === "PROMPTPAY"
+      const hasBankTransfer = step8?.withdrawalMethod === "BANK_TRANSFER"
+      const step8Done =
+        Boolean(step8?.lessonPrice && step8.lessonPrice > 0) &&
+        Boolean(
+          (hasPromptPay && step8?.withdrawalPhoneNumber?.trim()) ||
+          (hasBankTransfer && step8?.bankName?.trim() && step8?.bankAccountNumber?.trim()),
+        )
+      if (!step8Done) missingSteps.push(8)
+
+      const step9Done =
+        (step9?.documentType === ApiDocumentType.ID_CARD && Boolean(step9?.idCardUrl)) ||
+        (step9?.documentType === ApiDocumentType.PASSPORT && Boolean(step9?.passportUrl))
+      if (!step9Done) missingSteps.push(9)
+
+      return missingSteps
     }
 
     const save = async () => {
@@ -218,10 +294,28 @@ export default function OnboardingStepNine() {
         payload.passportKey = passportKeyRef.current
       }
 
+      const existingDocumentType = stepNineDataRef.current?.documentType as DocumentTypeApi | undefined
+      const hasNewDocumentUpload = Boolean(idCardKeyRef.current || passportKeyRef.current)
+
+      if (!hasNewDocumentUpload && existingDocumentType === apiDocumentType) {
+        return
+      }
+
       await saveStepNineRef.current.mutateAsync(payload)
     }
 
-    registerStepActions(9, { validate, save })
+    const submit = async () => {
+      await save()
+
+      const missingSteps = await getMissingSteps()
+      if (missingSteps.length > 0) {
+        const message = `Please complete all required steps before submitting. Missing step(s): ${missingSteps.join(", ")}`
+        setSubmitError(message)
+        throw new Error(message)
+      }
+    }
+
+    registerStepActions(9, { validate, save, submit })
     return () => {
       unregisterStepActions(9)
     }
@@ -244,6 +338,11 @@ export default function OnboardingStepNine() {
         existingImageUrl={documentType === "ID Card" ? stepNineData?.idCardUrl : stepNineData?.passportUrl}
         isUploading={documentType === "ID Card" ? isUploadingIdCard : isUploadingPassport}
       />
+      {submitError ? (
+        <Typography variant="body-3" color="red-normal">
+          {submitError}
+        </Typography>
+      ) : null}
       <Tips />
     </div>
   )

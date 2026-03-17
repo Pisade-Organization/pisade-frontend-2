@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useMyProfile, useMyWalletSummary } from "@/hooks/settings/queries"
+import { Role } from "@/types/role.enum"
 
 import type { NavbarVariant } from "./types"
 import SearchNavbar from "./variants/SearchNavbar"
@@ -24,6 +25,7 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
   const { data, status } = useSession()
   const { data: myProfile } = useMyProfile()
   const { data: myWalletSummary } = useMyWalletSummary()
+  const userRole = data?.user?.role as Role | undefined
 
   const onLogoClick = () => router.push("/")
   const onSigninClick = () => router.push("/signin")
@@ -40,11 +42,16 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
     return (
       <SearchNavbar
         isAuth={isAuth}
+        role={userRole}
+        localePrefix={localePrefix}
         onLogoClick={onLogoClick}
         onSigninClick={onSigninClick}
         onBecomeTutorClick={onBecomeTutorClick}
         avatarUrl={data?.user?.avatarUrl}
         fullName={data?.user?.fullName}
+        email={data?.user?.email}
+        timezone={myProfile?.profile?.timezone ?? undefined}
+        totalBalance={myWalletSummary?.balance ?? 0}
       />
     )
   }

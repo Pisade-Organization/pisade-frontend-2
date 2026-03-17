@@ -20,7 +20,7 @@ export default function AuthRight({ setIsEmailSent, setEmailTo, type = AUTH_TYPE
                 <AuthHeader type={type} />
 
                 {/* LOGIN FORM */}
-                <AuthForm setEmailTo={setEmailTo} setIsEmailSent={setIsEmailSent}  />
+                <AuthForm setEmailTo={setEmailTo} setIsEmailSent={setIsEmailSent} type={type} />
                 
             </div>
             <div className="w-full flex justify-center pb-6 lg:hidden">

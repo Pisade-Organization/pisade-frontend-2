@@ -367,9 +367,19 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       id: "google",
       name: "Google",
-      credentials: { googleToken: { label: "Google Token", type: "text" } },
+      credentials: {
+        googleToken: { label: "Google Token", type: "text" },
+        intent: { label: "Intent", type: "text" },
+      },
       async authorize(credentials) {
         const googleToken = credentials?.googleToken?.trim();
+        const intent = credentials?.intent?.trim();
+
+        logAuth("info", "Google authorization request received", {
+          hasGoogleToken: !!googleToken,
+          intent,
+        });
+
         if (!googleToken) {
           logAuth("warn", "Google authorization: no token provided");
           return null;
@@ -377,7 +387,10 @@ export const authOptions: NextAuthOptions = {
         try {
           const response = await api.post<ApiSuccessResponse<BackendAuthResponse> | BackendAuthResponse>(
             "/auth/google/callback",
-            { googleToken }
+            {
+              googleToken,
+              ...(intent ? { intent } : {}),
+            }
           );
           const data = unwrapApiResponse(response.data);
           if (!data?.access_token || !data?.refresh_token || !data?.user) {
@@ -388,15 +401,33 @@ export const authOptions: NextAuthOptions = {
             });
             return null;
           }
-          logAuth("info", "Google authorization successful", { userId: data.user.id });
+          logAuth("info", "Google authorization successful", {
+            userId: data.user.id,
+            role: data.user.role,
+            intent,
+          });
           return { ...data.user, _access_token: data.access_token, _refresh_token: data.refresh_token } as any;
         } catch (err) {
           const ax = err as AxiosError;
+          const payload = ax.response?.data as any;
+          const backendCode = payload?.error?.code ?? payload?.code;
+          const backendMessage = payload?.error?.message ?? payload?.message;
+
           logAuth("error", "Google authorization failed", {
             status: ax.response?.status,
+            code: backendCode,
             error: ax.response?.data || ax.message,
           });
-          return null;
+
+          if (backendCode === "ROLE_CONFLICT_STUDENT_EXISTS") {
+            throw new Error("ROLE_CONFLICT_STUDENT_EXISTS");
+          }
+
+          throw new Error(
+            backendCode
+              ? `${backendCode}${backendMessage ? `: ${backendMessage}` : ""}`
+              : backendMessage || "Google authorization failed"
+          );
         }
       },
     }),

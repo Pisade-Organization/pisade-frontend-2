@@ -29,6 +29,13 @@ function dayNumberToName(dayNumber: number): string {
   return days[dayNumber] || "Sun"
 }
 
+function normalizeAvailabilities(availabilities: AvailabilityDto[]) {
+  return [...availabilities].sort((a, b) => {
+    if (a.day !== b.day) return a.day - b.day
+    return a.startTime.localeCompare(b.startTime)
+  })
+}
+
 export default function OnboardingStepSeven() {
   const [timezone, setTimezone] = useState<string>("Asia/Bangkok")
   const [selectedSlots, setSelectedSlots] = useState<Record<string, Set<string>>>({})
@@ -39,12 +46,14 @@ export default function OnboardingStepSeven() {
   
   // Use refs to access latest values without including them in dependencies
   const saveStepSevenRef = useRef(saveStepSeven)
+  const stepSevenDataRef = useRef(stepSevenData)
   const timezoneRef = useRef(timezone)
   const selectedSlotsRef = useRef(selectedSlots)
   
   // Keep refs in sync
   useEffect(() => {
     saveStepSevenRef.current = saveStepSeven
+    stepSevenDataRef.current = stepSevenData
     timezoneRef.current = timezone
     selectedSlotsRef.current = selectedSlots
   })
@@ -102,7 +111,22 @@ export default function OnboardingStepSeven() {
 
       const payload = {
         timezone: timezoneRef.current,
-        availabilities: availabilities
+        availabilities: normalizeAvailabilities(availabilities)
+      }
+
+      const existingAvailabilities: AvailabilityDto[] =
+        stepSevenDataRef.current?.availabilities?.map((availability) => ({
+          day: availability.dayOfWeek,
+          startTime: availability.startTime,
+        })) || []
+
+      const existingPayload = {
+        timezone: stepSevenDataRef.current?.timezone || "Asia/Bangkok",
+        availabilities: normalizeAvailabilities(existingAvailabilities),
+      }
+
+      if (JSON.stringify(payload) === JSON.stringify(existingPayload)) {
+        return
       }
 
       await saveStepSevenRef.current.mutateAsync(payload)

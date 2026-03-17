@@ -4,24 +4,37 @@ import MobileMenu from "../../MobileMenu/MobileMenu"
 import AuthButtons from "../AuthButtons"
 import LanguageSwitcher from "../LanguageSwitcher"
 import Logo from "../Logo"
+import StudentProfileDropdown from "../shared/StudentProfileDropdown"
+import TutorProfileDropdown from "../shared/TutorProfileDropdown"
 import UserAvatar from "../UserAvatar"
+import { Role } from "@/types/role.enum"
 
 interface SearchNavbarProps {
   isAuth: boolean
+  role?: Role
+  localePrefix: string
   onLogoClick: () => void
   onSigninClick: () => void
   onBecomeTutorClick: () => void
   avatarUrl?: string
   fullName?: string
+  email?: string
+  timezone?: string
+  totalBalance?: number
 }
 
 export default function SearchNavbar({
   isAuth,
+  role,
+  localePrefix,
   onLogoClick,
   onSigninClick,
   onBecomeTutorClick,
   avatarUrl,
   fullName,
+  email,
+  timezone,
+  totalBalance,
 }: SearchNavbarProps) {
   return (
     <nav className="w-full flex justify-between items-center py-4 px-4 lg:px-20 bg-transparent absolute top-0 z-50">
@@ -29,7 +42,24 @@ export default function SearchNavbar({
 
       <div className="hidden lg:flex items-center gap-2">
         {isAuth ? (
-          <UserAvatar avatarUrl={avatarUrl} fullName={fullName} size={44} />
+          role === Role.STUDENT ? (
+            <StudentProfileDropdown
+              localePrefix={localePrefix}
+              avatarUrl={avatarUrl ?? null}
+              fullName={fullName ?? "Student"}
+              email={email ?? "-"}
+              timezone={timezone ?? "-"}
+              totalBalance={totalBalance ?? 0}
+            />
+          ) : role === Role.TUTOR ? (
+            <TutorProfileDropdown
+              localePrefix={localePrefix}
+              avatarUrl={avatarUrl}
+              fullName={fullName}
+            />
+          ) : (
+            <UserAvatar avatarUrl={avatarUrl} fullName={fullName} size={44} />
+          )
         ) : (
           <>
             <LanguageSwitcher dark />

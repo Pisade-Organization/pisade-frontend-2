@@ -21,6 +21,36 @@ const apiToDisplay: Record<ApiWithdrawalMethod, WithdrawalMethod> = {
   [ApiWithdrawalMethod.BANK_TRANSFER]: "Bank transfer"
 }
 
+function normalizeStepEightPayload(payload: {
+  lessonPrice?: number
+  withdrawalMethod?: ApiWithdrawalMethod
+  withdrawalPhoneNumber?: string
+  bankName?: string
+  bankAccountNumber?: string
+}) {
+  if (payload.withdrawalMethod === ApiWithdrawalMethod.PROMPTPAY) {
+    return {
+      lessonPrice: payload.lessonPrice,
+      withdrawalMethod: payload.withdrawalMethod,
+      withdrawalPhoneNumber: payload.withdrawalPhoneNumber || undefined,
+    }
+  }
+
+  if (payload.withdrawalMethod === ApiWithdrawalMethod.BANK_TRANSFER) {
+    return {
+      lessonPrice: payload.lessonPrice,
+      withdrawalMethod: payload.withdrawalMethod,
+      bankName: payload.bankName || undefined,
+      bankAccountNumber: payload.bankAccountNumber || undefined,
+    }
+  }
+
+  return {
+    lessonPrice: payload.lessonPrice,
+    withdrawalMethod: payload.withdrawalMethod,
+  }
+}
+
 export default function OnboardingStepEight() {
   const [lessonPrice, setLessonPrice] = useState<string>('')
   const [withdrawalMethod, setWithdrawalMethod] = useState<WithdrawalMethod>('Prompt Pay')
@@ -34,6 +64,7 @@ export default function OnboardingStepEight() {
   
   // Use refs to access latest values without including them in dependencies
   const saveStepEightRef = useRef(saveStepEight)
+  const stepEightDataRef = useRef(stepEightData)
   const lessonPriceRef = useRef(lessonPrice)
   const withdrawalMethodRef = useRef(withdrawalMethod)
   const phoneNumberRef = useRef(phoneNumber)
@@ -43,6 +74,7 @@ export default function OnboardingStepEight() {
   // Keep refs in sync
   useEffect(() => {
     saveStepEightRef.current = saveStepEight
+    stepEightDataRef.current = stepEightData
     lessonPriceRef.current = lessonPrice
     withdrawalMethodRef.current = withdrawalMethod
     phoneNumberRef.current = phoneNumber
@@ -115,17 +147,24 @@ export default function OnboardingStepEight() {
     const save = async () => {
       const apiWithdrawalMethod = displayToApi[withdrawalMethodRef.current]
       
-      const payload: any = {
+      const payload = normalizeStepEightPayload({
         lessonPrice: lessonPriceRef.current ? parseInt(lessonPriceRef.current, 10) : undefined,
         withdrawalMethod: apiWithdrawalMethod,
-      }
-      
-      // Add withdrawal method specific fields
-      if (apiWithdrawalMethod === ApiWithdrawalMethod.PROMPTPAY) {
-        payload.withdrawalPhoneNumber = phoneNumberRef.current || undefined
-      } else if (apiWithdrawalMethod === ApiWithdrawalMethod.BANK_TRANSFER) {
-        payload.bankName = bankNameRef.current || undefined
-        payload.bankAccountNumber = accountNumberRef.current || undefined
+        withdrawalPhoneNumber: phoneNumberRef.current || undefined,
+        bankName: bankNameRef.current || undefined,
+        bankAccountNumber: accountNumberRef.current || undefined,
+      })
+
+      const existingPayload = normalizeStepEightPayload({
+        lessonPrice: stepEightDataRef.current?.lessonPrice ?? undefined,
+        withdrawalMethod: stepEightDataRef.current?.withdrawalMethod as ApiWithdrawalMethod | undefined,
+        withdrawalPhoneNumber: stepEightDataRef.current?.withdrawalPhoneNumber ?? undefined,
+        bankName: stepEightDataRef.current?.bankName ?? undefined,
+        bankAccountNumber: stepEightDataRef.current?.bankAccountNumber ?? undefined,
+      })
+
+      if (JSON.stringify(payload) === JSON.stringify(existingPayload)) {
+        return
       }
 
       await saveStepEightRef.current.mutateAsync(payload)

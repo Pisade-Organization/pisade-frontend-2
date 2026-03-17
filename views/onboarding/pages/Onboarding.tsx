@@ -3,6 +3,9 @@ import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCurrentStep } from "@/hooks/tutors/onboarding/queries/useCurrentStep";
 import LoadingPage from "@/components/LoadingPage";
+import { useSession } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import Navbar from "../component/Navbar";
 import ProgressBar from "../component/ProgressBar";
@@ -84,7 +87,33 @@ function OnboardingContent() {
 }
 
 export default function OnboardingPage() {
-  const { data: currentStepData, isLoading: isLoadingCurrentStep } = useCurrentStep()
+  const { status } = useSession()
+  const router = useRouter()
+  const pathname = usePathname()
+  const locale = pathname?.split("/")?.[1]
+  const safeLocale = locale === "en" || locale === "th" ? locale : "en"
+
+  const {
+    data: currentStepData,
+    isLoading: isLoadingCurrentStep,
+    error: currentStepError,
+  } = useCurrentStep({ enabled: status === "authenticated" })
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace(`/${safeLocale}/signin`)
+      return
+    }
+
+    if (currentStepError?.response?.status === 401) {
+      router.replace(`/${safeLocale}/signin`)
+    }
+  }, [status, currentStepError, router, safeLocale])
+
+  if (status === "loading" || status === "unauthenticated") {
+    return <LoadingPage />
+  }
+
   const initialStep = currentStepData?.currentStep || 1
 
   if (isLoadingCurrentStep) {

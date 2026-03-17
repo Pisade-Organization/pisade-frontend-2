@@ -14,6 +14,20 @@ interface OnboardingStepFiveForm {
   catchyHeadline: string
 }
 
+function normalizeStepFivePayload(payload: {
+  introduceYourself?: string
+  teachingExperience?: string
+  motivatePotentialStudents?: string
+  catchyHeadline?: string
+}) {
+  return {
+    introduceYourself: payload.introduceYourself || undefined,
+    teachingExperience: payload.teachingExperience || undefined,
+    motivatePotentialStudents: payload.motivatePotentialStudents || undefined,
+    catchyHeadline: payload.catchyHeadline || undefined,
+  }
+}
+
 export default function OnboardingStepFive() {
   const { data: stepFiveData, isLoading } = useStepFive()
   const saveStepFive = useSaveStepFive()
@@ -66,12 +80,23 @@ export default function OnboardingStepFive() {
 
     const save = async () => {
       const values = methods.getValues()
-      
-      const payload = {
+
+      const payload = normalizeStepFivePayload({
         introduceYourself: values.introduceYourself || undefined,
         teachingExperience: values.teachingExperience || undefined,
         motivatePotentialStudents: values.motivatePotentialStudents || undefined,
         catchyHeadline: values.catchyHeadline || undefined,
+      })
+
+      const existingPayload = normalizeStepFivePayload({
+        introduceYourself: stepFiveDataRef.current?.introduceYourself,
+        teachingExperience: stepFiveDataRef.current?.teachingExperience,
+        motivatePotentialStudents: stepFiveDataRef.current?.motivatePotentialStudents,
+        catchyHeadline: stepFiveDataRef.current?.catchyHeadline,
+      })
+
+      if (JSON.stringify(payload) === JSON.stringify(existingPayload)) {
+        return
       }
 
       await saveStepFiveRef.current.mutateAsync(payload)

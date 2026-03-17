@@ -120,7 +120,7 @@ export default function OnboardingStepFour() {
           yearStart: edu.yearStart?.toString() || "",
           yearEnd: edu.yearEnd?.toString() || "",
           currentlyStudying: edu.currentlyStudying || false,
-          fileUrl: edu.fileUrl,
+          fileUrl: edu.diplomaFileUrl,
         }))
         methods.reset({
           educations: formEducations
@@ -129,15 +129,15 @@ export default function OnboardingStepFour() {
         // Initialize file state for existing diplomas with file URLs
         const initialFiles: Record<number, { file: File | null; key: string | null; error: string | null; isUploading: boolean; originalFileUrl?: string | null }> = {}
         stepFourData.diplomas.forEach((edu, index) => {
-          if (edu.fileUrl) {
+          if (edu.diplomaFileUrl) {
             // Try to extract the key from the URL
-            const extractedKey = extractKeyFromUrl(edu.fileUrl)
+            const extractedKey = extractKeyFromUrl(edu.diplomaFileUrl)
             initialFiles[index] = {
               file: null,
               key: extractedKey || "existing", // Use extracted key or mark as existing
               error: null,
               isUploading: false,
-              originalFileUrl: edu.fileUrl, // Store original URL
+              originalFileUrl: edu.diplomaFileUrl, // Store original URL
             }
           }
         })
@@ -213,7 +213,6 @@ export default function OnboardingStepFour() {
             yearStart: parseInt(edu.yearStart, 10),
             yearEnd: edu.yearEnd ? parseInt(edu.yearEnd, 10) : undefined,
             currentlyStudying: edu.currentlyStudying || false,
-            fileUrl: edu.fileUrl,
             ...(fileKey && { diplomaFileKey: fileKey }),
           }
         })
@@ -221,6 +220,50 @@ export default function OnboardingStepFour() {
       const payload = {
         hasDiploma: !noHigherEducationDegreeRef.current,
         educations: educations.length > 0 ? educations : undefined,
+      }
+
+      const normalizeEducationsForCompare = (items?: EducationDto[]) => {
+        const normalized = (items || []).map((edu) => ({
+          universityName: edu.universityName,
+          degree: edu.degree,
+          fieldOfStudy: edu.fieldOfStudy || "",
+          specialization: edu.specialization || "",
+          yearStart: edu.yearStart,
+          yearEnd: edu.yearEnd ?? null,
+          currentlyStudying: edu.currentlyStudying || false,
+        }))
+
+        return normalized.sort((a, b) => {
+          const aKey = `${a.universityName}|${a.degree}|${a.yearStart}|${a.yearEnd}|${a.fieldOfStudy}|${a.specialization}|${a.currentlyStudying}`
+          const bKey = `${b.universityName}|${b.degree}|${b.yearStart}|${b.yearEnd}|${b.fieldOfStudy}|${b.specialization}|${b.currentlyStudying}`
+          return aKey.localeCompare(bKey)
+        })
+      }
+
+      const hasNewDiplomaUploads = Object.values(diplomaFilesRef.current).some(
+        (fileData) => Boolean(fileData?.key && fileData.key !== "existing"),
+      )
+
+      const existingPayload = {
+        hasDiploma: stepFourDataRef.current?.hasDiploma ?? true,
+        educations: (stepFourDataRef.current?.diplomas || []).map((edu) => ({
+          universityName: edu.universityName,
+          degree: edu.degree as Degree,
+          fieldOfStudy: edu.fieldOfStudy || "",
+          specialization: edu.specialization || "",
+          yearStart: edu.yearStart,
+          yearEnd: edu.yearEnd ?? undefined,
+          currentlyStudying: edu.currentlyStudying || false,
+        })),
+      }
+
+      const hasSameData =
+        payload.hasDiploma === existingPayload.hasDiploma &&
+        JSON.stringify(normalizeEducationsForCompare(payload.educations)) ===
+          JSON.stringify(normalizeEducationsForCompare(existingPayload.educations as EducationDto[]))
+
+      if (hasSameData && !hasNewDiplomaUploads) {
+        return
       }
 
       await saveStepFourRef.current.mutateAsync(payload)
@@ -334,7 +377,7 @@ export default function OnboardingStepFour() {
           <>
             {fields.map((field, index) => {
               const fileData = diplomaFiles[index]
-              const existingFileUrl = stepFourData?.diplomas?.[index]?.fileUrl
+              const existingFileUrl = stepFourData?.diplomas?.[index]?.diplomaFileUrl
               
               return (
                 <DiplomaItem 

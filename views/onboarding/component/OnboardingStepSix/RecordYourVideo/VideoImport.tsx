@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Typography from "@/components/base/Typography"
 import BaseInput from "@/components/base/BaseInput"
 
@@ -13,6 +13,10 @@ interface VideoImportProps {
 export default function VideoImport({ onVideoLinkChange, videoLink, recordedVideoBlob }: VideoImportProps) {
   const [inputValue, setInputValue] = useState(videoLink)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setInputValue(videoLink)
+  }, [videoLink])
 
   const isValidYouTubeUrl = (url: string): boolean => {
     const patterns = [

@@ -15,7 +15,9 @@ export default function TutorSignUpPage() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.replace(getPostAuthPath(pathname ?? "/", session?.user?.role));
+      router.replace(
+        getPostAuthPath(pathname ?? "/", session?.user?.role, session?.user?.onboardingStatus),
+      );
     }
   }, [status, session?.user?.role, pathname, router]);
 

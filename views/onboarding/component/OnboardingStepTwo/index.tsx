@@ -16,7 +16,7 @@ export default function OnboardingStepTwo() {
   const [currentKey, setCurrentKey] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const { data: session } = useSession()
-  const { registerStepActions, unregisterStepActions } = useOnboardingNavigation()
+  const { registerStepActions, unregisterStepActions, setCanContinue } = useOnboardingNavigation()
   const saveStepTwo = useSaveStepTwo()
   const { data: stepTwoData, isLoading } = useStepTwo()
   
@@ -26,6 +26,8 @@ export default function OnboardingStepTwo() {
   const saveStepTwoRef = useRef(saveStepTwo)
   const stepTwoDataRef = useRef(stepTwoData)
   const currentKeyRef = useRef<string | null>(null)
+  const isUploadingRef = useRef(false)
+  const fileErrorRef = useRef<string | null>(null)
   
   // Keep refs in sync
   useEffect(() => {
@@ -34,26 +36,49 @@ export default function OnboardingStepTwo() {
     saveStepTwoRef.current = saveStepTwo
     stepTwoDataRef.current = stepTwoData
     currentKeyRef.current = currentKey
+    isUploadingRef.current = isUploading
+    fileErrorRef.current = fileError
   })
 
   useEffect(() => {
+    setCanContinue(!isUploading)
+
+    return () => {
+      setCanContinue(true)
+    }
+  }, [isUploading, setCanContinue])
+
+  useEffect(() => {
     const validate = async () => {
+      const hasExistingAvatar = Boolean(stepTwoDataRef.current?.avatarUrl)
+
+      if (isUploadingRef.current) {
+        setFileError("Photo is still uploading. Please wait until it finishes.")
+        return false
+      }
+
+      if (fileErrorRef.current) {
+        return false
+      }
+
       // Pass validation if there's either a new file uploaded (with key) or an existing image
-      if (!currentKeyRef.current && !stepTwoDataRef.current) {
+      if (!currentKeyRef.current && !hasExistingAvatar) {
         setFileError("Please upload a photo before continuing")
         return false
       }
+
       setFileError(null)
       return true
     }
 
     const save = async () => {
       const key = currentKeyRef.current
+      const hasExistingAvatar = Boolean(stepTwoDataRef.current?.avatarUrl)
       
       // If no new file is uploaded but there's an existing image, skip save
       if (!key) {
         // If there's an existing image, validation already passed, so we can skip
-        if (stepTwoDataRef.current) {
+        if (hasExistingAvatar) {
           return
         }
         throw new Error("No file uploaded")

@@ -3,6 +3,8 @@
 import BaseButton from "@/components/base/BaseButton"
 import Typography from "@/components/base/Typography"
 import useMediaQuery from "@/hooks/useMediaQuery"
+import { useMyWalletTransactions } from "@/hooks/settings/queries"
+import type { WalletTransaction, WalletTransactionStatus } from "@/services/wallet/types"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useMemo, useState } from "react"
 
@@ -13,6 +15,53 @@ interface TransactionHistoryRow {
   paymentMethod: string
   date: string
   status: "Completed" | "Processing" | "Cancel"
+}
+
+function mapTransactionStatus(status: WalletTransactionStatus | undefined): TransactionHistoryRow["status"] {
+  if (status === "SUCCESS") return "Completed"
+  if (status === "FAILED" || status === "CANCELLED") return "Cancel"
+  return "Processing"
+}
+
+function formatBaht(value: number | undefined) {
+  return `฿${Number(value ?? 0).toLocaleString("en-US")}`
+}
+
+function formatTransactionTitle(type?: string) {
+  if (type === "TOPUP") return "Top-up"
+  if (type === "WITHDRAW") return "Withdrawal"
+  if (type === "PAYMENT") return "Lesson payment"
+  if (type === "REFUND") return "Refund"
+  if (type === "COMMISSION") return "Commission"
+  return "Transaction"
+}
+
+function formatPaymentMethod(tx: WalletTransaction) {
+  if (tx.type === "TOPUP") return "PromptPay"
+  if (tx.type === "WITHDRAW") return "Bank transfer"
+  return "Wallet"
+}
+
+function toRow(tx: WalletTransaction): TransactionHistoryRow {
+  const createdAt = tx.createdAt ? new Date(tx.createdAt) : null
+
+  return {
+    id: tx.id,
+    transaction: formatTransactionTitle(tx.type),
+    amount: formatBaht(tx.amount),
+    paymentMethod: formatPaymentMethod(tx),
+    date: createdAt
+      ? createdAt.toLocaleString([], {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+      : "-",
+    status: mapTransactionStatus(tx.status),
+  }
 }
 
 interface TransactionHistorySectionProps {
@@ -119,8 +168,11 @@ export default function TransactionHistorySection({
   onRequestMobileViewAll,
 }: TransactionHistorySectionProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)")
+  const { data, isLoading, isError } = useMyWalletTransactions({ page: 1, limit: 50 })
   const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeekMonday(new Date()))
   const [showAllRows, setShowAllRows] = useState(false)
+
+  const rows = useMemo(() => (data?.transactions ?? []).map(toRow), [data?.transactions])
 
   const weekRangeLabel = useMemo(() => {
     const weekEnd = addDays(currentWeekStart, 6)
@@ -128,8 +180,8 @@ export default function TransactionHistorySection({
   }, [currentWeekStart])
 
   const isMobileDetailMode = !isDesktop && isMobileDetailView
-  const visibleRows = isMobileDetailMode ? MOCK_ROWS : showAllRows ? MOCK_ROWS : MOCK_ROWS.slice(0, 5)
-  const hasMoreRows = !isMobileDetailMode && MOCK_ROWS.length > 5
+  const visibleRows = isMobileDetailMode ? rows : showAllRows ? rows : rows.slice(0, 5)
+  const hasMoreRows = !isMobileDetailMode && rows.length > 5
   const tableGridClass = "grid grid-cols-[1fr_3fr_1fr_1.8fr_1.2fr_1fr] items-center gap-6"
 
   return (
@@ -323,6 +375,24 @@ export default function TransactionHistorySection({
           ))}
         </div>
       )}
+
+      {isLoading ? (
+        <Typography variant="body-3" color="neutral-400">
+          Loading transactions...
+        </Typography>
+      ) : null}
+
+      {!isLoading && !isError && rows.length === 0 ? (
+        <Typography variant="body-3" color="neutral-400">
+          No transactions yet.
+        </Typography>
+      ) : null}
+
+      {isError ? (
+        <Typography variant="body-3" color="red-normal">
+          Unable to load transactions right now.
+        </Typography>
+      ) : null}
 
       {hasMoreRows ? (
         <div className="flex justify-center">

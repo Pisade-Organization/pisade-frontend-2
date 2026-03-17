@@ -34,7 +34,7 @@ export default function OnboardingStepSix() {
   const { data: session } = useSession()
   const { data: stepSixData, isLoading } = useStepSix()
   const saveStepSix = useSaveStepSix()
-  const { registerStepActions, unregisterStepActions } = useOnboardingNavigation()
+  const { registerStepActions, unregisterStepActions, setCanContinue } = useOnboardingNavigation()
   
   // Use refs to access latest values without including them in dependencies
   const saveStepSixRef = useRef(saveStepSix)
@@ -42,9 +42,12 @@ export default function OnboardingStepSix() {
   const stepSixDataRef = useRef(stepSixData)
   const videoKeyRef = useRef(videoKey)
   const thumbnailKeyRef = useRef(thumbnailKey)
-  const recordedVideoBlobRef = useRef(recordedVideoBlob)
-  const videoLinkRef = useRef(videoLink)
   const selectedSourceRef = useRef(selectedSource)
+  const videoLinkRef = useRef(videoLink)
+  const isUploadingVideoRef = useRef(isUploadingVideo)
+  const isUploadingThumbnailRef = useRef(isUploadingThumbnail)
+  const videoUploadErrorRef = useRef(videoUploadError)
+  const thumbnailErrorRef = useRef(thumbnailError)
   
   // Keep refs in sync
   useEffect(() => {
@@ -53,48 +56,53 @@ export default function OnboardingStepSix() {
     stepSixDataRef.current = stepSixData
     videoKeyRef.current = videoKey
     thumbnailKeyRef.current = thumbnailKey
-    recordedVideoBlobRef.current = recordedVideoBlob
-    videoLinkRef.current = videoLink
     selectedSourceRef.current = selectedSource
+    videoLinkRef.current = videoLink
+    isUploadingVideoRef.current = isUploadingVideo
+    isUploadingThumbnailRef.current = isUploadingThumbnail
+    videoUploadErrorRef.current = videoUploadError
+    thumbnailErrorRef.current = thumbnailError
   })
-
-  // Helper function to extract key from S3 URL
-  const extractKeyFromUrl = (url: string): string | null => {
-    try {
-      const urlObj = new URL(url)
-      const pathParts = urlObj.pathname.split('/').filter(Boolean)
-      const tutorIndex = pathParts.indexOf('tutor')
-      if (tutorIndex !== -1 && tutorIndex < pathParts.length - 1) {
-        return pathParts.slice(tutorIndex).join('/')
-      }
-      return null
-    } catch {
-      return null
-    }
-  }
 
   // Load existing data
   useEffect(() => {
     if (stepSixData) {
-      // Extract video key from existing video URL if it exists
       if (stepSixData.videoUrl) {
-        const extractedKey = extractKeyFromUrl(stepSixData.videoUrl)
-        if (extractedKey) {
-          setVideoKey(extractedKey)
-        }
-        // If there's a video URL, assume it's a recorded video (not a link)
-        // Set this regardless of whether key extraction succeeded
+        // Existing video is shown from URL; keep key empty until user uploads a new file.
         setSelectedSource("recorded")
       }
-      // Extract thumbnail key from existing thumbnail URL if it exists
-      if (stepSixData.thumbnailUrl) {
-        const extractedKey = extractKeyFromUrl(stepSixData.thumbnailUrl)
-        if (extractedKey) {
-          setThumbnailKey(extractedKey)
-        }
+
+      if (stepSixData.videoLink) {
+        setVideoLink(stepSixData.videoLink)
+        setSelectedSource("link")
       }
     }
   }, [stepSixData])
+
+  const isValidYouTubeUrl = (url: string): boolean => {
+    const patterns = [
+      /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\/.+/,
+      /^https?:\/\/youtube\.com\/watch\?v=.+/,
+      /^https?:\/\/youtu\.be\/.+/
+    ]
+    return patterns.some(pattern => pattern.test(url))
+  }
+
+  const isValidVimeoUrl = (url: string): boolean => {
+    return /^https?:\/\/(www\.)?vimeo\.com\/.+/.test(url)
+  }
+
+  const isValidVideoLink = (url: string): boolean => {
+    return isValidYouTubeUrl(url) || isValidVimeoUrl(url)
+  }
+
+  useEffect(() => {
+    setCanContinue(!isUploadingVideo && !isUploadingThumbnail)
+
+    return () => {
+      setCanContinue(true)
+    }
+  }, [isUploadingVideo, isUploadingThumbnail, setCanContinue])
 
   // Handle video upload (when blob is recorded)
   const handleVideoUpload = async (blob: Blob) => {
@@ -207,38 +215,87 @@ export default function OnboardingStepSix() {
   // Register step actions
   useEffect(() => {
     const validate = async () => {
-      // Both video and thumbnail are optional - user can continue anytime
+      if (isUploadingVideoRef.current || isUploadingThumbnailRef.current) {
+        return false
+      }
+
+      if (videoUploadErrorRef.current || thumbnailErrorRef.current) {
+        return false
+      }
+
+      const selectedSource = selectedSourceRef.current
+      const hasExistingVideoLink = Boolean(stepSixDataRef.current?.videoLink)
+
+      if (selectedSource === "link") {
+        const trimmedVideoLink = videoLinkRef.current.trim()
+
+        if (!trimmedVideoLink && !hasExistingVideoLink) {
+          return false
+        }
+
+        if (trimmedVideoLink && !isValidVideoLink(trimmedVideoLink)) {
+          return false
+        }
+      }
+
+      // Both video and thumbnail are optional when there is no upload error.
       return true
     }
 
-    // Disabled save function - API call disabled for now
     const save = async () => {
-      // const payload: {
-      //   videoKey?: string
-      //   thumbnailKey?: string | null
-      // } = {}
+      const payload: {
+        videoKey?: string
+        videoLink?: string | null
+        thumbnailKey?: string | null
+      } = {}
 
-      // // Only include videoKey if source is "recorded" and key exists
-      // // If upload is still in progress, skip it (user can continue without waiting)
-      // if (selectedSourceRef.current === "recorded" && videoKeyRef.current) {
-      //   payload.videoKey = videoKeyRef.current
-      // }
-      // // If source is "link", we don't send videoKey (the link is handled separately if needed)
+      const selectedSource = selectedSourceRef.current
+      const hasExistingRecordedVideo = Boolean(stepSixDataRef.current?.videoUrl)
+      const existingVideoLink = stepSixDataRef.current?.videoLink?.trim() || ""
+      const trimmedVideoLink = videoLinkRef.current.trim()
+      const hasNewVideoUpload =
+        Boolean(videoKeyRef.current && videoKeyRef.current.includes("/temp/"))
+      const hasNewThumbnailUpload =
+        Boolean(thumbnailKeyRef.current && thumbnailKeyRef.current.includes("/temp/"))
 
-      // // Include thumbnailKey if it exists, otherwise send null
-      // payload.thumbnailKey = thumbnailKeyRef.current || null
-      
-      // console.log('Saving step 6 with payload:', {
-      //   videoKey: payload.videoKey,
-      //   thumbnailKey: payload.thumbnailKey,
-      //   thumbnailKeyRef: thumbnailKeyRef.current,
-      //   thumbnailKeyState: thumbnailKey
-      // })
+      // Save only newly uploaded temp files.
+      if (
+        selectedSource === "recorded" &&
+        hasNewVideoUpload
+      ) {
+        payload.videoKey = videoKeyRef.current
+      }
 
-      // await saveStepSixRef.current.mutateAsync(payload)
-      
-      // No-op: saving disabled
-      console.log('Step 6 save disabled')
+      if (
+        selectedSource === "recorded" &&
+        existingVideoLink &&
+        (hasExistingRecordedVideo || hasNewVideoUpload)
+      ) {
+        payload.videoLink = null
+      }
+
+      if (selectedSource === "link" && trimmedVideoLink && isValidVideoLink(trimmedVideoLink)) {
+        payload.videoLink = trimmedVideoLink
+      }
+
+      if (hasNewThumbnailUpload) {
+        payload.thumbnailKey = thumbnailKeyRef.current
+      }
+
+      if (
+        selectedSource === "link" &&
+        payload.videoLink === existingVideoLink &&
+        !hasNewThumbnailUpload
+      ) {
+        return
+      }
+
+      // No data changes to persist.
+      if (Object.keys(payload).length === 0) {
+        return
+      }
+
+      await saveStepSixRef.current.mutateAsync(payload)
     }
 
     registerStepActions(6, { validate, save })

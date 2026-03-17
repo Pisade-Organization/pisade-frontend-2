@@ -60,32 +60,32 @@ export const servicePath = {
     onboarding: {
       getCurrentStep: "/onboarding/current-step", // GET
 
-      getOnboardingStepOne: "/onboarding/step-1", // GET
-      saveOnboardingStepOne: "/onboarding/step-1", // POST
+      getOnboardingStepOne: "/onboarding/step/1", // GET
+      saveOnboardingStepOne: "/onboarding/step/1", // PATCH
 
-      getOnboardingStepTwo: "/onboarding/step-2", // GET
-      saveOnboardingStepTwo: "/onboarding/step-2", // POST
+      getOnboardingStepTwo: "/onboarding/step/2", // GET
+      saveOnboardingStepTwo: "/onboarding/step/2", // PATCH
 
-      getOnboardingStepThree: "/onboarding/step-3", // GET
-      saveOnboardingStepThree: "/onboarding/step-3", // POST
+      getOnboardingStepThree: "/onboarding/step/3", // GET
+      saveOnboardingStepThree: "/onboarding/step/3", // PATCH
 
-      getOnboardingStepFour: "/onboarding/step-4", // GET
-      saveOnboardingStepFour: "/onboarding/step-4", // POST
+      getOnboardingStepFour: "/onboarding/step/4", // GET
+      saveOnboardingStepFour: "/onboarding/step/4", // PATCH
 
-      getOnboardingStepFive: "/onboarding/step-5", // GET
-      saveOnboardingStepFive: "/onboarding/step-5", // POST
+      getOnboardingStepFive: "/onboarding/step/5", // GET
+      saveOnboardingStepFive: "/onboarding/step/5", // PATCH
 
-      getOnboardingStepSix: "/onboarding/step-6", // GET
-      saveOnboardingStepSix: "/onboarding/step-6", // POST
+      getOnboardingStepSix: "/onboarding/step/6", // GET
+      saveOnboardingStepSix: "/onboarding/step/6", // PATCH
 
-      getOnboardingStepSeven: "/onboarding/step-7", // GET
-      saveOnboardingStepSeven: "/onboarding/step-7", // POST
+      getOnboardingStepSeven: "/onboarding/step/7", // GET
+      saveOnboardingStepSeven: "/onboarding/step/7", // PATCH
 
-      getOnboardingStepEight: "/onboarding/step-8", // GET
-      saveOnboardingStepEight: "/onboarding/step-8", // POST
+      getOnboardingStepEight: "/onboarding/step/8", // GET
+      saveOnboardingStepEight: "/onboarding/step/8", // PATCH
 
-      getOnboardingStepNine: "/onboarding/step-9", // GET
-      saveOnboardingStepNine: "/onboarding/step-9", // POST
+      getOnboardingStepNine: "/onboarding/step/9", // GET
+      saveOnboardingStepNine: "/onboarding/step/9", // PATCH
     },
     upload: {
       getPresignedUrl: '/upload/presigned', // GET

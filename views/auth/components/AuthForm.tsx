@@ -6,20 +6,20 @@ import AuthTermsNotice from "./AuthTermsNotice";
 import GoogleButton from "./GoogleButton";
 import BaseInput from "@/components/base/BaseInput";
 import BaseButton from "@/components/base/BaseButton";
-import { usePathname } from "next/navigation";
+import { AUTH_TYPES } from "../types/auth.enum";
 interface AuthFormProps {
     setEmailTo: (email: string) => void;
     setIsEmailSent: (value: boolean) => void;
+    type?: AUTH_TYPES;
 }
 
-export default function AuthForm({ setEmailTo, setIsEmailSent }: AuthFormProps) {
-    const pathname = usePathname();
+export default function AuthForm({ setEmailTo, setIsEmailSent, type = AUTH_TYPES.SIGNIN }: AuthFormProps) {
     const [isLoginActive, setisLoginActive] = useState<boolean>(false);
     const [email, setEmail] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
 
-    const isTutorSignup = pathname === "/en/tutor/signup" || pathname === "/th/tutor/signup"
+    const isTutorSignup = type === AUTH_TYPES.TUTOR_SIGNUP
     
     
 
@@ -82,7 +82,7 @@ export default function AuthForm({ setEmailTo, setIsEmailSent }: AuthFormProps) 
                     or
                 </div>
 
-                <GoogleButton />
+                <GoogleButton authType={type} />
 
                 <div className="w-full hidden lg:block">
                     <AuthTermsNotice />

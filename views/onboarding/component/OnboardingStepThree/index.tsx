@@ -209,18 +209,12 @@ export default function OnboardingStepThree() {
           }
           
           const fileData = certificateFilesRef.current[index]
-          // Use the key if it exists and is not the "existing" placeholder
-          // If it's "existing", try to extract from original URL or check if certificate originally had a file
+          // Only send key when there is a newly uploaded file (temp key).
+          // Existing files should not be re-sent.
           let fileKey: string | undefined = undefined
           
           if (fileData?.key && fileData.key !== "existing") {
             fileKey = fileData.key
-          } else if (fileData?.key === "existing" && fileData?.originalFileUrl) {
-            // Try to extract key from original URL
-            const extractedKey = extractKeyFromUrl(fileData.originalFileUrl)
-            if (extractedKey) {
-              fileKey = extractedKey
-            }
           }
           
           const dto: CertificationDto = {
@@ -242,6 +236,46 @@ export default function OnboardingStepThree() {
       const payload = {
         hasTeachingCertificate: !noTeachingCertificateRef.current,
         certifications: certificates.length > 0 ? certificates : undefined,
+      }
+
+      const normalizeCertificationsForCompare = (items?: CertificationDto[]) => {
+        const normalized = (items || []).map((cert) => ({
+          certificationName: cert.certificationName,
+          description: cert.description || "",
+          issuedBy: cert.issuedBy,
+          startYear: cert.startYear,
+          endYear: cert.endYear ?? cert.startYear,
+        }))
+
+        return normalized.sort((a, b) => {
+          const aKey = `${a.certificationName}|${a.issuedBy}|${a.startYear}|${a.endYear}|${a.description}`
+          const bKey = `${b.certificationName}|${b.issuedBy}|${b.startYear}|${b.endYear}|${b.description}`
+          return aKey.localeCompare(bKey)
+        })
+      }
+
+      const hasNewCertificateUploads = Object.values(certificateFilesRef.current).some(
+        (fileData) => Boolean(fileData?.key && fileData.key !== "existing"),
+      )
+
+      const existingPayload = {
+        hasTeachingCertificate: stepThreeDataRef.current?.hasTeachingCertificate ?? true,
+        certifications: (stepThreeDataRef.current?.certifications || []).map((cert) => ({
+          certificationName: cert.certificationName,
+          description: cert.description || "",
+          issuedBy: cert.issuedBy,
+          startYear: cert.startYear,
+          endYear: cert.endYear ?? cert.startYear,
+        })),
+      }
+
+      const hasSameData =
+        payload.hasTeachingCertificate === existingPayload.hasTeachingCertificate &&
+        JSON.stringify(normalizeCertificationsForCompare(payload.certifications)) ===
+          JSON.stringify(normalizeCertificationsForCompare(existingPayload.certifications as CertificationDto[]))
+
+      if (hasSameData && !hasNewCertificateUploads) {
+        return
       }
 
       await saveStepThreeRef.current.mutateAsync(payload)
@@ -277,17 +311,11 @@ export default function OnboardingStepThree() {
         }
         
         const certFileData = certificateFilesRef.current[idx]
-        // Use the key if it exists and is not the "existing" placeholder
+        // Only send key when there is a newly uploaded file (temp key).
         let certFileKey: string | undefined = undefined
         
         if (certFileData?.key && certFileData.key !== "existing") {
           certFileKey = certFileData.key
-        } else if (certFileData?.key === "existing" && certFileData?.originalFileUrl) {
-          // Try to extract key from original URL
-          const extractedKey = extractKeyFromUrl(certFileData.originalFileUrl)
-          if (extractedKey) {
-            certFileKey = extractedKey
-          }
         }
         
         const dto: CertificationDto = {

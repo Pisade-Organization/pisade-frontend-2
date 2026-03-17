@@ -22,12 +22,13 @@ const END_YEAR_OPTIONS = [
 
 // Generate degree options from enum with user-friendly labels
 const DEGREE_LABELS: Record<Degree, string> = {
+  [Degree.HIGH_SCHOOL]: "High School",
+  [Degree.ASSOCIATE]: "Associate Degree",
   [Degree.BACHELOR]: "Bachelor's Degree",
   [Degree.MASTER]: "Master's Degree",
   [Degree.DOCTORATE]: "Doctorate",
-  [Degree.ASSOCIATE]: "Associate Degree",
-  [Degree.DIPLOMA]: "Diploma",
-  [Degree.CERTIFICATE]: "Certificate",
+  [Degree.PROFESSIONAL]: "Professional Certification",
+  [Degree.OTHER]: "Other",
 }
 
 const DEGREE_OPTIONS = Object.values(Degree).map((degree) => ({

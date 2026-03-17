@@ -10,18 +10,19 @@ import useMediaQuery from "@/hooks/useMediaQuery"
 import { ChevronLeft } from "lucide-react"
 import { useState } from "react"
 import StudentTopUpSection from "@/views/wallet/components/StudentTopUpSection"
-import TransactionList from "@/views/wallet/components/TransactionList"
 import TutorWithdrawSection from "@/views/wallet/components/TutorWithdrawSection"
 import WalletHeader from "@/views/wallet/components/WalletHeader"
 import WalletLayout from "@/views/wallet/components/WalletLayout"
 import WalletNavbar from "@/views/wallet/components/WalletNavbar"
 import type { WalletBankAccount, WalletPageProps } from "@/views/wallet/types"
+import { useMyWalletSummary } from "@/hooks/settings/queries"
 
 type MobileWalletSection = "overview" | "held-funds" | "transaction-history"
 
 export default function WalletPage({ role }: WalletPageProps) {
-  const availableBalance = 0
-  const temporarilyHold = 0
+  const { data: walletSummary } = useMyWalletSummary()
+  const availableBalance = Number(walletSummary?.balance ?? 0)
+  const temporarilyHold = Number(walletSummary?.pending ?? 0)
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const [activeMobileSection, setActiveMobileSection] = useState<MobileWalletSection>("overview")
   const [isStudentTopUpOpen, setIsStudentTopUpOpen] = useState(false)
@@ -105,14 +106,18 @@ export default function WalletPage({ role }: WalletPageProps) {
                 </div>
               </>
             )}
-            <BankAccountSection
-              title="Bank Account"
-              description="Add a bank account to send and receive payments directly in the app."
-              bankAccounts={bankAccounts}
-            />
-            <HeldFundsSection
-              onRequestMobileViewAll={() => setActiveMobileSection("held-funds")}
-            />
+            {role === "tutor" ? (
+              <BankAccountSection
+                title="Bank Account"
+                description="Add a bank account to send and receive payments directly in the app."
+                bankAccounts={bankAccounts}
+              />
+            ) : null}
+            {role === "tutor" ? (
+              <HeldFundsSection
+                onRequestMobileViewAll={() => setActiveMobileSection("held-funds")}
+              />
+            ) : null}
             <TransactionHistorySection
               onRequestMobileViewAll={() => setActiveMobileSection("transaction-history")}
             />
@@ -127,7 +132,6 @@ export default function WalletPage({ role }: WalletPageProps) {
                 onOpenChange={setIsTutorWithdrawOpen}
               />
             )}
-            <TransactionList />
           </>
         )}
       </WalletLayout>

@@ -42,6 +42,7 @@ export default function AuthLayout({
                         <AuthVerifyEmail
                             emailTo={emailTo}
                             onBack={() => setIsEmailSent(false)}
+                            type={type}
                         />
                         </motion.div>
                     ) : (

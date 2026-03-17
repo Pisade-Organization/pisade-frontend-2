@@ -3,13 +3,15 @@ import { MailCheck } from "lucide-react"
 import { ArrowLeft } from "lucide-react"
 import { useState, useEffect } from "react"
 import { AuthService } from "@/services/auth"
+import { AUTH_TYPES } from "../types/auth.enum"
 
 interface AuthVerifyEmailProps {
     emailTo: string;
     onBack: () => void;
+    type?: AUTH_TYPES;
 }
 
-export default function AuthVerifyEmail({ emailTo, onBack }: AuthVerifyEmailProps) {
+export default function AuthVerifyEmail({ emailTo, onBack, type = AUTH_TYPES.SIGNIN }: AuthVerifyEmailProps) {
     const [countdown, setCountdown] = useState(30);
     const [isResendActive, setIsResendActive] = useState(false);
 
@@ -32,7 +34,10 @@ export default function AuthVerifyEmail({ emailTo, onBack }: AuthVerifyEmailProp
                 setIsResendActive(false);
                 
                 // Call your backend to resend the email
-                await AuthService.sendMagicLink({ email: emailTo });
+                await AuthService.sendMagicLink({
+                    email: emailTo,
+                    intent: type === AUTH_TYPES.TUTOR_SIGNUP ? "TUTOR_SIGNUP" : undefined,
+                });
                 console.log("Magic link resent successfully to:", emailTo);
             } catch (error) {
                 console.error("Failed to resend magic link:", error);

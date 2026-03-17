@@ -24,7 +24,9 @@ export default function VerifyPage() {
         if (result?.error) throw new Error(result.error);
         setStatus("success");
         const session = await getSession();
-        router.replace(getPostAuthPath(pathname ?? "/", session?.user?.role));
+        router.replace(
+          getPostAuthPath(pathname ?? "/", session?.user?.role, session?.user?.onboardingStatus),
+        );
       } catch (err) {
         console.error(err);
         setStatus("error");
