@@ -13,6 +13,7 @@ const authOnlyRoutes: string[] = [
 const roleProtectedRoutes: Record<string, Role[]> = {
   "/tutor/dashboard": [Role.TUTOR],
   "/tutor/schedule": [Role.TUTOR],
+  "/tutor/earnings-and-withdrawals": [Role.TUTOR],
   "/tutor/wallet": [Role.TUTOR],
   "/tutor/students": [Role.TUTOR],
   "/tutor/class-management": [Role.TUTOR],
@@ -35,6 +36,12 @@ const tutorAllowedWhenNotApproved: string[] = [
   "/signout",
 ];
 
+const tutorAllowedWhenReviewing: string[] = [
+  "/",
+  "/tutor/onboarding/success",
+  "/signout",
+];
+
 function matchesRoute(pathname: string, route: string): boolean {
   return pathname === route || pathname.startsWith(`${route}/`);
 }
@@ -43,12 +50,28 @@ function isTutorApproved(onboardingStatus?: string): boolean {
   return onboardingStatus === "APPROVED";
 }
 
+function isTutorReviewing(onboardingStatus?: string): boolean {
+  return onboardingStatus === "REVIEWING";
+}
+
 function canUnapprovedTutorAccessRoute(pathname: string): boolean {
   if (pathname === "") {
     return true;
   }
 
+  if (matchesRoute(pathname, "/tutor/onboarding/success")) {
+    return false;
+  }
+
   return tutorAllowedWhenNotApproved.some((route) => matchesRoute(pathname, route));
+}
+
+function canReviewingTutorAccessRoute(pathname: string): boolean {
+  if (pathname === "") {
+    return true;
+  }
+
+  return tutorAllowedWhenReviewing.some((route) => matchesRoute(pathname, route));
 }
 
 function getRoleHome(locale: string, role?: Role, onboardingStatus?: string): string {
@@ -57,6 +80,10 @@ function getRoleHome(locale: string, role?: Role, onboardingStatus?: string): st
   }
 
   if (role === Role.TUTOR) {
+    if (isTutorReviewing(onboardingStatus)) {
+      return `/${locale}/tutor/onboarding/success`;
+    }
+
     if (!isTutorApproved(onboardingStatus)) {
       return `/${locale}/tutor/onboarding`;
     }
@@ -93,7 +120,19 @@ export async function middleware(request: NextRequest) {
   if (
     token &&
     userRole === Role.TUTOR &&
+    isTutorReviewing(onboardingStatus) &&
+    !canReviewingTutorAccessRoute(withoutLocale)
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${locale}/tutor/onboarding/success`;
+    return NextResponse.redirect(url);
+  }
+
+  if (
+    token &&
+    userRole === Role.TUTOR &&
     !isTutorApproved(onboardingStatus) &&
+    !isTutorReviewing(onboardingStatus) &&
     !canUnapprovedTutorAccessRoute(withoutLocale)
   ) {
     const url = request.nextUrl.clone();

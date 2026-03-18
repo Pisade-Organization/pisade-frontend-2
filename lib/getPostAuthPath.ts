@@ -4,11 +4,19 @@ function isTutorApproved(onboardingStatus?: string) {
   return onboardingStatus === "APPROVED";
 }
 
+function isTutorReviewing(onboardingStatus?: string) {
+  return onboardingStatus === "REVIEWING";
+}
+
 export function getPostAuthPath(pathname: string, role?: string, onboardingStatus?: string) {
   const locale = pathname?.split("/")?.[1];
   const safeLocale = locale === "en" || locale === "th" ? locale : "en";
 
   if (role === Role.TUTOR) {
+    if (isTutorReviewing(onboardingStatus)) {
+      return `/${safeLocale}/tutor/onboarding/success`;
+    }
+
     if (!isTutorApproved(onboardingStatus)) {
       return `/${safeLocale}/tutor/onboarding`;
     }

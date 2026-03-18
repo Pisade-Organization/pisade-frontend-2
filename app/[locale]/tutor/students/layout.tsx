@@ -9,7 +9,7 @@ export default function TutorStudentsLayout({
   return (
     <div className="min-h-screen bg-white">
       <Navbar variant="tutor_dashboard" />
-      <TutorTabs basePath="/tutor/students" />
+      <TutorTabs basePath="/tutor/students" mode="tutor-students" />
       <div>{children}</div>
     </div>
   );

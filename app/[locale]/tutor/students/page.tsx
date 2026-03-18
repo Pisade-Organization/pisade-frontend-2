@@ -10,7 +10,7 @@ export default function TutorStudentsPageClient() {
   useEffect(() => {
     const locale = pathname?.split("/")?.[1] || "";
     const localePrefix = locale ? `/${locale}` : "";
-    router.replace(`${localePrefix}/tutor/students/favorites`);
+    router.replace(`${localePrefix}/tutor/students/active`);
   }, [pathname, router]);
 
   return null;

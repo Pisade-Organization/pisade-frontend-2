@@ -27,6 +27,7 @@ export const servicePath = {
       getMyTutorProfile: "/v1/me/tutor-profile", // GET
       updateMyTutorProfile: "/v1/me/tutor-profile", // PATCH
       getMyTutorTransactions: "/v1/me/tutor-profile/transactions", // GET
+      submitOnboarding: "/v1/me/tutor-profile/submissions", // POST
     },
     dashboard: {
       getSummary: "/dashboard/summary", // GET
@@ -54,6 +55,7 @@ export const servicePath = {
       verifyTopup: "/wallet/topup/verify", // POST
     },
     tutorWallet: {
+      requestWithdraw: "/tutor-wallet/withdraw", // POST
       getWithdrawals: "/tutor-wallet/withdrawals", // GET
       getSummary: "/tutor-wallet/summary", // GET
     },

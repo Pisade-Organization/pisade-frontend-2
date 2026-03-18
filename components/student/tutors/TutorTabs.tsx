@@ -10,9 +10,13 @@ interface Tab {
 
 interface TutorTabsProps {
   basePath?: string;
+  mode?: 'student-tutors' | 'tutor-students';
 }
 
-export default function TutorTabs({ basePath = "/student/tutors" }: TutorTabsProps) {
+export default function TutorTabs({
+  basePath = "/student/tutors",
+  mode = 'student-tutors',
+}: TutorTabsProps) {
   const pathname = usePathname();
 
   // get current locale from path: e.g. '/en/...' => 'en'
@@ -20,10 +24,16 @@ export default function TutorTabs({ basePath = "/student/tutors" }: TutorTabsPro
   const localePrefix = currentLocale ? `/${currentLocale}` : '';
   const normalizedBasePath = basePath.startsWith("/") ? basePath : `/${basePath}`;
 
-  const tabs: Tab[] = [
-    { name: 'Favorite Tutors', path: `${localePrefix}${normalizedBasePath}/favorites` },
-    { name: 'Current Tutors', path: `${localePrefix}${normalizedBasePath}/current` },
-  ];
+  const tabs: Tab[] =
+    mode === 'tutor-students'
+      ? [
+          { name: 'Active Students', path: `${localePrefix}${normalizedBasePath}/active` },
+          { name: 'Past Students', path: `${localePrefix}${normalizedBasePath}/past` },
+        ]
+      : [
+          { name: 'Favorite Tutors', path: `${localePrefix}${normalizedBasePath}/favorites` },
+          { name: 'Current Tutors', path: `${localePrefix}${normalizedBasePath}/current` },
+        ];
 
   const isActive = (fullPath: string) => {
     if (!pathname) return false;

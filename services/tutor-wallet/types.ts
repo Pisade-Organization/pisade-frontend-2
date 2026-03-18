@@ -29,3 +29,19 @@ export interface TutorWalletSummary {
   pendingPayouts?: number;
   [key: string]: unknown;
 }
+
+export interface RequestTutorWithdrawDto {
+  amount: number;
+  method: 'BANK' | 'PAYPAL';
+  accountInfo: string;
+}
+
+export interface RequestTutorWithdrawResponse {
+  message?: string;
+  withdrawalId?: string;
+  status?: string;
+  amount?: number;
+  method?: string;
+  accountInfo?: string;
+  [key: string]: unknown;
+}

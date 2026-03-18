@@ -482,6 +482,11 @@ export const authOptions: NextAuthOptions = {
         return token;
       }
 
+      if (trigger === "update") {
+        logAuth("info", "JWT update trigger received, forcing user revalidation");
+        token = await revalidateUser(token);
+      }
+
       // Early refresh if close to expiry OR if token is already expired but refresh token exists
       const needsRefresh = token.refresh_token && (
         shouldRefresh(token.accessTokenExp) ||

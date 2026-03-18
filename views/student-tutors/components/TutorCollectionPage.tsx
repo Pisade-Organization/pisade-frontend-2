@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { useSession } from "next-auth/react"
+import { useQuery } from "@tanstack/react-query"
 import BaseButton from "@/components/base/BaseButton"
 import { EmptyBoxIcon } from "@/components/icons"
 import Footer from "@/components/footer/Footer"
@@ -12,10 +13,13 @@ import { TUTOR_RANKING } from "@/types/tutorRanking.enum"
 import type { DashboardTutorCardItem } from "@/services/dashboard/types"
 import type { TutorCardProps } from "@/views/search/types"
 import { useCurrentTutorCards, useFavoriteTutorCards } from "@/hooks/dashboard/queries"
+import { BookingsService } from "@/services/bookings"
+import type { BookingListItem } from "@/services/bookings/types"
 
-type TutorCollectionVariant = "favorite" | "current"
+type TutorCollectionVariant = "favorite" | "current" | "active" | "past"
+type StudentTutorCollectionVariant = "favorite" | "current"
 
-const MOCK_TUTORS: Record<TutorCollectionVariant, DashboardTutorCardItem> = {
+const MOCK_TUTORS: Record<StudentTutorCollectionVariant, DashboardTutorCardItem> = {
   favorite: {
     id: "mock-favorite-tutor",
     fullName: "Ariana Kongsawat",
@@ -102,41 +106,163 @@ interface TutorCollectionPageProps {
   variant: TutorCollectionVariant
 }
 
+function toStudentCard(item: BookingListItem): TutorCardProps {
+  const student = item.student
+  const fullName = student?.name ?? "Student"
+
+  return {
+    id: student?.id ?? item.id,
+    fullName,
+    isActive: true,
+    avatarUrl: student?.avatarUrl ?? "https://ui-avatars.com/api/?name=Student",
+    flagUrl: "https://flagcdn.com/w40/th.png",
+    bio: "",
+    baseRate: 0,
+    specialties: [],
+    subject: "Student",
+    languages: [],
+    avgRating: 0,
+    tutorRanking: TUTOR_RANKING.STARTER,
+    studentsCount: 0,
+    lessonsCount: 0,
+    availability: {},
+    videoUrl: "",
+    videoThumbnailUrl: "",
+  }
+}
+
+function uniqueStudentsFromBookings(bookings: BookingListItem[]): TutorCardProps[] {
+  const map = new Map<string, TutorCardProps>()
+
+  bookings.forEach((booking) => {
+    const studentId = booking.student?.id
+    if (!studentId || map.has(studentId)) {
+      return
+    }
+
+    map.set(studentId, toStudentCard(booking))
+  })
+
+  return Array.from(map.values())
+}
+
+async function fetchAllTutorBookingsByView(
+  view: "upcoming" | "past",
+  maxPages = 20,
+): Promise<BookingListItem[]> {
+  const allBookings: BookingListItem[] = []
+  let cursor: string | undefined
+
+  for (let page = 0; page < maxPages; page += 1) {
+    const response = await BookingsService.getAll({
+      view,
+      limit: 100,
+      ...(cursor ? { cursor } : {}),
+    })
+
+    allBookings.push(...response.data)
+
+    if (!response.nextCursor) {
+      break
+    }
+
+    cursor = response.nextCursor
+  }
+
+  return allBookings
+}
+
 export default function TutorCollectionPage({ variant }: TutorCollectionPageProps) {
   const [mode, setMode] = useState<"list" | "grid">("list")
   const { data: session } = useSession()
   const isStudent = session?.user?.role === "STUDENT"
+  const isTutor = session?.user?.role === "TUTOR"
+  const isTutorStudentsVariant = variant === "active" || variant === "past"
 
   const favoriteQuery = useFavoriteTutorCards(12, isStudent && variant === "favorite")
   const currentQuery = useCurrentTutorCards(12, isStudent && variant === "current")
   const query = variant === "favorite" ? favoriteQuery : currentQuery
 
+  const activeBookingsQuery = useQuery({
+    queryKey: ["tutor-students", "active-bookings"],
+    queryFn: () => fetchAllTutorBookingsByView("upcoming"),
+    enabled: isTutor && isTutorStudentsVariant,
+    retry: 1,
+  })
+
+  const pastBookingsQuery = useQuery({
+    queryKey: ["tutor-students", "past-bookings"],
+    queryFn: () => fetchAllTutorBookingsByView("past"),
+    enabled: isTutor && variant === "past",
+    retry: 1,
+  })
+
+  const activeStudents = useMemo(() => {
+    const bookings = activeBookingsQuery.data ?? []
+    return uniqueStudentsFromBookings(bookings)
+  }, [activeBookingsQuery.data])
+
+  const pastStudents = useMemo(() => {
+    const bookings = pastBookingsQuery.data ?? []
+    const activeIds = new Set(activeStudents.map((student) => student.id))
+
+    return uniqueStudentsFromBookings(
+      bookings.filter((booking) => {
+        const studentId = booking.student?.id
+        if (!studentId) return false
+        return !activeIds.has(studentId)
+      }),
+    )
+  }, [activeStudents, pastBookingsQuery.data])
+
   const tutors = useMemo(() => {
     return (query.data?.pages ?? []).flatMap((page) => page.data).map(toTutorCard)
   }, [query.data?.pages])
 
-  const useMockTutor = query.isSuccess && tutors.length === 0
+  const useMockTutor = !isTutorStudentsVariant && query.isSuccess && tutors.length === 0
+  const tutorStudents = variant === "active" ? activeStudents : pastStudents
+  const studentVariant = variant === "favorite" ? "favorite" : "current"
   const tutorsToRender = useMockTutor
-    ? [toTutorCard(MOCK_TUTORS[variant])]
-    : tutors
+    ? [toTutorCard(MOCK_TUTORS[studentVariant])]
+    : isTutorStudentsVariant
+      ? tutorStudents
+      : tutors
 
   const firstPage = query.data?.pages?.[0]
-  const total = firstPage?.total ?? 0
+  const total = isTutorStudentsVariant ? tutorStudents.length : firstPage?.total ?? 0
   const displayTotal = useMockTutor ? 1 : total
-  const isLoading = query.isLoading
-  const isError = query.isError
+  const isLoading =
+    isTutorStudentsVariant && isTutor
+      ? activeBookingsQuery.isLoading || pastBookingsQuery.isLoading
+      : query.isLoading
+  const isError =
+    isTutorStudentsVariant && isTutor
+      ? activeBookingsQuery.isError || pastBookingsQuery.isError
+      : query.isError
 
   const title =
     variant === "favorite"
       ? `${displayTotal} saved tutors`
-      : `You currently have ${displayTotal} tutor${displayTotal === 1 ? "" : "s"}`
+      : variant === "current"
+        ? `You currently have ${displayTotal} tutor${displayTotal === 1 ? "" : "s"}`
+        : `${displayTotal} ${variant} student${displayTotal === 1 ? "" : "s"}`
 
   const emptyTitle =
-    variant === "favorite" ? "No Favorite Tutor Yet?" : "Time to Find Your Expert"
+    variant === "favorite"
+      ? "No Favorite Tutor Yet?"
+      : variant === "current"
+        ? "Time to Find Your Expert"
+        : variant === "active"
+          ? "No Active Students Yet"
+          : "No Past Students Yet"
   const emptyDescription =
     variant === "favorite"
       ? "Your perfect match is waiting! Start exploring our tutors and find the expert you love today."
-      : "We see you haven't secured a tutor. Explore our available tutors and connect with the right one for you today!"
+      : variant === "current"
+        ? "We see you haven't secured a tutor. Explore our available tutors and connect with the right one for you today!"
+        : variant === "active"
+          ? "Once students book upcoming classes with you, they will appear here."
+          : "Students with only past classes and no upcoming booking will appear here."
 
   return (
     <>
@@ -169,7 +295,9 @@ export default function TutorCollectionPage({ variant }: TutorCollectionPageProp
               <p className="text-body-3 text-center text-neutral-400 lg:text-body-2">{emptyDescription}</p>
             </div>
 
-            <BaseButton typeStyle={{ base: "outline", lg: "default" }}>Find my tutor</BaseButton>
+            {!isTutorStudentsVariant ? (
+              <BaseButton typeStyle={{ base: "outline", lg: "default" }}>Find my tutor</BaseButton>
+            ) : null}
           </div>
         ) : null}
 
@@ -191,7 +319,7 @@ export default function TutorCollectionPage({ variant }: TutorCollectionPageProp
               )}
             </div>
 
-            {query.hasNextPage && !useMockTutor ? (
+            {!isTutorStudentsVariant && query.hasNextPage && !useMockTutor ? (
               <div className="mt-6 flex justify-center">
                 <BaseButton
                   onClick={() => query.fetchNextPage()}

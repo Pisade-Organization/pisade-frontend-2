@@ -7,6 +7,7 @@ import { PaymentMethod } from "../components/TransactionHistory/badges/PaymentMe
 import DashboardPage from "./DashboardPage"
 import { useTutorTransactions } from "@/hooks/settings/queries"
 import { useMyProfile } from "@/hooks/settings/queries"
+import { useTutorWalletSummary } from "@/hooks/settings/queries"
 import { useBookings } from "@/hooks/bookings/queries"
 
 function mapTutorStatus(status: string): TransactionStatus {
@@ -15,10 +16,21 @@ function mapTutorStatus(status: string): TransactionStatus {
   return TransactionStatus.PROCESSING
 }
 
+function mapTutorPaymentMethod(reference: string | null): PaymentMethod {
+  if ((reference ?? "").toUpperCase().includes("BANK")) {
+    return PaymentMethod.BANK_TRANSFER
+  }
+
+  return PaymentMethod.PROMPTPAY
+}
+
 export default function TutorDashboardPage() {
   const { data: profile } = useMyProfile()
+  const { data: tutorWalletSummary } = useTutorWalletSummary()
   const { data: tutorTransactions = [] } = useTutorTransactions()
-  const { data: upcoming } = useBookings({ view: "upcoming", limit: 1 })
+  const { data: upcoming } = useBookings({ view: "upcoming", limit: 100 })
+  const { data: completed } = useBookings({ status: "COMPLETED", limit: 100 })
+  const { data: cancelled } = useBookings({ status: "CANCELLED", limit: 100 })
 
   const todayRange = useMemo(() => {
     const start = new Date()
@@ -44,7 +56,7 @@ export default function TutorDashboardPage() {
     title: transaction.type,
     amount: String(transaction.amount),
     date: transaction.createdAt,
-    paymentMethod: PaymentMethod.PROMPTPAY,
+    paymentMethod: mapTutorPaymentMethod(transaction.reference),
     status: mapTutorStatus(transaction.status),
   }))
 
@@ -63,19 +75,25 @@ export default function TutorDashboardPage() {
       navbarVariant="tutor_dashboard"
       role={Role.TUTOR}
       transactions={transactions}
+      stats={{
+        completedLessons: completed?.data?.length ?? 0,
+        scheduledLessons: upcoming?.data?.length ?? 0,
+        skippedLessons: cancelled?.data?.length ?? 0,
+        goal: Math.round(tutorWalletSummary?.totalEarnings ?? 0),
+      }}
       onViewAll={handleViewAll}
       onShowMore={handleShowMore}
       heroProps={{
         fullName: profile?.profile?.fullName ?? "Tutor",
         todayLessonCounts: todayBookingData?.data?.length ?? 0,
         lessonTitle: "Upcoming class",
-        tutorName: upcomingBooking?.student?.name ?? "Student",
-        avatarUrl:
-          upcomingBooking?.student?.avatarUrl ?? "https://ui-avatars.com/api/?name=Student",
+        tutorName: upcomingBooking?.student?.name ?? "",
+        avatarUrl: upcomingBooking?.student?.avatarUrl ?? "",
         lessonTime: upcomingBooking
           ? new Date(upcomingBooking.schedule.startTime)
           : new Date(),
         headerText: "Upcoming class",
+        showNextLessonCard: Boolean(upcomingBooking),
       }}
     />
   )

@@ -4,7 +4,12 @@ import type { Transaction } from "../components/TransactionHistory/types"
 import { TransactionStatus } from "../components/TransactionHistory/badges/TransactionStatusBadge/types"
 import { PaymentMethod } from "../components/TransactionHistory/badges/PaymentMethodBadge/types"
 import DashboardPage from "./DashboardPage"
-import { useDashboardTransactions, useNextLesson, useTodayLessons } from "@/hooks/dashboard/queries"
+import {
+  useDashboardSummary,
+  useDashboardTransactions,
+  useNextLesson,
+  useTodayLessons,
+} from "@/hooks/dashboard/queries"
 import { useMyProfile } from "@/hooks/settings/queries"
 
 function mapStatus(status: string): TransactionStatus {
@@ -20,6 +25,7 @@ function mapPaymentMethod(method: string | null): PaymentMethod {
 
 export default function StudentDashboardPage() {
   const { data: profile } = useMyProfile()
+  const { data: summary } = useDashboardSummary()
   const { data: todayLessons = [] } = useTodayLessons()
   const { data: nextLesson } = useNextLesson()
   const { data: transactionsRaw = [] } = useDashboardTransactions()
@@ -46,18 +52,23 @@ export default function StudentDashboardPage() {
       navbarVariant="student_dashboard"
       role={Role.STUDENT}
       transactions={transactions}
+      stats={{
+        completedLessons: summary?.completedLessons ?? 0,
+        scheduledLessons: summary?.scheduledLessons ?? 0,
+        skippedLessons: summary?.skippedLessons ?? 0,
+        goal: 0,
+      }}
       onViewAll={handleViewAll}
       onShowMore={handleShowMore}
       heroProps={{
         fullName: profile?.profile?.fullName ?? "Student",
         todayLessonCounts: todayLessons.length,
         lessonTitle: "Upcoming lesson",
-        tutorName: nextLesson?.tutor.user.profile?.fullName ?? "Tutor",
-        avatarUrl:
-          nextLesson?.tutor.user.profile?.avatarUrl ??
-          "https://ui-avatars.com/api/?name=Tutor",
+        tutorName: nextLesson?.tutor.user.profile?.fullName ?? "",
+        avatarUrl: nextLesson?.tutor.user.profile?.avatarUrl ?? "",
         lessonTime: nextLesson ? new Date(nextLesson.scheduledAt) : new Date(),
         headerText: "Next lesson",
+        showNextLessonCard: Boolean(nextLesson),
       }}
     />
   )

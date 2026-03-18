@@ -82,3 +82,7 @@ export interface TutorTransaction {
   reference: string | null;
   createdAt: string;
 }
+
+export interface SubmitTutorOnboardingResponse {
+  message: string;
+}

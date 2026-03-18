@@ -31,7 +31,7 @@ export const getTutorDashboardNavItems = (localePrefix: string): DashboardNavIte
   },
   {
     label: "Students",
-    path: `${localePrefix}/tutor/students`,
+    path: `${localePrefix}/tutor/students/active`,
     isActive: (pathname) => pathname?.includes("/tutor/students") ?? false,
   },
   {
@@ -41,7 +41,9 @@ export const getTutorDashboardNavItems = (localePrefix: string): DashboardNavIte
   },
   {
     label: "Earnings & Withdrawals",
-    path: `${localePrefix}/tutor/wallet`,
-    isActive: (pathname) => pathname?.includes("/tutor/wallet") ?? false,
+    path: `${localePrefix}/tutor/earnings-and-withdrawals`,
+    isActive: (pathname) =>
+      Boolean(pathname?.includes("/tutor/earnings-and-withdrawals")) ||
+      Boolean(pathname?.includes("/tutor/wallet")),
   },
 ]

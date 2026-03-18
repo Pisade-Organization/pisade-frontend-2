@@ -10,10 +10,12 @@ export default function Thumbnail({
     videoUrl: string
     fullName: string
 }) {
+    const safeThumbnail = videoThumbnailUrl || "/default_avatar.png"
+
     return (
         <div className="cursor-pointer relative w-full aspect-video rounded-t-[8px]">
             <Image 
-                src={videoThumbnailUrl} 
+                src={safeThumbnail}
                 alt={`Introduction video of ${fullName}`}
                 fill
                 className="object-cover w-full h-full rounded-t-[8px]"

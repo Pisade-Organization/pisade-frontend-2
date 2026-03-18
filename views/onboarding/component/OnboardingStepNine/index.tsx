@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
+import { usePathname, useRouter } from "next/navigation"
 import { useStepNine } from "@/hooks/tutors/onboarding/queries/useStepNine"
 import { useSaveStepNine } from "@/hooks/tutors/onboarding/mutations/useUpdateStepNine"
 import { useOnboardingNavigation } from "../../hooks/useOnboardingNavigation"
 import { getPresignedUrl, uploadFileToPresignedUrl } from "@/services/upload"
-import { TutorOnboardingService } from "@/services/tutor/onboarding"
+import { TutorService } from "@/services/tutor"
 import { DocumentType } from "../../types/document.types"
 import type { DocumentTypeApi } from "../../types/document.types"
 import { DocumentType as ApiDocumentType } from "@/services/tutor/onboarding/types"
@@ -29,6 +30,31 @@ const apiToDisplay: Record<DocumentTypeApi, DocumentType> = {
 
 const DEFAULT_DOCUMENT_TYPE: DocumentType = "ID Card"
 
+type SubmitMissingStep = {
+  step: number
+  fields: string[]
+}
+
+function getSubmitErrorMessage(error: unknown): string {
+  const responseError = (error as any)?.response?.data?.error
+  const details = responseError?.details
+
+  if (details?.code === "ONBOARDING_INCOMPLETE" && Array.isArray(details?.missingSteps)) {
+    const missing = details.missingSteps as SubmitMissingStep[]
+    const missingText = missing
+      .map((step) => `Step ${step.step}: ${step.fields.join(", ")}`)
+      .join(" | ")
+
+    return `Please complete required fields before submitting. ${missingText}`
+  }
+
+  if (typeof responseError?.message === "string" && responseError.message.trim()) {
+    return responseError.message
+  }
+
+  return "Failed to submit onboarding. Please try again."
+}
+
 export default function OnboardingStepNine() {
   const [documentType, setDocumentType] = useState<DocumentType>(DEFAULT_DOCUMENT_TYPE)
   const [idCardFile, setIdCardFile] = useState<File | null>(null)
@@ -41,7 +67,11 @@ export default function OnboardingStepNine() {
   const [isUploadingPassport, setIsUploadingPassport] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   
-  const { data: session } = useSession()
+  const { data: session, update } = useSession()
+  const router = useRouter()
+  const pathname = usePathname()
+  const locale = pathname?.split("/")?.[1]
+  const safeLocale = locale === "en" || locale === "th" ? locale : "en"
   const { data: stepNineData, isLoading } = useStepNine()
   const saveStepNine = useSaveStepNine()
   const { registerStepActions, unregisterStepActions } = useOnboardingNavigation()
@@ -213,72 +243,6 @@ export default function OnboardingStepNine() {
       return true
     }
 
-    const getMissingSteps = async () => {
-      const [step1, step2, step3, step4, step5, step6, step7, step8, step9] = await Promise.all([
-        TutorOnboardingService.getOnboardingStepOne(),
-        TutorOnboardingService.getOnboardingStepTwo(),
-        TutorOnboardingService.getOnboardingStepThree(),
-        TutorOnboardingService.getOnboardingStepFour(),
-        TutorOnboardingService.getOnboardingStepFive(),
-        TutorOnboardingService.getOnboardingStepSix(),
-        TutorOnboardingService.getOnboardingStepSeven(),
-        TutorOnboardingService.getOnboardingStepEight(),
-        TutorOnboardingService.getOnboardingStepNine(),
-      ])
-
-      const missingSteps: number[] = []
-
-      const step1Done =
-        Boolean(step1?.firstName?.trim()) &&
-        Boolean(step1?.lastName?.trim()) &&
-        Boolean(step1?.subject?.trim()) &&
-        Boolean(step1?.languages?.length)
-      if (!step1Done) missingSteps.push(1)
-
-      const step2Done = Boolean(step2?.avatarUrl)
-      if (!step2Done) missingSteps.push(2)
-
-      const step3Done =
-        step3?.hasTeachingCertificate === false ||
-        Boolean(step3?.certifications && step3.certifications.length > 0)
-      if (!step3Done) missingSteps.push(3)
-
-      const step4Done =
-        step4?.hasDiploma === false ||
-        Boolean(step4?.diplomas && step4.diplomas.length > 0)
-      if (!step4Done) missingSteps.push(4)
-
-      const step5Done =
-        Boolean(step5?.introduceYourself?.trim()) &&
-        Boolean(step5?.teachingExperience?.trim()) &&
-        Boolean(step5?.motivatePotentialStudents?.trim()) &&
-        Boolean(step5?.catchyHeadline?.trim())
-      if (!step5Done) missingSteps.push(5)
-
-      const step6Done = Boolean(step6?.videoUrl || step6?.videoLink)
-      if (!step6Done) missingSteps.push(6)
-
-      const step7Done = Boolean(step7?.timezone?.trim()) && Boolean(step7?.availabilities?.length)
-      if (!step7Done) missingSteps.push(7)
-
-      const hasPromptPay = step8?.withdrawalMethod === "PROMPTPAY"
-      const hasBankTransfer = step8?.withdrawalMethod === "BANK_TRANSFER"
-      const step8Done =
-        Boolean(step8?.lessonPrice && step8.lessonPrice > 0) &&
-        Boolean(
-          (hasPromptPay && step8?.withdrawalPhoneNumber?.trim()) ||
-          (hasBankTransfer && step8?.bankName?.trim() && step8?.bankAccountNumber?.trim()),
-        )
-      if (!step8Done) missingSteps.push(8)
-
-      const step9Done =
-        (step9?.documentType === ApiDocumentType.ID_CARD && Boolean(step9?.idCardUrl)) ||
-        (step9?.documentType === ApiDocumentType.PASSPORT && Boolean(step9?.passportUrl))
-      if (!step9Done) missingSteps.push(9)
-
-      return missingSteps
-    }
-
     const save = async () => {
       const apiDocumentType = displayToApi[documentTypeRef.current] as ApiDocumentType
       
@@ -306,12 +270,16 @@ export default function OnboardingStepNine() {
 
     const submit = async () => {
       await save()
+      setSubmitError(null)
 
-      const missingSteps = await getMissingSteps()
-      if (missingSteps.length > 0) {
-        const message = `Please complete all required steps before submitting. Missing step(s): ${missingSteps.join(", ")}`
+      try {
+        await TutorService.submitOnboarding()
+        await update()
+        router.replace(`/${safeLocale}/tutor/onboarding/success`)
+      } catch (error) {
+        const message = getSubmitErrorMessage(error)
         setSubmitError(message)
-        throw new Error(message)
+        throw error
       }
     }
 
@@ -319,7 +287,7 @@ export default function OnboardingStepNine() {
     return () => {
       unregisterStepActions(9)
     }
-  }, [registerStepActions, unregisterStepActions])
+  }, [registerStepActions, unregisterStepActions, router, safeLocale, update])
 
   if (isLoading) return <p>Loading...</p>
 

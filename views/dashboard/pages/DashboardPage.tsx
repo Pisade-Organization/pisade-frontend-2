@@ -13,8 +13,6 @@ import TransactionHistory from "../components/TransactionHistory"
 import { Role } from "@/types/role.enum"
 import type { Transaction } from "../components/TransactionHistory/types"
 import useMediaQuery from "@/hooks/useMediaQuery"
-import { useDashboardSummary } from "@/hooks/dashboard/queries"
-import { useTutorWalletSummary } from "@/hooks/settings/queries"
 import { PageRoot } from "@/components/layout/PagePrimitives"
 
 type DashboardNavbarVariant = "student_dashboard" | "tutor_dashboard"
@@ -30,8 +28,15 @@ interface DashboardPageProps {
     avatarUrl: string
     lessonTime: Date
     headerText?: string
+    showNextLessonCard?: boolean
   }
   transactions: Transaction[]
+  stats: {
+    completedLessons: number
+    scheduledLessons: number
+    skippedLessons: number
+    goal: number
+  }
   onViewAll?: () => void
   onShowMore?: () => void
 }
@@ -41,47 +46,54 @@ export default function DashboardPage({
   role,
   heroProps,
   transactions,
+  stats,
   onViewAll,
   onShowMore,
 }: DashboardPageProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const layout = isDesktop ? "table" : "card"
-  const { data: studentSummary } = useDashboardSummary()
-  const { data: tutorWalletSummary } = useTutorWalletSummary()
+  const statCards = [
+    { label: "Completed Lessons" as const, value: stats.completedLessons },
+    { label: "Scheduled Lessons" as const, value: stats.scheduledLessons },
+    { label: "Skipped Lessons" as const, value: stats.skippedLessons },
+    { label: "Goal" as const, value: stats.goal },
+  ]
 
-  const stats =
+  const dashboardSections =
     role === Role.STUDENT
       ? [
-          { label: "Completed Lessons" as const, value: studentSummary?.completedLessons ?? 0 },
-          { label: "Scheduled Lessons" as const, value: studentSummary?.scheduledLessons ?? 0 },
-          { label: "Skipped Lessons" as const, value: studentSummary?.skippedLessons ?? 0 },
-          { label: "Goal" as const, value: 0 },
+          { className: "w-full order-2 lg:order-1", content: <TodayLessons /> },
+          { className: "w-full order-1 lg:order-2", content: <StatsOverview stats={statCards} /> },
+          { className: "w-full order-3", content: <WeeklyStudyPlan /> },
+          { className: "w-full order-4", content: <FavoriteTutors /> },
+          {
+            className: "w-full order-5",
+            content: (
+              <TransactionHistory
+                role={role}
+                transactions={transactions}
+                layout={layout}
+                onViewAll={onViewAll}
+                onShowMore={onShowMore}
+              />
+            ),
+          },
         ]
       : [
-          { label: "Completed Lessons" as const, value: 0 },
-          { label: "Scheduled Lessons" as const, value: 0 },
-          { label: "Skipped Lessons" as const, value: 0 },
-          { label: "Goal" as const, value: Math.round(tutorWalletSummary?.totalEarnings ?? 0) },
+          { className: "w-full order-1", content: <StatsOverview stats={statCards} /> },
+          {
+            className: "w-full order-2",
+            content: (
+              <TransactionHistory
+                role={role}
+                transactions={transactions}
+                layout={layout}
+                onViewAll={onViewAll}
+                onShowMore={onShowMore}
+              />
+            ),
+          },
         ]
-
-  const dashboardSections = [
-    { className: "w-full order-2 lg:order-1", content: <TodayLessons /> },
-    { className: "w-full order-1 lg:order-2", content: <StatsOverview stats={stats} /> },
-    { className: "w-full order-3", content: <WeeklyStudyPlan /> },
-    { className: "w-full order-4", content: <FavoriteTutors /> },
-    {
-      className: "w-full order-5",
-      content: (
-        <TransactionHistory
-          role={role}
-          transactions={transactions}
-          layout={layout}
-          onViewAll={onViewAll}
-          onShowMore={onShowMore}
-        />
-      ),
-    },
-  ]
 
   return (
     <PageRoot className="items-center">

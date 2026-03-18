@@ -34,3 +34,4 @@ export { default as CardDateIcon } from './CardDateIcon';
 export { default as CardCvcIcon } from './CardCvcIcon';
 export { default as ApplePayIcon } from './ApplePayIcon';
 export { default as GooglePayIcon } from './GooglePayIcon';
+export { default as SuccessOnboardingBoxIcon } from './SuccessOnboardingBoxIcon';

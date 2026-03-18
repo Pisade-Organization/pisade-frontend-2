@@ -38,9 +38,9 @@ export default function TutorProfileDropdown({
         className="w-[220px] rounded-[12px] border border-neutral-50 p-1"
       >
         <DropdownMenuItem asChild className="cursor-pointer rounded-[8px] px-3 py-2">
-          <Link href={`${localePrefix}/tutor/wallet`} className="flex items-center gap-2 text-neutral-800">
+          <Link href={`${localePrefix}/tutor/earnings-and-withdrawals`} className="flex items-center gap-2 text-neutral-800">
             <Wallet className="h-4 w-4 text-neutral-300" />
-            My Wallet
+            Earnings & Withdrawals
           </Link>
         </DropdownMenuItem>
 

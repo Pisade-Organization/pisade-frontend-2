@@ -26,13 +26,13 @@ export default function TutorDashboardOverlay() {
 
   const generalLinks: TutorMenuLink[] = [
     { id: "home", label: "Home", href: `${localePrefix}/tutor/dashboard` },
-    { id: "students", label: "Students", href: `${localePrefix}/tutor/students` },
+    { id: "students", label: "Students", href: `${localePrefix}/tutor/students/active` },
     { id: "schedule", label: "Schedule", href: `${localePrefix}/tutor/schedule` },
-    { id: "earnings", label: "Earnings & Withdrawals", href: `${localePrefix}/tutor/wallet` },
+    { id: "earnings", label: "Earnings & Withdrawals", href: `${localePrefix}/tutor/earnings-and-withdrawals` },
   ];
 
   const accountLinks: TutorMenuLink[] = [
-    { id: "my-wallet", label: "My Wallet", href: `${localePrefix}/tutor/wallet` },
+    { id: "my-wallet", label: "Earnings & Withdrawals", href: `${localePrefix}/tutor/earnings-and-withdrawals` },
     { id: "my-profile", label: "My Profile", href: `${localePrefix}/settings/tutor/general` },
     { id: "account-settings", label: "Account settings", href: `${localePrefix}/settings/tutor` },
     { id: "safety-trust", label: "Safety & Trust", href: `${localePrefix}/settings/tutor/general` },
