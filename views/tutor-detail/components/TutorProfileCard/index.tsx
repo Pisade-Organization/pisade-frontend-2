@@ -55,7 +55,7 @@ export default function TutorProfileCard({ tutorData }: TutorProfileCardProps) {
                 />
 
             {/* DESKTOP NAME + SUBJECT + RATE */}
-            <div className="flex flex-col justify-center items-start gap-y-3">
+            <div className="hidden lg:flex flex-col justify-center items-start gap-y-3">
                 <div className="flex flex-col justify-center items-start gap-y-1">
                     <TutorName fullName={tutorData.fullName} />
                     <TutorFlagAndSubject flagUrl={tutorData.flagUrl} subject={tutorData.subject} />
@@ -65,7 +65,7 @@ export default function TutorProfileCard({ tutorData }: TutorProfileCardProps) {
             </div>
 
             {/* DIVIDER */}
-            <div className="w-full border border-neutral-50"></div>
+            <div className="w-full border-b border-neutral-50"></div>
 
 
             <TutorStats 
@@ -75,9 +75,9 @@ export default function TutorProfileCard({ tutorData }: TutorProfileCardProps) {
             />
             
             {/* DESKTOP DIVIDER */}
-            <div className="hidden lg:block w-full border border-neutral-50"></div>
+            <div className="hidden lg:block w-full border-b border-neutral-50"></div>
 
-            <div className="w-full flex flex-col justify-center items-start gap-2">
+            <div className="hidden w-full lg:flex flex-col justify-center items-start gap-2">
                 <BookLessonBtn tutorId={tutorData.id} />
 
                 <div className="w-full flex justify-start items-center gap-2">

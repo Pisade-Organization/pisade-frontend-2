@@ -9,7 +9,7 @@ export default function RankingLevel({
     const tutorRankingBadgeSrc = getTutorRankingBadgeSrc(tutorRanking)
     const tutorRankingLabel = getTutorRankingLabel(tutorRanking)
     return (
-        <div className="w-full flex justify-center items-center gap-2 px-5">
+        <div className="w-full flex justify-center items-center gap-2 px-0">
             {tutorRankingBadgeSrc ? (
                 <Image 
                     src={tutorRankingBadgeSrc}

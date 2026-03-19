@@ -2,6 +2,7 @@ import apiInstanceClient from "@/services/apiInstanceClient";
 import apiInstancePublic from "@/services/apiInstancePublic";
 import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiResponse";
 import { servicePath } from "@/services/servicePath";
+import { formatLanguageLabel } from "@/lib/language";
 import {
   Tutor,
   TutorDetailData,
@@ -15,6 +16,10 @@ const DEFAULT_FLAG_URL = "https://flagcdn.com/w40/th.png";
 const DEFAULT_AVATAR_URL = "https://ui-avatars.com/api/?name=Tutor";
 
 type RawTutor = Record<string, unknown>;
+
+function toSafeString(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
 
 function toDayKey(day: unknown): string {
   if (typeof day === "number") {
@@ -119,7 +124,7 @@ function normalizeTutor(raw: RawTutor): Tutor {
     : [];
 
   const languages = Array.isArray(raw.languages)
-    ? raw.languages.map((language) => String(language))
+    ? raw.languages.map((language) => formatLanguageLabel(String(language)))
     : [];
 
   const specialties = Array.isArray(raw.specialties)
@@ -132,6 +137,25 @@ function normalizeTutor(raw: RawTutor): Tutor {
   );
   const videoThumbnailUrl =
     providedThumbnail || getYouTubeThumbnailUrl(videoUrl);
+
+  const rawSelfIntroduction =
+    raw.selfIntroduction && typeof raw.selfIntroduction === "object"
+      ? (raw.selfIntroduction as Record<string, unknown>)
+      : null;
+
+  const selfIntroduction = rawSelfIntroduction
+    ? {
+        introduceYourself: toSafeString(rawSelfIntroduction.introduceYourself),
+        teachingExperience: toSafeString(rawSelfIntroduction.teachingExperience),
+        motivatePotentialStudents: toSafeString(rawSelfIntroduction.motivatePotentialStudents),
+        catchyHeadline: toSafeString(rawSelfIntroduction.catchyHeadline),
+      }
+    : {
+        introduceYourself: toSafeString(raw.introduceYourself) || String(raw.bio ?? ""),
+        teachingExperience: toSafeString(raw.teachingExperience),
+        motivatePotentialStudents: toSafeString(raw.motivatePotentialStudents),
+        catchyHeadline: toSafeString(raw.catchyHeadline),
+      };
 
   return {
     id: String(raw.id ?? ""),
@@ -149,6 +173,7 @@ function normalizeTutor(raw: RawTutor): Tutor {
     availability: normalizeAvailability(raw.availability ?? raw.availabilities),
     videoUrl,
     videoThumbnailUrl,
+    selfIntroduction,
     isActive: Boolean(raw.isActive ?? true),
     tutorRanking: (raw.tutorRanking as Tutor["tutorRanking"]) ?? "STARTER",
     reviews: Array.isArray(raw.reviews)

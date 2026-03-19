@@ -1,9 +1,12 @@
 import { Languages } from "lucide-react"
+import { formatLanguageLabels } from "@/lib/language"
 export default function TutorLanguages({
     languages
 }: {
     languages: string[]
 }) {
+    const formattedLanguages = formatLanguageLabels(languages)
+
     return (
         <div className="flex justify-start items-center gap-x-2">
 
@@ -16,7 +19,7 @@ export default function TutorLanguages({
             </div>
 
             <div className="text-body-2 text-neutral-900">
-            {languages.join(", ")}
+            {formattedLanguages.join(", ")}
             </div>
 
         </div>

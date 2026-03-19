@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import { useSession } from "next-auth/react"
 
 import { motion, AnimatePresence } from "framer-motion"
 import AuthLeft from "./AuthLeft"
@@ -15,6 +16,8 @@ export default function AuthLayout({
 }) {
     const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
     const [emailTo, setEmailTo] = useState<string>('');
+    const { status } = useSession()
+    const isAuth = status === "authenticated"
 
     return (
         <div className="min-h-screen flex justify-center items-center overflow-x-hidden">
@@ -25,8 +28,8 @@ export default function AuthLayout({
 
             <div className="relative w-full lg:w-1/2 h-screen">
                 {/* MOBILE NAVBAR */}
-                <div className="lg:hidden w-full absolute top-0">
-                    <AuthNavbar />
+                <div className="lg:hidden w-full absolute top-0 z-20">
+                    <AuthNavbar isAuth={isAuth} />
                 </div>
 
                 <AnimatePresence mode="wait">
@@ -37,7 +40,7 @@ export default function AuthLayout({
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -40 }}
                         transition={{ duration: 0.35, ease: "easeInOut" }}
-                        className="absolute inset-0"
+                        className="absolute inset-0 z-10 pt-[64px] lg:pt-0"
                         >
                         <AuthVerifyEmail
                             emailTo={emailTo}
@@ -52,7 +55,7 @@ export default function AuthLayout({
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 40 }}
                         transition={{ duration: 0.35, ease: "easeInOut" }}
-                        className="absolute inset-0"
+                        className="absolute inset-0 z-10 pt-[64px] lg:pt-0"
                         >
                         <AuthRight
                             setIsEmailSent={setIsEmailSent}

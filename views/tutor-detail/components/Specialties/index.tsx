@@ -6,7 +6,7 @@ export default function Specialties({
     specialties: string[]
 }) {
     return (
-        <div className="border border-neutral-50 rounded-[15px] p-6 gap-y-4 flex flex-col justify-center items-start">
+        <div className="w-full p-0 gap-y-4 flex flex-col justify-center items-start lg:p-6 lg:border lg:border-neutral-50 lg:rounded-[15px]">
 
             <div className="text-neutral-900 text-title-1">
                 Specialties

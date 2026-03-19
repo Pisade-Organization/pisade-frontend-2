@@ -6,21 +6,21 @@ import { useState } from "react"
 import useMediaQuery from "@/hooks/useMediaQuery"
 
 export default function AboutBody({
-    about
+    text
 }: {
-    about: string
+    text: string
 }) {
     const isDesktop = useMediaQuery("(min-width: 1024px)")
     const isMobile = !isDesktop
     const [isExpanded, setIsExpanded] = useState(false)
 
-    const shouldTruncate = isMobile && about && about.length > 300 && !isExpanded
-    const displayedText = shouldTruncate ? `${about.slice(0, 300)}…` : about
+    const shouldTruncate = isMobile && text && text.length > 300 && !isExpanded
+    const displayedText = shouldTruncate ? `${text.slice(0, 300)}…` : text
 
     return (
         <div className="text-neutral-500 text-body-3 lg:text-body-2">
             {displayedText}
-            {isMobile && about && about.length > 300 && !isExpanded && (
+            {isMobile && text && text.length > 300 && !isExpanded && (
                 <button
                     type="button"
                     onClick={() => setIsExpanded(true)}

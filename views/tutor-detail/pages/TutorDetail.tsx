@@ -13,6 +13,9 @@ import AvailabilityCalendar from "../components/AvailabilityCalendar"
 import { TutorDetailData } from "@/services/tutor/types"
 import { fetchTutorDetailData } from "@/services/tutor"
 import Loading from "@/components/Loading"
+import BaseButton from "@/components/base/BaseButton"
+import { MessageCircle } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
 
 export default function TutorDetailPage({
     params
@@ -24,6 +27,17 @@ export default function TutorDetailPage({
     const [tutorData, setTutorData] = useState<TutorDetailData | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const router = useRouter()
+    const pathname = usePathname()
+    const locale = pathname.split("/")[1] || "en"
+
+    const handleBookLessonClick = () => {
+        if (!tutorData) {
+            return
+        }
+
+        router.push(`/${locale}/bookings/${tutorData.id}`)
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -67,16 +81,16 @@ export default function TutorDetailPage({
     }
 
     return (
-        <div className="flex flex-col justify-center items-center">
+        <div className="min-h-screen w-full flex flex-col items-center">
             <Navbar variant="tutor_detail" />
             {/* MOBILE */}
-            <div className="lg:hidden min-h-screen relative flex flex-col justify-start gap-y-4 px-4 py-20">
+            <div className="w-full lg:hidden min-h-screen relative flex flex-col justify-start gap-5 lg:gap-4 pt-20 pb-28">
 
                 <div className="absolute w-full h-[252px] top-0 left-0 z-10">
                     <HeroBanner/>
                 </div>
 
-                <div className="relative z-10">
+                <div className="relative z-10 px-4">
                     <TutorProfileCard tutorData={tutorData}></TutorProfileCard>
                 </div>
 
@@ -85,7 +99,7 @@ export default function TutorDetailPage({
                     setCurrentTab={setCurrentTab}
                 />
 
-                <div className="w-full">
+                <div className="w-full px-4">
                     {currentTab === 'Overview' && (
                         <Overview
                             videoThumbnailUrl={tutorData.videoThumbnailUrl}
@@ -94,6 +108,8 @@ export default function TutorDetailPage({
                             tutorRanking={tutorData.tutorRanking}
                             hoursTaught={tutorData.lessonsCount}
                             about={tutorData.bio}
+                            selfIntroduction={tutorData.selfIntroduction}
+                            onSeeAvailabilityCalendar={() => setCurrentTab("Availability calendar")}
                             languages={tutorData.languages}
                             avgRating={tutorData.avgRating}
                             studentReviewsCount={tutorData.studentsCount}
@@ -117,10 +133,26 @@ export default function TutorDetailPage({
                         />
                     )}
                 </div>
+
+                <div className="sticky bottom-0 z-40 w-full bg-white px-4 py-3 shadow-[0px_1px_4px_0px_#0000001A] lg:hidden">
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            aria-label="Chat with tutor"
+                            className="flex items-center justify-center rounded-[8px] border border-deep-royal-indigo-100 p-[10px]"
+                        >
+                            <MessageCircle className="h-6 w-6 text-deep-royal-indigo-500" />
+                        </button>
+
+                        <BaseButton className="flex-1" onClick={handleBookLessonClick}>
+                            Book lesson
+                        </BaseButton>
+                    </div>
+                </div>
             </div>
             
             {/* DESKTOP */}
-            <div className="max-w-screen-2xl hidden relative lg:flex justify-center items-start gap-[29px] px-20">
+            <div className="w-full max-w-[1440px] hidden relative lg:flex justify-center items-start gap-[29px] px-20">
 
                 <div className="absolute w-full h-[252px] top-0 left-0 z-10">
                     <HeroBanner/>
@@ -150,6 +182,8 @@ export default function TutorDetailPage({
                                 tutorRanking={tutorData.tutorRanking}
                                 hoursTaught={tutorData.lessonsCount}
                                 about={tutorData.bio}
+                                selfIntroduction={tutorData.selfIntroduction}
+                                onSeeAvailabilityCalendar={() => setCurrentTab("Availability calendar")}
                                 languages={tutorData.languages}
                                 avgRating={tutorData.avgRating}
                                 studentReviewsCount={tutorData.studentsCount}

@@ -12,7 +12,7 @@ interface AuthRightProps {
 
 export default function AuthRight({ setIsEmailSent, setEmailTo, type = AUTH_TYPES.SIGNIN }: AuthRightProps) {
     return (
-        <div className="border py-8 lg:py-0 w-full h-full flex flex-col justify-center items-center">
+        <div className="py-8 lg:py-0 w-full h-full flex flex-col justify-center items-center lg:border">
             <div className="w-full h-full flex flex-col justify-center items-center gap-y-10 flex-1">
 
 

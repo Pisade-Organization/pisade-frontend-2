@@ -3,6 +3,7 @@ import About from "./About"
 import Languages from "./Languages"
 import WhatMyStudentsSaid from "./WhatMyStudentsSaid"
 import Specialties from "../Specialties"
+import BaseButton from "@/components/base/BaseButton"
 export default function Overview({
     videoThumbnailUrl,
     videoUrl,
@@ -10,6 +11,8 @@ export default function Overview({
     tutorRanking,
     hoursTaught,
     about,
+    selfIntroduction,
+    onSeeAvailabilityCalendar,
     languages,
     avgRating,
     studentReviewsCount,
@@ -22,6 +25,13 @@ export default function Overview({
     tutorRanking: "STARTER" | "PRO" | "MASTER";
     hoursTaught: number;
     about: string;
+    selfIntroduction?: {
+        introduceYourself: string;
+        teachingExperience: string;
+        motivatePotentialStudents: string;
+        catchyHeadline: string;
+    };
+    onSeeAvailabilityCalendar?: () => void;
     languages: string[];
     avgRating: number;
     studentReviewsCount: number;
@@ -45,9 +55,21 @@ export default function Overview({
                     hoursTaught={hoursTaught}
                     />
 
-                <About about={about} />
+                <About about={about} selfIntroduction={selfIntroduction} />
 
                 <Languages languages={languages} />
+
+                <div className="w-full">
+                    <BaseButton
+                        typeStyle="outline"
+                        className="w-full"
+                        onClick={onSeeAvailabilityCalendar}
+                    >
+                        See my availability calendar
+                    </BaseButton>
+                </div>
+
+                <div className="w-[calc(100%+2rem)] -mx-4 border-b border-neutral-50" />
 
                 <WhatMyStudentsSaid
                     avgRating={avgRating}
@@ -74,7 +96,7 @@ export default function Overview({
                             hoursTaught={hoursTaught}
                         />
 
-                        <About about={about} />
+                        <About about={about} selfIntroduction={selfIntroduction} />
 
                         <Languages languages={languages} />
                     </div>

@@ -89,5 +89,11 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
     )
   }
 
-  return <TutorDetailNavbar onLogoClick={onLogoClick} onSigninClick={onSigninClick} />
+  return (
+    <TutorDetailNavbar
+      onLogoClick={onLogoClick}
+      onSigninClick={onSigninClick}
+      isAuth={isAuth}
+    />
+  )
 }

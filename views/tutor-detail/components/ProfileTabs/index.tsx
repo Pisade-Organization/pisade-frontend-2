@@ -31,7 +31,8 @@ export default function ProfileTabs({
                 "w-full transition-all duration-200 pb-2",
                 currentTab === "Availability calendar" && "text-electric-violet-400 border-b border-electric-violet-400"
             )}>
-                Availability calendar
+                <span className="lg:hidden">Availability</span>
+                <span className="hidden lg:inline">Availability calendar</span>
             </button>
 
             <button 
@@ -40,7 +41,8 @@ export default function ProfileTabs({
                 "w-full transition-all duration-200 pb-2",
                 currentTab === "Reviews & ratings" && "text-electric-violet-400 border-b border-electric-violet-400"
             )}>
-                Reviews & ratings
+                <span className="lg:hidden">Reviews</span>
+                <span className="hidden lg:inline">Reviews & ratings</span>
             </button>
 
         </div>

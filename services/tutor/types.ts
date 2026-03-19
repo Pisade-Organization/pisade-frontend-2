@@ -18,6 +18,12 @@ export interface Tutor {
   videoThumbnailUrl: string;
   isActive: boolean;
   tutorRanking: "STARTER" | "PRO" | "MASTER";
+  selfIntroduction?: {
+    introduceYourself: string;
+    teachingExperience: string;
+    motivatePotentialStudents: string;
+    catchyHeadline: string;
+  };
   reviews?: TutorReview[];
 }
 

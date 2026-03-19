@@ -4,7 +4,7 @@ import BaseButton from "@/components/base/BaseButton";
 
 export default function NoReview() {
   return (
-    <div className="flex flex-col justify-center items-center gap-3 py-7">
+    <div className="w-full flex flex-col justify-center items-center gap-3 py-7 text-center">
         <Image 
           src='/images/tutor-detail/no-review.svg'
           alt="No review icon"

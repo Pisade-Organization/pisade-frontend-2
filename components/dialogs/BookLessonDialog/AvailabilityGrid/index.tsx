@@ -35,6 +35,13 @@ export default function AvailabilityGrid({
 
     return (
       <div className="flex flex-col gap-3 min-w-[80px] lg:min-w-0 w-full">
+        <div
+          className={cn(
+            "w-full h-[2px] rounded-full lg:hidden",
+            isPast ? "bg-neutral-100" : "bg-electric-violet-500"
+          )}
+        />
+
         {/* Day Header */}
         <div className="flex flex-col gap-1 w-full">
           <Typography
@@ -47,10 +54,7 @@ export default function AvailabilityGrid({
           <Typography
             variant="body-3"
             color={isPast ? "neutral-400" : "neutral-700"}
-            className={cn(
-              "w-full text-center",
-              !isPast && "border-b-2 border-electric-violet-500 pb-0.5"
-            )}
+            className="w-full text-center"
           >
             {day.date.split("-")[2]}
           </Typography>
@@ -114,12 +118,12 @@ export default function AvailabilityGrid({
 
       {/* Desktop: Grid */}
       <div className="hidden w-full lg:flex lg:flex-col lg:gap-1">
-        <div className="w-full flex gap-1">
+        <div className="w-full grid grid-cols-7 gap-1">
           {availability.map((day) => (
             <div
               key={`indicator-${day.date}`}
               className={cn(
-                "w-full h-[2px] rounded-full flex-1",
+                "h-[2px] rounded-full w-full mx-auto",
                 indicatorSegmentClassName,
                 isDateInPast(day.date) ? "bg-neutral-100" : "bg-electric-violet-500"
               )}
@@ -127,7 +131,7 @@ export default function AvailabilityGrid({
           ))}
         </div>
 
-        <div className="w-full grid grid-cols-7 gap-6">
+        <div className="w-full grid grid-cols-7 gap-1">
           {availability.map((day) => (
             <DayColumn key={day.date} day={day} />
           ))}
