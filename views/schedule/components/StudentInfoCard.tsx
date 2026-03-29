@@ -1,8 +1,29 @@
 import Image from "next/image"
 import Typography from "@/components/base/Typography"
 import BaseButton from "@/components/base/BaseButton"
+import { useRouter, useParams } from "next/navigation"
 
-export default function StudentInfoCard() {
+interface StudentInfoCardProps {
+  fullName: string
+  timezone: string
+  summaryLabel: string
+  summaryValue: string
+  actionLabel?: string
+  actionHref?: string
+}
+
+export default function StudentInfoCard({
+  fullName,
+  timezone,
+  summaryLabel,
+  summaryValue,
+  actionLabel,
+  actionHref,
+}: StudentInfoCardProps) {
+  const router = useRouter()
+  const params = useParams()
+  const locale = (params?.locale as string | undefined) ?? "en"
+
   return (
     <div
       className="border border-neutral-50 bg-white p-4 gap-3 flex flex-col rounded-xl lg:rounded-t-xl lg:rounded-b-none shadow-[0px_1px_4px_0px_#0000001A] lg:shadow-none"
@@ -20,21 +41,23 @@ export default function StudentInfoCard() {
         />
 
         <div className="flex flex-col gap-1 lg:gap-0">
-          <Typography variant="title-2" color="neutral-800">Somchai Alene</Typography>
-          <Typography variant="body-3" color="neutral-300">Asia/Thai GMT +7:00</Typography>
+          <Typography variant="title-2" color="neutral-800">{fullName}</Typography>
+          <Typography variant="body-3" color="neutral-300">{timezone}</Typography>
         </div>
       </div>
 
       {/* TOTAL BALANCE */}
       <div className="w-full flex justify-between items-center">
-        <Typography variant="body-3" color="neutral-500">Total balance</Typography>
-        <Typography variant="title-2" color="deep-royal-indigo-500">฿123,000,000</Typography>
+        <Typography variant="body-3" color="neutral-500">{summaryLabel}</Typography>
+        <Typography variant="title-2" color="deep-royal-indigo-500">{summaryValue}</Typography>
       </div>
 
       {/* TOP UP WALLET BUTTON */}
-      <BaseButton>
-        Top Up Wallet
-      </BaseButton>
+      {actionLabel && actionHref ? (
+        <BaseButton onClick={() => router.push(`/${locale}${actionHref}`)}>
+          {actionLabel}
+        </BaseButton>
+      ) : null}
     </div>
   )
 }

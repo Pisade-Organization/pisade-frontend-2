@@ -26,6 +26,11 @@ export default function AvailabilityGrid({
     return date < today;
   };
 
+  const isSlotInPast = (dateString: string, startTime: string) => {
+    const slotDateTime = new Date(`${dateString}T${startTime}:00`);
+    return slotDateTime.getTime() <= Date.now();
+  };
+
   const isSlotSelected = (date: string, startTime: string) => {
     return selectedSlot?.date === date && selectedSlot?.startTime === startTime;
   };
@@ -64,7 +69,7 @@ export default function AvailabilityGrid({
         <div className="w-full flex flex-col gap-2">
           {day.slots.map((slot: TimeSlotI) => {
             const selected = isSlotSelected(day.date, slot.startTime);
-            const isDisabled = !slot.isAvailable || isPast;
+            const isDisabled = !slot.isAvailable || isPast || isSlotInPast(day.date, slot.startTime);
 
             return (
               <button

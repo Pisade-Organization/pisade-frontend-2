@@ -9,6 +9,11 @@ interface HeroProps {
   tutorName: string
   avatarUrl: string
   lessonTime: Date
+  meetingUrl?: string | null
+  canJoin?: boolean
+  joinAvailableAt?: Date | null
+  secondaryActionHref?: string | null
+  actionLabel?: string
   headerText?: string
   showNextLessonCard?: boolean
 }
@@ -20,6 +25,11 @@ export default function Hero({
   tutorName,
   avatarUrl,
   lessonTime,
+  meetingUrl,
+  canJoin,
+  joinAvailableAt,
+  secondaryActionHref,
+  actionLabel,
   headerText,
   showNextLessonCard = true,
 }: HeroProps) {
@@ -47,6 +57,11 @@ export default function Hero({
               tutorName={tutorName}
               avatarUrl={avatarUrl}
               lessonTime={lessonTime}
+              meetingUrl={meetingUrl}
+              canJoin={canJoin}
+              joinAvailableAt={joinAvailableAt}
+              secondaryActionHref={secondaryActionHref}
+              actionLabel={actionLabel}
               headerText={headerText}
             />
           </div>

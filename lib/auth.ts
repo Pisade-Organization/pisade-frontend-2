@@ -160,7 +160,12 @@ async function refreshTokenOnce(refresh_token: string): Promise<BackendAuthRespo
       logAuth("info", "Starting token refresh");
       const response = await api.post<ApiSuccessResponse<BackendAuthResponse> | BackendAuthResponse>(
         "/auth/refresh",
-        { refresh_token }
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${refresh_token}`,
+          },
+        },
       );
       const data = unwrapApiResponse(response.data);
       
@@ -338,9 +343,10 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
         try {
-          const response = await api.get<ApiSuccessResponse<BackendAuthResponse> | BackendAuthResponse>("/auth/verify-magic-link", {
-            params: { token },
-          });
+          const response = await api.post<ApiSuccessResponse<BackendAuthResponse> | BackendAuthResponse>(
+            "/auth/verify-magic-link",
+            { token },
+          );
           const data = unwrapApiResponse(response.data);
           if (!data?.access_token || !data?.refresh_token || !data?.user) {
             logAuth("error", "Magic link authorization: invalid response structure", {

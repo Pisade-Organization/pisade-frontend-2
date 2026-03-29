@@ -1,7 +1,6 @@
 "use client";
 
 import type { BookingDialogI } from "./types";
-import { useState } from "react";
 import AvailabilityGrid from "./AvailabilityGrid";
 import BookingHeader from "./BookingHeader";
 import TimezoneSelector from "./TimezoneSelector";
@@ -14,18 +13,18 @@ export default function BookingDialog({
   selectedLessonDuration,
   timezone,
   utcOffset,
+  currentDate,
+  onPreviousWeek,
+  onNextWeek,
   weekRange,
   availability,
-  selectedSlot: initialSelectedSlot,
+  selectedSlot,
   isSubmitting,
   onSlotSelect,
   onContinue,
   continueDisabled,
 }: BookingDialogI) {
-  const [selectedSlot, setSelectedSlot] = useState(initialSelectedSlot);
-
   const handleSlotSelect = (date: string, startTime: string) => {
-    setSelectedSlot({ date, startTime });
     onSlotSelect?.(date, startTime);
   };
 
@@ -45,7 +44,11 @@ export default function BookingDialog({
         }}
       />
 
-      <DateNavigator />
+      <DateNavigator
+        currentDate={currentDate}
+        onPreviousWeek={onPreviousWeek}
+        onNextWeek={onNextWeek}
+      />
 
       <AvailabilityGrid
         availability={availability}

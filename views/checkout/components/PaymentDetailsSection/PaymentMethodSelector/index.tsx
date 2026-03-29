@@ -11,9 +11,14 @@ type PaymentMethod = PaymentMethodSelectorI["method"]
 interface PaymentMethodSelectorProps {
   selectedMethod: PaymentMethod;
   onMethodChange: (method: PaymentMethod) => void;
+  showCardForm?: boolean;
 }
 
-export default function PaymentMethodSelector({ selectedMethod, onMethodChange }: PaymentMethodSelectorProps) {
+export default function PaymentMethodSelector({
+  selectedMethod,
+  onMethodChange,
+  showCardForm = true,
+}: PaymentMethodSelectorProps) {
   const paymentMethods: Array<{
     method: PaymentMethod;
     label: string;
@@ -45,7 +50,7 @@ export default function PaymentMethodSelector({ selectedMethod, onMethodChange }
         ))}
       </div>
 
-      {selectedMethod === "CARD" && (
+      {selectedMethod === "CARD" && showCardForm && (
         <div className="w-full flex flex-col gap-2">
           <PaymentFormsHeader selectedMethod={selectedMethod} />
           <CardForm />

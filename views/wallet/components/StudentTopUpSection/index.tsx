@@ -10,6 +10,7 @@ import { WalletService } from "@/services/wallet"
 import { useQueryClient } from "@tanstack/react-query"
 import { ChevronRight, LogIn } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
+import { AxiosError } from "axios"
 
 interface StudentTopUpSectionProps {
   open: boolean
@@ -26,7 +27,7 @@ export default function StudentTopUpSection({ open, onOpenChange }: StudentTopUp
   const [expiresAt, setExpiresAt] = useState<string | null>(null)
   const [isPolling, setIsPolling] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const quickAmounts = [50, 100, 200, 500, 1000, 2000]
+  const quickAmounts = [100, 200, 500, 1000, 2000, 5000]
 
   const minimumAmount = 100
   const amountValue = Number(amount || 0)
@@ -51,6 +52,31 @@ export default function StudentTopUpSection({ open, onOpenChange }: StudentTopUp
     setIsSuccess(false)
   }
 
+  const getErrorMessage = (unknownError: unknown, fallback: string) => {
+    if (unknownError instanceof AxiosError) {
+      const data = unknownError.response?.data as {
+        error?: { message?: string | string[] }
+        message?: string | string[]
+      } | undefined
+
+      const message = data?.error?.message ?? data?.message
+
+      if (typeof message === "string" && message.trim()) {
+        return message
+      }
+
+      if (Array.isArray(message) && message.length > 0) {
+        return message[0]
+      }
+    }
+
+    if (unknownError instanceof Error && unknownError.message.trim()) {
+      return unknownError.message
+    }
+
+    return fallback
+  }
+
   const handleAmountChange = (value: string) => {
     const digitsOnly = value.replace(/[^0-9]/g, "")
     setAmount(digitsOnly)
@@ -67,12 +93,28 @@ export default function StudentTopUpSection({ open, onOpenChange }: StudentTopUp
 
     try {
       const response = await createTopup.mutateAsync({ amount: amountValue })
+
+      if (!response.qrCodeUrl) {
+        setError("PromptPay QR code was not returned. Please try again.")
+        setProviderRef(null)
+        setQrCodeUrl(null)
+        setExpiresAt(null)
+        setIsPolling(false)
+        return
+      }
+
       setProviderRef(response.providerRef)
       setQrCodeUrl(response.qrCodeUrl)
       setExpiresAt(response.expiresAt ?? null)
+      setIsSuccess(false)
       setIsPolling(true)
-    } catch {
-      setError("Unable to generate QR code right now. Please try again.")
+    } catch (requestError) {
+      setError(
+        getErrorMessage(
+          requestError,
+          "Unable to generate QR code right now. Please try again.",
+        ),
+      )
     }
   }
 

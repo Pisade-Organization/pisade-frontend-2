@@ -1,7 +1,7 @@
 import Typography from "@/components/base/Typography";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const calendarSlideVariants = {
   enter: (direction: number) => ({
@@ -18,10 +18,15 @@ const calendarSlideVariants = {
   }),
 };
 
-export default function DateCalendar() {
+interface DateCalendarProps {
+  selectedDate: Date;
+  onSelectDate: (date: Date) => void;
+}
+
+export default function DateCalendar({ selectedDate, onSelectDate }: DateCalendarProps) {
   const today = new Date();
   const [displayDate, setDisplayDate] = useState(
-    () => new Date(today.getFullYear(), today.getMonth(), 1),
+    () => new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1),
   );
   const [navigationDirection, setNavigationDirection] = useState(0);
   const currentYear = displayDate.getFullYear();
@@ -42,6 +47,15 @@ export default function DateCalendar() {
     currentYear === today.getFullYear() && currentMonth === today.getMonth();
 
   const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const selectedDayStart = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate(),
+  );
+
+  useEffect(() => {
+    setDisplayDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1));
+  }, [selectedDate]);
 
   const handlePrevMonth = () => {
     setNavigationDirection(-1);
@@ -105,18 +119,24 @@ export default function DateCalendar() {
               const day = index + 1;
               const cellDate = new Date(currentYear, currentMonth, day);
               const isToday = cellDate.getTime() === startOfToday.getTime();
+              const isSelected = cellDate.getTime() === selectedDayStart.getTime();
               const isPast = cellDate.getTime() < startOfToday.getTime();
 
               return (
-                <div key={day} className="w-9 h-9 flex items-center justify-center">
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => onSelectDate(cellDate)}
+                  className="w-9 h-9 flex items-center justify-center"
+                >
                   <Typography
                     variant="body-3"
-                    color={isToday ? "white" : isPast ? "neutral-200" : "neutral-900"}
-                    className={isToday ? "w-9 h-9 rounded-full bg-electric-violet-400 flex items-center justify-center" : ""}
+                    color={isToday || isSelected ? "white" : isPast ? "neutral-200" : "neutral-900"}
+                    className={isToday || isSelected ? "w-9 h-9 rounded-full bg-electric-violet-400 flex items-center justify-center" : ""}
                   >
                     {day}
                   </Typography>
-                </div>
+                </button>
               );
             })}
 

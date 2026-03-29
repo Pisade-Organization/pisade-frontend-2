@@ -67,6 +67,12 @@ export default function StudentDashboardPage() {
         tutorName: nextLesson?.tutor.user.profile?.fullName ?? "",
         avatarUrl: nextLesson?.tutor.user.profile?.avatarUrl ?? "",
         lessonTime: nextLesson ? new Date(nextLesson.scheduledAt) : new Date(),
+        meetingUrl: nextLesson?.meetLink ?? null,
+        canJoin: nextLesson?.canJoin ?? false,
+        joinAvailableAt: nextLesson?.joinAvailableAt
+          ? new Date(nextLesson.joinAvailableAt)
+          : null,
+        actionLabel: "Join class",
         headerText: "Next lesson",
         showNextLessonCard: Boolean(nextLesson),
       }}

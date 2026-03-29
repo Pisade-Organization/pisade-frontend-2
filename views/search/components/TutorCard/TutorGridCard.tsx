@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation"
 
 export default function TutorGridCard({
     id,
+    userId,
     fullName,
     avatarUrl,
     flagUrl,
@@ -50,7 +51,13 @@ export default function TutorGridCard({
                     fullName={fullName}
                     tutorRanking={tutorRanking}
                 />
-                <TutorActionButtons className="hidden xl:flex" tutorId={id} />
+                <TutorActionButtons
+                    className="hidden xl:flex"
+                    tutorId={id}
+                    tutorUserId={userId}
+                    tutorFullName={fullName}
+                    tutorAvatarUrl={avatarUrl}
+                />
             </div>
 
         {/* Info */}
@@ -83,7 +90,13 @@ export default function TutorGridCard({
       {/* 🔽 Bottom Section */}
       <div className="xl:hidden w-full flex flex-col justify-center items-start gap-y-3">
         <div className="w-full border border-neutral-50"></div>
-        <TutorActionButtons className="w-full !justify-between" tutorId={id} />
+        <TutorActionButtons
+            className="w-full !justify-between"
+            tutorId={id}
+            tutorUserId={userId}
+            tutorFullName={fullName}
+            tutorAvatarUrl={avatarUrl}
+        />
       </div>
     </div>
   )

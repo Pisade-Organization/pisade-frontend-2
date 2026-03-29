@@ -18,6 +18,13 @@ interface ClassManagementCardProps {
   description: string
   tutorFullName: string
   tutorAvatarUrl: string
+  meetingUrl: string | null
+  canJoin: boolean
+  joinAvailableAt: Date | null
+  canRescheduleOverride?: boolean
+  canCancelOverride?: boolean
+  joinLabel?: string
+  showSecondaryActions?: boolean
 }
 
 export default function ClassManagementCard({
@@ -30,10 +37,17 @@ export default function ClassManagementCard({
   status,
   description,
   tutorFullName,
-  tutorAvatarUrl
+  tutorAvatarUrl,
+  meetingUrl,
+  canJoin,
+  joinAvailableAt,
+  canRescheduleOverride,
+  canCancelOverride,
+  joinLabel,
+  showSecondaryActions,
 }: ClassManagementCardProps) {
-  const canReschedule = status === LessonStatusType.Upcoming || status === LessonStatusType.Processing
-  const canCancel = status === LessonStatusType.Upcoming || status === LessonStatusType.Processing
+  const canReschedule = canRescheduleOverride ?? (status === LessonStatusType.Upcoming || status === LessonStatusType.Processing)
+  const canCancel = canCancelOverride ?? (status === LessonStatusType.Upcoming || status === LessonStatusType.Processing)
 
   return (
     <div className="border-b border-neutral-50 pb-4 flex flex-col lg:flex-row gap-4 lg:gap-6">
@@ -53,7 +67,16 @@ export default function ClassManagementCard({
 
       {/* CTA buttons section */}
       <div className="lg:flex-shrink-0">
-        <CTA bookingId={bookingId} canReschedule={canReschedule} canCancel={canCancel} />
+        <CTA
+          bookingId={bookingId}
+          canReschedule={canReschedule}
+          canCancel={canCancel}
+          meetingUrl={meetingUrl}
+          canJoin={canJoin}
+          joinAvailableAt={joinAvailableAt}
+          joinLabel={joinLabel}
+          showSecondaryActions={showSecondaryActions}
+        />
       </div>
     </div>    
   )

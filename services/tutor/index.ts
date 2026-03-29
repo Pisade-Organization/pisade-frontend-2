@@ -159,6 +159,7 @@ function normalizeTutor(raw: RawTutor): Tutor {
 
   return {
     id: String(raw.id ?? ""),
+    userId: String(raw.userId ?? ""),
     fullName: String(raw.fullName ?? "Tutor"),
     avatarUrl: String(raw.avatarUrl ?? DEFAULT_AVATAR_URL),
     flagUrl: String(raw.flagUrl ?? DEFAULT_FLAG_URL),

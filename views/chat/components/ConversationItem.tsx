@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import Typography from "@/components/base/Typography"
 import { EllipsisVertical } from "lucide-react"
 import type { ChatConversation } from "../mock"
@@ -15,6 +16,18 @@ function truncateWithDots(value: string, limit = 38) {
 
 export default function ConversationItem({ conversation, isActive, onClick }: ConversationItemProps) {
   const isUnread = conversation.unreadCount > 0
+  const [avatarLoadFailed, setAvatarLoadFailed] = useState(false)
+
+  useEffect(() => {
+    setAvatarLoadFailed(false)
+  }, [conversation.avatarUrl, conversation.id])
+
+  const initialLabel = conversation.name
+    .split(" ")
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
 
   return (
     <button
@@ -30,11 +43,18 @@ export default function ConversationItem({ conversation, isActive, onClick }: Co
     >
       <div className="flex w-full items-start gap-2">
         <div className="relative h-10 w-10 overflow-hidden rounded-full bg-neutral-100">
-          <img
-            src={conversation.avatarUrl}
-            alt={conversation.name}
-            className="h-full w-full object-cover"
-          />
+          {conversation.avatarUrl && !avatarLoadFailed ? (
+            <img
+              src={conversation.avatarUrl}
+              alt={conversation.name}
+              className="h-full w-full object-cover"
+              onError={() => setAvatarLoadFailed(true)}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-neutral-700">
+              {initialLabel}
+            </div>
+          )}
           {conversation.isOnline ? (
             <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border border-white bg-green-500 lg:hidden" />
           ) : null}

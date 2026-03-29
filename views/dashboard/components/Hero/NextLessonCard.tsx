@@ -6,12 +6,22 @@ export default function NextLessonCard({
     tutorName,
     avatarUrl,
     lessonTime,
+    meetingUrl,
+    canJoin,
+    joinAvailableAt,
+    secondaryActionHref,
+    actionLabel,
     headerText
 }: {
     lessonTitle: string
     tutorName: string
     avatarUrl: string
     lessonTime: Date
+    meetingUrl?: string | null
+    canJoin?: boolean
+    joinAvailableAt?: Date | null
+    secondaryActionHref?: string | null
+    actionLabel?: string
     headerText?: string
 }) {
     return (
@@ -28,7 +38,13 @@ export default function NextLessonCard({
                 <CountdownTimer 
                     lessonTime={lessonTime}
                 />
-                <ActionButtons />
+                <ActionButtons
+                    meetingUrl={meetingUrl}
+                    canJoin={canJoin}
+                    joinAvailableAt={joinAvailableAt}
+                    secondaryActionHref={secondaryActionHref}
+                    actionLabel={actionLabel}
+                />
             </div>
 
         </div>

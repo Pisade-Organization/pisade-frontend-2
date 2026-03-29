@@ -28,25 +28,40 @@ export async function getPresignedUrl(
     }
 }
 
-export async function uploadFileToPresignedUrl(uploadUrl: string, file: File): Promise<boolean> {
-    try {
-        const response = await fetch(uploadUrl, {
-            method: 'PUT',
-            body: file,
-            headers: {
-                'Content-Type': file.type,
-            },
-        });
+export async function uploadFileToPresignedUrl(
+    uploadUrl: string,
+    file: File,
+    onProgress?: (progressPercent: number) => void,
+): Promise<boolean> {
+    return new Promise((resolve) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', uploadUrl);
+        xhr.setRequestHeader('Content-Type', file.type);
 
-        if (!response.ok) {
-            throw new Error(`Upload failed with status: ${response.status}`);
-        }
+        xhr.upload.onprogress = (event) => {
+            if (!onProgress || !event.lengthComputable) return;
+            const progress = Math.round((event.loaded / event.total) * 100);
+            onProgress(progress);
+        };
 
-        return true;
-    } catch (error) {
-        console.error('Error uploading file to presigned URL:', error);
-        return false;
-    }
+        xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                onProgress?.(100);
+                resolve(true);
+                return;
+            }
+
+            console.error(`Upload failed with status: ${xhr.status}`);
+            resolve(false);
+        };
+
+        xhr.onerror = () => {
+            console.error('Error uploading file to presigned URL');
+            resolve(false);
+        };
+
+        xhr.send(file);
+    });
 }
 
 export async function deleteObject(key: string) {

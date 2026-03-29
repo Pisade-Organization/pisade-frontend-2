@@ -1,8 +1,8 @@
 export const servicePath = {
     auth: {
       sendMagicLink: "/auth/magic-link", // POST
-      verifyMagicLink: "/auth/verify-magic-link", // GET
-      refresh: "/auth/refresh", // GET
+      verifyMagicLink: "/auth/verify-magic-link", // POST
+      refresh: "/auth/refresh", // POST
     },
     user: {
       getProfile: "/v1/me", // GET
@@ -46,6 +46,12 @@ export const servicePath = {
       checkout: "/bookings/:id/checkout", // POST
       cancel: "/bookings/:id/cancel", // PATCH
       reschedule: "/bookings/:id/reschedule", // PATCH
+    },
+    chat: {
+      getConversations: "/chat/conversations", // GET
+      getMessages: "/chat/messages", // GET
+      sendMessage: "/chat/messages", // POST
+      markMessageRead: "/chat/messages/:id/read", // PATCH
     },
     wallet: {
       getMyWallet: "/wallet/me", // GET
@@ -92,6 +98,13 @@ export const servicePath = {
     upload: {
       getPresignedUrl: '/upload/presigned', // GET
       deleteObject: '/upload/deleteObject' // DELETE
-    }
+    },
+    payments: {
+      getMethods: '/payments/methods', // GET
+      saveMethod: '/payments/methods', // POST
+      removeMethod: '/payments/methods/:id', // DELETE
+      getDefaultMethod: '/payments/methods/default', // GET
+      setDefaultMethod: '/payments/methods/default', // PUT
+    },
   };
   

@@ -14,8 +14,10 @@ import { TutorDetailData } from "@/services/tutor/types"
 import { fetchTutorDetailData } from "@/services/tutor"
 import Loading from "@/components/Loading"
 import BaseButton from "@/components/base/BaseButton"
+import AuthRequiredModal from "@/components/dialogs/AuthRequiredModal"
 import { MessageCircle } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 export default function TutorDetailPage({
     params
@@ -27,6 +29,8 @@ export default function TutorDetailPage({
     const [tutorData, setTutorData] = useState<TutorDetailData | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+    const { status } = useSession()
     const router = useRouter()
     const pathname = usePathname()
     const locale = pathname.split("/")[1] || "en"
@@ -36,7 +40,31 @@ export default function TutorDetailPage({
             return
         }
 
+        if (status !== "authenticated") {
+            setIsAuthModalOpen(true)
+            return
+        }
+
         router.push(`/${locale}/bookings/${tutorData.id}`)
+    }
+
+    const handleMessageClick = () => {
+        if (status !== "authenticated") {
+            setIsAuthModalOpen(true)
+            return
+        }
+
+        if (!tutorData?.userId) {
+            return
+        }
+
+        const query = new URLSearchParams({
+            peerUserId: tutorData.userId,
+            ...(tutorData.fullName ? { peerName: tutorData.fullName } : {}),
+            ...(tutorData.avatarUrl ? { peerAvatarUrl: tutorData.avatarUrl } : {}),
+        })
+
+        router.push(`/${locale}/messages?${query.toString()}`)
     }
 
     useEffect(() => {
@@ -140,6 +168,7 @@ export default function TutorDetailPage({
                             type="button"
                             aria-label="Chat with tutor"
                             className="flex items-center justify-center rounded-[8px] border border-deep-royal-indigo-100 p-[10px]"
+                            onClick={handleMessageClick}
                         >
                             <MessageCircle className="h-6 w-6 text-deep-royal-indigo-500" />
                         </button>
@@ -210,6 +239,11 @@ export default function TutorDetailPage({
                 </div>
 
             </div>
+            <AuthRequiredModal
+                open={isAuthModalOpen}
+                onOpenChange={setIsAuthModalOpen}
+                tutorAvatarUrl={tutorData.avatarUrl}
+            />
             <Footer />
         </div>
     )

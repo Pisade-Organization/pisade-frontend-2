@@ -1,5 +1,6 @@
 export interface Tutor {
   id: string;
+  userId: string;
   fullName: string;
   avatarUrl: string;
   flagUrl: string;

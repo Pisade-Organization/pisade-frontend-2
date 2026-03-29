@@ -10,6 +10,7 @@ import SendMessageBtn from "./SendMessageBtn"
 interface TutorProfileCardProps {
     tutorData: {
         id: string;
+        userId: string;
         avatarUrl: string;
         fullName: string;
         flagUrl: string;
@@ -78,11 +79,15 @@ export default function TutorProfileCard({ tutorData }: TutorProfileCardProps) {
             <div className="hidden lg:block w-full border-b border-neutral-50"></div>
 
             <div className="hidden w-full lg:flex flex-col justify-center items-start gap-2">
-                <BookLessonBtn tutorId={tutorData.id} />
+                <BookLessonBtn tutorId={tutorData.id} tutorAvatarUrl={tutorData.avatarUrl} />
 
                 <div className="w-full flex justify-start items-center gap-2">
-                    <LikeBtn />
-                    <SendMessageBtn />
+                    <LikeBtn tutorAvatarUrl={tutorData.avatarUrl} />
+                    <SendMessageBtn
+                        tutorUserId={tutorData.userId}
+                        tutorFullName={tutorData.fullName}
+                        tutorAvatarUrl={tutorData.avatarUrl}
+                    />
 
                 </div>
 

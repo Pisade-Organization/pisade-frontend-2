@@ -263,7 +263,7 @@ export default function OnboardingStepSix() {
         selectedSource === "recorded" &&
         hasNewVideoUpload
       ) {
-        payload.videoKey = videoKeyRef.current
+        payload.videoKey = videoKeyRef.current ?? undefined
       }
 
       if (
@@ -328,7 +328,7 @@ export default function OnboardingStepSix() {
           setShowChoiceDialog(false)
           setSelectedSource("recorded")
         }}
-        existingVideoUrl={stepSixData?.videoUrl}
+        existingVideoUrl={stepSixData?.videoUrl ?? undefined}
       />
       <VideoRequirements />
       <RecordYourVideo 
@@ -371,7 +371,7 @@ export default function OnboardingStepSix() {
         selectedFile={thumbnailFile}
         onFileChange={handleThumbnailUpload}
         error={thumbnailError}
-        existingImageUrl={stepSixData?.thumbnailUrl}
+        existingImageUrl={stepSixData?.thumbnailUrl ?? undefined}
         videoSource={selectedSource === "recorded" && recordedVideoBlob ? recordedVideoBlob : selectedSource === "recorded" && stepSixData?.videoUrl ? stepSixData.videoUrl : null}
       />
     </div>

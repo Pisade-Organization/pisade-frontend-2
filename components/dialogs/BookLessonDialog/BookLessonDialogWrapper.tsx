@@ -16,6 +16,7 @@ export default function BookLessonDialogWrapper() {
   const [tutorId, setTutorId] = useState<string | null>(null);
   const [tutorData, setTutorData] = useState<TutorDetailData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [currentDate, setCurrentDate] = useState<Date>(() => new Date());
 
   // Check if pathname matches /[locale]/book/[tutorId] or /book/[tutorId] pattern
   useEffect(() => {
@@ -61,6 +62,22 @@ export default function BookLessonDialogWrapper() {
 
   const isOpen = !!tutorId;
 
+  const handlePreviousWeek = () => {
+    setCurrentDate((prev) => {
+      const next = new Date(prev);
+      next.setDate(next.getDate() - 7);
+      return next;
+    });
+  };
+
+  const handleNextWeek = () => {
+    setCurrentDate((prev) => {
+      const next = new Date(prev);
+      next.setDate(next.getDate() + 7);
+      return next;
+    });
+  };
+
   // Prepare booking dialog props
   const bookingProps: BookingDialogI | null = tutorData
     ? {
@@ -79,13 +96,15 @@ export default function BookLessonDialogWrapper() {
         selectedLessonDuration: 25,
         timezone: "Etc/GMT+11",
         utcOffset: "GMT -11:00",
+        currentDate,
+        onPreviousWeek: handlePreviousWeek,
+        onNextWeek: handleNextWeek,
         weekRange: {
-          startDate: new Date().toISOString().split("T")[0],
-          endDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split("T")[0],
+          startDate: buildBookingAvailabilityFromTutor(tutorData.availability, currentDate, "rollingWeek")[0]?.date ?? "",
+          endDate:
+            buildBookingAvailabilityFromTutor(tutorData.availability, currentDate, "rollingWeek")[6]?.date ?? "",
         },
-        availability: buildBookingAvailabilityFromTutor(tutorData.availability),
+        availability: buildBookingAvailabilityFromTutor(tutorData.availability, currentDate, "rollingWeek"),
         isSubmitting: false,
         onContinue: () => {},
         continueDisabled: true,

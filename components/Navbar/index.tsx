@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useMyProfile, useMyWalletSummary } from "@/hooks/settings/queries"
@@ -23,18 +24,27 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
   const currentLocale = pathname?.split('/')?.[1] || ''
   const localePrefix = currentLocale ? `/${currentLocale}` : ''
   const { data, status } = useSession()
+  const [stableSession, setStableSession] = useState(data)
+  const [stableStatus, setStableStatus] = useState(status)
   const { data: myProfile } = useMyProfile()
   const { data: myWalletSummary } = useMyWalletSummary()
-  const userRole = data?.user?.role as Role | undefined
+
+  useEffect(() => {
+    if (status !== "loading") {
+      setStableSession(data)
+      setStableStatus(status)
+    }
+  }, [data, status])
+
+  const sessionData = status === "loading" ? stableSession : data
+  const sessionStatus = status === "loading" ? stableStatus : status
+  const userRole = sessionData?.user?.role as Role | undefined
 
   const onLogoClick = () => router.push("/")
   const onSigninClick = () => router.push("/signin")
   const onBecomeTutorClick = () => router.push("/tutor/signup")
 
-  // Prevent hydration flicker - rely on hydration gate
-  if (status === "loading") return null
-
-  const isAuth = status === "authenticated"
+  const isAuth = sessionStatus === "authenticated"
   const onMessagesClick = () => router.push(`${localePrefix}/messages`)
   const onNavigate = (path: string) => router.push(path)
 
@@ -47,9 +57,9 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
         onLogoClick={onLogoClick}
         onSigninClick={onSigninClick}
         onBecomeTutorClick={onBecomeTutorClick}
-        avatarUrl={data?.user?.avatarUrl}
-        fullName={data?.user?.fullName}
-        email={data?.user?.email}
+        avatarUrl={sessionData?.user?.avatarUrl}
+        fullName={sessionData?.user?.fullName}
+        email={sessionData?.user?.email}
         timezone={myProfile?.profile?.timezone ?? undefined}
         totalBalance={myWalletSummary?.balance ?? 0}
       />
@@ -65,9 +75,9 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
         onNavigate={onNavigate}
         onSigninClick={onSigninClick}
         onMessagesClick={onMessagesClick}
-        avatarUrl={data?.user?.avatarUrl}
-        fullName={data?.user?.fullName}
-        email={data?.user?.email}
+        avatarUrl={sessionData?.user?.avatarUrl}
+        fullName={sessionData?.user?.fullName}
+        email={sessionData?.user?.email}
         timezone={myProfile?.profile?.timezone ?? undefined}
         totalBalance={myWalletSummary?.balance ?? 0}
       />
@@ -83,8 +93,8 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
         onNavigate={onNavigate}
         onSigninClick={onSigninClick}
         onMessagesClick={onMessagesClick}
-        avatarUrl={data?.user?.avatarUrl}
-        fullName={data?.user?.fullName}
+        avatarUrl={sessionData?.user?.avatarUrl}
+        fullName={sessionData?.user?.fullName}
       />
     )
   }

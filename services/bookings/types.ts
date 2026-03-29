@@ -24,6 +24,12 @@ export interface BookingListItem {
     pay: boolean;
     cancel: boolean;
     reschedule: boolean;
+    join: boolean;
+  };
+  meeting?: {
+    url: string | null;
+    canJoin: boolean;
+    joinAvailableAt: string | null;
   };
   createdAt: string;
   updatedAt: string;
@@ -70,6 +76,12 @@ export interface BookingDetail {
     pay: boolean;
     cancel: boolean;
     reschedule: boolean;
+    join: boolean;
+  };
+  meeting?: {
+    url: string | null;
+    canJoin: boolean;
+    joinAvailableAt: string | null;
   };
   createdAt: string;
   expiresAt?: string;
@@ -97,12 +109,20 @@ export interface CreateBookingResponse {
     pay: boolean;
     cancel: boolean;
     reschedule: boolean;
+    join: boolean;
+  };
+  meeting?: {
+    url: string | null;
+    canJoin: boolean;
+    joinAvailableAt: string | null;
   };
 }
 
 export interface CheckoutBookingDto {
   method: "PROMPTPAY" | "CARD";
   paymentMethodId?: string;
+  savedPaymentMethodId?: string;
+  savePaymentMethod?: boolean;
 }
 
 export interface CancelBookingDto {

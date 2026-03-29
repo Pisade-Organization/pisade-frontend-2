@@ -16,6 +16,10 @@ export default function VerifyPage() {
       if (!token) return setStatus("error");
 
       try {
+        if (typeof window !== "undefined") {
+          window.history.replaceState({}, "", pathname ?? "/");
+        }
+
         const result = await signIn("magicLink", {
           token,
           redirect: false,

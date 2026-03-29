@@ -29,6 +29,9 @@ const MOCK_CLASSES = [
     description: "Zoom lesson with speaking drills and pronunciation feedback.",
     tutorFullName: "Emma Collins",
     tutorAvatarUrl: "https://i.pravatar.cc/150?img=5",
+    meetingUrl: null,
+    canJoin: false,
+    joinAvailableAt: null,
   },
   {
     id: "class-002",
@@ -41,6 +44,9 @@ const MOCK_CLASSES = [
     description: "Payment pending. Your seat is reserved until checkout completes.",
     tutorFullName: "Nathan Lee",
     tutorAvatarUrl: "https://i.pravatar.cc/150?img=12",
+    meetingUrl: null,
+    canJoin: false,
+    joinAvailableAt: null,
   },
   {
     id: "class-003",
@@ -53,6 +59,9 @@ const MOCK_CLASSES = [
     description: "Completed successfully. Band estimate: 6.5 to 7.0.",
     tutorFullName: "Sophia Nguyen",
     tutorAvatarUrl: "https://i.pravatar.cc/150?img=32",
+    meetingUrl: null,
+    canJoin: false,
+    joinAvailableAt: null,
   },
   {
     id: "class-004",
@@ -65,6 +74,9 @@ const MOCK_CLASSES = [
     description: "Cancelled by student due to schedule conflict.",
     tutorFullName: "Daniel Park",
     tutorAvatarUrl: "https://i.pravatar.cc/150?img=18",
+    meetingUrl: null,
+    canJoin: false,
+    joinAvailableAt: null,
   },
 ]
 
@@ -79,6 +91,9 @@ interface ClassCardItem {
   description: string
   tutorFullName: string
   tutorAvatarUrl: string
+  meetingUrl: string | null
+  canJoin: boolean
+  joinAvailableAt: Date | null
 }
 
 function mapLessonStatus(status: string): LessonStatusType | null {
@@ -124,6 +139,11 @@ function mapBookingToClassCard(booking: BookingListItem): ClassCardItem | null {
     description: buildDescription(booking.status),
     tutorFullName: tutorName,
     tutorAvatarUrl: avatarUrl,
+    meetingUrl: booking.meeting?.url ?? null,
+    canJoin: booking.allowedActions.join && Boolean(booking.meeting?.canJoin),
+    joinAvailableAt: booking.meeting?.joinAvailableAt
+      ? new Date(booking.meeting.joinAvailableAt)
+      : null,
   }
 }
 
@@ -207,6 +227,9 @@ export default function ClassManagementPage({
                   description={classItem.description}
                   tutorFullName={classItem.tutorFullName}
                   tutorAvatarUrl={classItem.tutorAvatarUrl}
+                  meetingUrl={classItem.meetingUrl}
+                  canJoin={classItem.canJoin}
+                  joinAvailableAt={classItem.joinAvailableAt}
                 />
               ))}
 

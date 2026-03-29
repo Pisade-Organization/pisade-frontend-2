@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import type { AxiosError } from "axios";
 import { X } from "lucide-react";
 import BookingDialog from "@/components/dialogs/BookLessonDialog/index";
 import { fetchTutorDetailData } from "@/services/tutor";
@@ -16,8 +17,57 @@ import TimezoneSelector from "@/components/dialogs/BookLessonDialog/TimezoneSele
 import DateNavigator from "@/components/dialogs/BookLessonDialog/DateNavigator";
 import AvailabilityGrid from "@/components/dialogs/BookLessonDialog/AvailabilityGrid";
 import BookingFooter from "@/components/dialogs/BookLessonDialog/BookingFooter";
+import TopToast from "@/components/shared/TopToast";
 import { buildBookingAvailabilityFromTutor } from "@/lib/bookingAvailability";
 import { useCreateBooking } from "@/hooks/bookings/mutations";
+
+type BookingApiError = {
+  code?: string;
+  message?: string | string[];
+  error?: {
+    code?: string;
+    message?: string | string[];
+    details?: {
+      code?: string;
+      message?: string | string[];
+    };
+  };
+};
+
+function getBookingErrorMessage(error: unknown): string {
+  const axiosError = error as AxiosError<BookingApiError>;
+  const payload = axiosError.response?.data;
+  const apiError = payload?.error;
+  const code =
+    apiError?.code ??
+    apiError?.details?.code ??
+    payload?.code;
+
+  switch (code) {
+    case "START_TIME_IN_PAST":
+      return "This lesson time has already passed. Please choose a later slot.";
+    case "BOOKING_TOO_SOON":
+      return "Lessons must be booked at least 2 hours in advance.";
+    case "SLOT_UNAVAILABLE":
+      return "This slot is no longer available. Please choose another time.";
+    case "END_TIME_BEFORE_START_TIME":
+      return "Please choose a valid lesson time.";
+    case "INVALID_DURATION":
+      return "Please choose a valid lesson duration.";
+    default: {
+      const message = apiError?.message ?? apiError?.details?.message ?? payload?.message;
+      if (typeof message === "string" && message.trim()) {
+        return message;
+      }
+
+      if (Array.isArray(message) && message.length > 0) {
+        return message[0];
+      }
+
+      return "Unable to continue right now. Please try another time slot.";
+    }
+  }
+}
 
 export default function Booking() {
   const params = useParams();
@@ -27,8 +77,20 @@ export default function Booking() {
   const [tutorData, setTutorData] = useState<TutorDetailData | null>(null);
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const createBookingMutation = useCreateBooking();
+
+  useEffect(() => {
+    if (!toastMessage) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setToastMessage(null);
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [toastMessage]);
 
   // Check if mobile
   useEffect(() => {
@@ -65,13 +127,32 @@ export default function Booking() {
   const [selectedSlot, setSelectedSlot] = useState<{ date: string; startTime: string } | null>(null);
   const [timezone, setTimezone] = useState("Etc/GMT+11");
   const [selectedLessonDuration, setSelectedLessonDuration] = useState(50); // Default to 50 minutes
+  const [currentDate, setCurrentDate] = useState<Date>(() => new Date());
+
+  const handlePreviousWeek = () => {
+    setSelectedSlot(null);
+    setCurrentDate((prev) => {
+      const next = new Date(prev);
+      next.setDate(next.getDate() - 7);
+      return next;
+    });
+  };
+
+  const handleNextWeek = () => {
+    setSelectedSlot(null);
+    setCurrentDate((prev) => {
+      const next = new Date(prev);
+      next.setDate(next.getDate() + 7);
+      return next;
+    });
+  };
 
   const handleContinueToCheckout = async () => {
     if (!selectedSlot || !tutorData?.id) {
       return;
     }
 
-    setSubmitError(null);
+    setToastMessage(null);
 
     const lessonStart = new Date(`${selectedSlot.date}T${selectedSlot.startTime}:00`);
     const lessonEnd = new Date(lessonStart.getTime() + selectedLessonDuration * 60 * 1000);
@@ -86,13 +167,17 @@ export default function Booking() {
       router.push(`/${locale}/checkout/${booking.id}`);
     } catch (error) {
       console.error("Failed to create booking:", error);
-      setSubmitError("Unable to continue right now. Please try another time slot.");
+      setToastMessage(getBookingErrorMessage(error));
     }
   };
 
   const bookingAvailability = useMemo<BookingDialogI["availability"]>(() => {
-    return buildBookingAvailabilityFromTutor(tutorData?.availability ?? {});
-  }, [tutorData?.availability]);
+    return buildBookingAvailabilityFromTutor(
+      tutorData?.availability ?? {},
+      currentDate,
+      "rollingWeek",
+    );
+  }, [currentDate, tutorData?.availability]);
 
   // Calculate lesson details from selected slot
   const lessonDetails = useMemo(() => {
@@ -144,11 +229,12 @@ export default function Booking() {
         selectedLessonDuration: 25,
         timezone: timezone,
         utcOffset: "GMT -11:00",
+        currentDate,
+        onPreviousWeek: handlePreviousWeek,
+        onNextWeek: handleNextWeek,
         weekRange: {
-          startDate: new Date().toISOString().split("T")[0],
-          endDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split("T")[0],
+          startDate: bookingAvailability[0]?.date ?? "",
+          endDate: bookingAvailability[bookingAvailability.length - 1]?.date ?? "",
         },
         availability: bookingAvailability,
         selectedSlot: selectedSlot || undefined,
@@ -163,6 +249,10 @@ export default function Booking() {
   if (!isMobile) {
     return (
       <>
+        {toastMessage ? (
+          <TopToast message={toastMessage} onClose={() => setToastMessage(null)} />
+        ) : null}
+
         {/* Desktop Navbar */}
         <div className="hidden lg:block">
           <Navbar variant="student_dashboard" />
@@ -216,17 +306,17 @@ export default function Booking() {
                   onTimezoneChange={(tz) => setTimezone(tz)}
                 />
 
-                <DateNavigator />
+                <DateNavigator
+                  currentDate={currentDate}
+                  onPreviousWeek={handlePreviousWeek}
+                  onNextWeek={handleNextWeek}
+                />
 
                 <AvailabilityGrid
                   availability={bookingAvailability}
                   selectedSlot={selectedSlot || undefined}
                   onSlotSelect={(date, startTime) => setSelectedSlot({ date, startTime })}
                 />
-
-                {submitError && (
-                  <p className="text-sm text-red-500">{submitError}</p>
-                )}
 
                 <BookingFooter
                   onContinue={handleContinueToCheckout}
@@ -264,6 +354,10 @@ export default function Booking() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
+          {toastMessage ? (
+            <TopToast message={toastMessage} onClose={() => setToastMessage(null)} />
+          ) : null}
+
           {loading ? (
             <div className="flex justify-center items-center h-full">
               <p className="text-neutral-600">Loading...</p>

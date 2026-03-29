@@ -18,8 +18,11 @@ export interface StudentDashboardSummary {
 export interface StudentLesson {
   id: string;
   scheduledAt: string;
+  endAt?: string;
   status: string;
   meetLink: string | null;
+  canJoin?: boolean;
+  joinAvailableAt?: string | null;
   duration: number;
   timezone: string;
   tutor: {

@@ -34,6 +34,10 @@ export interface BookingDialogI {
   timezone: string; // "Etc/GMT+11"
   utcOffset: string; // "GMT -11:00"
 
+  currentDate: Date;
+  onPreviousWeek: () => void;
+  onNextWeek: () => void;
+
   weekRange: {
     startDate: string; // "2025-09-24"
     endDate: string;   // "2025-09-30"

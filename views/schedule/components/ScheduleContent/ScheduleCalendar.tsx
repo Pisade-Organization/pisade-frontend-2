@@ -1,157 +1,124 @@
 import Typography from "@/components/base/Typography"
-import { useEffect, useMemo, useState } from "react"
+import type { BookingListItem } from "@/services/bookings/types"
+import ClassManagementCard from "@/views/class-management/components/ClassManagementCard"
+import { LessonStatusType } from "@/views/class-management/components/ClassManagementCard/LessonStatus/types"
 
-const START_HOUR = 7
-const END_HOUR = 13
-const SLOT_INTERVAL_MINUTES = 15
+type ScheduleRole = "student" | "tutor"
 
-function formatHourLabel(hour: number) {
-  return `${String(hour).padStart(2, "0")}:00`
+interface ScheduleCalendarProps {
+  bookings: BookingListItem[]
+  isLoading: boolean
+  isError: boolean
+  role: ScheduleRole
+  selectedDate: Date
 }
 
-function formatMinutesAsTime(minutes: number) {
-  const clamped = Math.max(0, Math.min(24 * 60 - 1, minutes))
-  const hours = Math.floor(clamped / 60)
-  const mins = clamped % 60
-  return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`
+function mapLessonStatus(status: string): LessonStatusType | null {
+  if (status === "CONFIRMED") return LessonStatusType.Upcoming
+  if (status === "PENDING_PAYMENT") return LessonStatusType.Processing
+  if (status === "COMPLETED") return LessonStatusType.Completed
+  if (status === "CANCELLED") return LessonStatusType.Cancelled
+  return null
 }
 
-export default function ScheduleCalendar() {
-  const [currentDateTime, setCurrentDateTime] = useState(() => new Date())
-  const [isCreateSlotOpen, setIsCreateSlotOpen] = useState(false)
-  const [slotTime, setSlotTime] = useState("")
+function buildDescription(status: string): string {
+  if (status === "CONFIRMED") return "Your class is confirmed. Join when the room opens."
+  if (status === "PENDING_PAYMENT") return "Payment is still pending for this reservation."
+  if (status === "COMPLETED") return "This class has been completed."
+  if (status === "CANCELLED") return "This class was cancelled."
+  return ""
+}
 
-  const startMinutes = START_HOUR * 60
-  const endMinutes = END_HOUR * 60
-  const nowMinutes = currentDateTime.getHours() * 60 + currentDateTime.getMinutes()
-  const totalRangeMinutes = endMinutes - startMinutes
-  const isWithinWorkingHours = nowMinutes >= startMinutes && nowMinutes <= endMinutes
+function formatSelectedDate(date: Date) {
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  })
+}
 
-  const currentLineTopPercentage =
-    ((nowMinutes - startMinutes) / totalRangeMinutes) * 100
+export default function ScheduleCalendar({
+  bookings,
+  isLoading,
+  isError,
+  role,
+  selectedDate,
+}: ScheduleCalendarProps) {
+  const visibleBookings = bookings.filter((booking) => {
+    if (role === "student") {
+      return booking.status !== "EXPIRED" && mapLessonStatus(booking.status) !== null
+    }
 
-  const timelineHours = useMemo(
-    () => Array.from({ length: END_HOUR - START_HOUR + 1 }, (_, index) => START_HOUR + index),
-    [],
-  )
+    return mapLessonStatus(booking.status) !== null
+  })
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentDateTime(new Date())
-    }, 60000)
+  if (isLoading) {
+    return (
+      <section className="rounded-xl border border-neutral-50 bg-white p-6">
+        <Typography variant="body-2" color="neutral-500">Loading schedule...</Typography>
+      </section>
+    )
+  }
 
-    return () => clearInterval(intervalId)
-  }, [])
+  if (isError) {
+    return (
+      <section className="rounded-xl border border-red-100 bg-red-25 p-6">
+        <Typography variant="body-2" color="red-normal">
+          Unable to load this day&apos;s schedule right now.
+        </Typography>
+      </section>
+    )
+  }
 
-  const handleOpenCreateSlot = () => {
-    const nearestQuarterHour = Math.round(nowMinutes / SLOT_INTERVAL_MINUTES) * SLOT_INTERVAL_MINUTES
-    const boundedMinutes = Math.max(startMinutes, Math.min(endMinutes, nearestQuarterHour))
-    setSlotTime(formatMinutesAsTime(boundedMinutes))
-    setIsCreateSlotOpen(true)
+  if (visibleBookings.length === 0) {
+    return (
+      <section className="rounded-xl border border-neutral-50 bg-white p-6">
+        <Typography variant="title-2" color="neutral-900">
+          No classes on {formatSelectedDate(selectedDate)}
+        </Typography>
+        <Typography variant="body-2" color="neutral-500" className="mt-2">
+          {role === "tutor"
+            ? "New bookings for this day will show up here automatically."
+            : "Your booked and pending lessons for this day will appear here."}
+        </Typography>
+      </section>
+    )
   }
 
   return (
-    <section className="rounded-xl border border-neutral-50 bg-white">
-      <div className="grid grid-cols-[92px_minmax(0,1fr)]">
-        <div className="relative h-[760px] border-r border-neutral-50">
-          {timelineHours.map((hour, index) => {
-            const isFirst = index === 0
-            const isLast = index === timelineHours.length - 1
-            const topPercentage = (index / (timelineHours.length - 1)) * 100
+    <section className="rounded-xl border border-neutral-50 bg-white p-4 lg:p-6">
+      <div className="flex flex-col gap-4">
+        {visibleBookings.map((booking) => {
+          const mappedStatus = mapLessonStatus(booking.status) as LessonStatusType
 
-            return (
-              <div
-                key={hour}
-                className={`absolute left-0 right-0 px-8 ${isFirst ? "translate-y-0" : isLast ? "-translate-y-full" : "-translate-y-1/2"}`}
-                style={{ top: `${topPercentage}%` }}
-              >
-                <Typography variant="title-3" color="neutral-300" className={isFirst ? "pt-5" : ""}>
-                  {formatHourLabel(hour)}
-                </Typography>
-              </div>
-            )
-          })}
-        </div>
+          const counterparty = role === "student" ? booking.tutor : booking.student
+          const name = counterparty?.name ?? (role === "student" ? "Tutor" : "Student")
+          const avatarUrl = counterparty?.avatarUrl ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`
 
-        <div className="relative h-[760px]">
-          {timelineHours.map((hour, index) => {
-            const topPercentage = (index / (timelineHours.length - 1)) * 100
-
-            return (
-              <div
-                key={hour}
-                className="absolute inset-x-0 border-t border-neutral-50"
-                style={{ top: `${topPercentage}%` }}
-              />
-            )
-          })}
-
-          {isWithinWorkingHours ? (
-            <div
-              className="absolute inset-x-0"
-              style={{ top: `${Math.max(0, Math.min(100, currentLineTopPercentage))}%` }}
-            >
-              <div className="relative h-0">
-                <div className="absolute inset-x-0 h-[2px] -translate-y-1/2 bg-electric-violet-400" />
-                <div className="absolute left-0 top-0 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-electric-violet-400" />
-                <button
-                  type="button"
-                  onClick={handleOpenCreateSlot}
-                  className="absolute left-1/2 top-0 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-electric-violet-400 text-title-2 text-white"
-                  aria-label="Create slot"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          ) : null}
-        </div>
+          return (
+            <ClassManagementCard
+              key={booking.id}
+              bookingId={booking.id}
+              avatarUrl={avatarUrl}
+              date={new Date(booking.schedule.startTime)}
+              title={`Class with ${name}`}
+              startTime={new Date(booking.schedule.startTime)}
+              endTime={new Date(booking.schedule.endTime)}
+              status={mappedStatus}
+              description={buildDescription(booking.status)}
+              tutorFullName={name}
+              tutorAvatarUrl={avatarUrl}
+              meetingUrl={booking.meeting?.url ?? null}
+              canJoin={booking.meeting?.canJoin ?? booking.allowedActions.join}
+              joinAvailableAt={booking.meeting?.joinAvailableAt ? new Date(booking.meeting.joinAvailableAt) : null}
+              canRescheduleOverride={role === "student" ? booking.allowedActions.reschedule : false}
+              canCancelOverride={role === "student" ? booking.allowedActions.cancel : false}
+              joinLabel={role === "student" ? "Join class" : "Join class link"}
+              showSecondaryActions={role === "student"}
+            />
+          )
+        })}
       </div>
-
-      {isCreateSlotOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-          <div className="w-full max-w-sm rounded-xl border border-neutral-50 bg-white p-5 shadow-xl">
-            <Typography variant="title-2" color="neutral-900">
-              Create Slot
-            </Typography>
-            <Typography variant="body-3" color="neutral-300" className="mt-2">
-              Prefilled with your current local time (nearest 15 minutes).
-            </Typography>
-
-            <div className="mt-4 flex flex-col gap-2">
-              <Typography variant="label-3" color="neutral-700">
-                Start time
-              </Typography>
-              <input
-                type="time"
-                step={SLOT_INTERVAL_MINUTES * 60}
-                min={formatHourLabel(START_HOUR)}
-                max={formatHourLabel(END_HOUR)}
-                value={slotTime}
-                onChange={(event) => setSlotTime(event.target.value)}
-                className="h-11 rounded-lg border border-neutral-100 px-3 text-body-3 text-neutral-900 outline-none focus:border-electric-violet-400"
-              />
-            </div>
-
-            <div className="mt-5 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsCreateSlotOpen(false)}
-                className="h-10 rounded-lg border border-neutral-100 px-4 text-label-3 text-neutral-700"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsCreateSlotOpen(false)}
-                className="h-10 rounded-lg bg-electric-violet-400 px-4 text-label-3 text-white"
-              >
-                Create
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </section>
   )
 }
