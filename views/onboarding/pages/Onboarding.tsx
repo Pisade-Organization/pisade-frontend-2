@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCurrentStep } from "@/hooks/tutors/onboarding/queries/useCurrentStep";
 import LoadingPage from "@/components/LoadingPage";
 import { useSession } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 import Navbar from "../component/Navbar";
@@ -90,6 +90,7 @@ export default function OnboardingPage() {
   const { status } = useSession()
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const locale = pathname?.split("/")?.[1]
   const safeLocale = locale === "en" || locale === "th" ? locale : "en"
 
@@ -114,7 +115,9 @@ export default function OnboardingPage() {
     return <LoadingPage />
   }
 
-  const initialStep = currentStepData?.currentStep || 1
+  const requestedStep = Number(searchParams.get("step"))
+  const hasRequestedStep = Number.isInteger(requestedStep) && requestedStep >= 1 && requestedStep <= 9
+  const initialStep = hasRequestedStep ? requestedStep : currentStepData?.currentStep || 1
 
   if (isLoadingCurrentStep) {
     return <LoadingPage />

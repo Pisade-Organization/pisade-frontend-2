@@ -1,4 +1,3 @@
-// middleware.ts
 import { type NextRequest, NextResponse } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
@@ -94,13 +93,11 @@ function getRoleHome(locale: string, role?: Role, onboardingStatus?: string): st
   return `/${locale}`;
 }
 
-// Create the middleware from your routing config
 const handleI18nRouting = createIntlMiddleware(routing);
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // ✅ If path does not start with a supported locale, redirect to default (/en)
   if (!pathname.startsWith("/en") && !pathname.startsWith("/th")) {
     const url = request.nextUrl.clone();
     url.pathname = `/en${pathname === "/" ? "" : pathname}`;
@@ -164,19 +161,15 @@ export async function middleware(request: NextRequest) {
     matchesRoute(withoutLocale, route),
   );
 
-  if (isAuthOnlyRoute) {
-    if (!token) {
-      const url = request.nextUrl.clone();
-      url.pathname = `/${locale}/signin`;
-      return NextResponse.redirect(url);
-    }
+  if (isAuthOnlyRoute && !token) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${locale}/signin`;
+    return NextResponse.redirect(url);
   }
 
-  // 🌐 Let next-intl handle locale routing (e.g. /en, /th)
   return handleI18nRouting(request);
 }
 
-// ✅ Match all routes except Next.js internals and static assets
 export const config = {
   matcher: [
     "/((?!api|_next|_vercel|.*\\..*).*)",

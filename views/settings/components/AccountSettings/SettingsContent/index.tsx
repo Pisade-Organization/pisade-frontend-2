@@ -3,8 +3,9 @@ import Notifications from "../modules/Notifications"
 import General from "../modules/General"
 import PaymentHistory from "../modules/PaymentHistory"
 import BillingMethods from "../modules/BillingMethods"
+import IdentityVerification from "../modules/IdentityVerification"
 
-export type SettingsContentType = "general" | "payment-method" | "payment-history" | "notifications" | "billing-methods"
+export type SettingsContentType = "general" | "payment-method" | "payment-history" | "notifications" | "billing-methods" | "identity-verification"
 
 interface SettingsContentProps {
   type: SettingsContentType
@@ -53,7 +54,10 @@ export default function SettingsContent({
     
     case "billing-methods":
       return <BillingMethods />
-    
+
+    case "identity-verification":
+      return <IdentityVerification />
+
     case "notifications":
       if (!notificationsProps) {
         return <div>Notifications settings - props required</div>

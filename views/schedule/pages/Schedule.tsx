@@ -7,26 +7,13 @@ import SidebarLayout from "../components/SidebarLayout"
 import ScheduleContent from "../components/ScheduleContent"
 import { useBookings } from "@/hooks/bookings/queries"
 import { useMyProfile, useMyWalletSummary, useTutorWalletSummary } from "@/hooks/settings/queries"
+import { getVisibleRange, shiftDate, type CalendarView } from "../components/ScheduleContent/calendar.utils"
 
 type ScheduleRole = "student" | "tutor"
 
 type SchedulePageProps = {
   navbarVariant?: "student_dashboard" | "tutor_dashboard"
   role?: ScheduleRole
-}
-
-function getDayRange(date: Date) {
-  const start = new Date(date)
-  start.setHours(0, 0, 0, 0)
-
-  const end = new Date(start)
-  end.setDate(end.getDate() + 1)
-  end.setMilliseconds(end.getMilliseconds() - 1)
-
-  return {
-    from: start.toISOString(),
-    to: end.toISOString(),
-  }
 }
 
 function formatCurrency(value: number) {
@@ -42,8 +29,16 @@ export default function SchedulePage({
   role = "student",
 }: SchedulePageProps) {
   const [selectedDate, setSelectedDate] = useState(() => new Date())
+  const [activeView, setActiveView] = useState<CalendarView>("week")
 
-  const { from, to } = useMemo(() => getDayRange(selectedDate), [selectedDate])
+  const { from, to } = useMemo(() => {
+    const range = getVisibleRange(selectedDate, activeView)
+
+    return {
+      from: range.from.toISOString(),
+      to: range.to.toISOString(),
+    }
+  }, [selectedDate, activeView])
   const { data: bookingsData, isLoading, isError } = useBookings({ from, to, limit: 100 })
   const { data: profile } = useMyProfile()
   const { data: walletSummary } = useMyWalletSummary(role === "student")
@@ -66,19 +61,11 @@ export default function SchedulePage({
   }
 
   const handlePreviousDay = () => {
-    setSelectedDate((prev) => {
-      const next = new Date(prev)
-      next.setDate(next.getDate() - 1)
-      return next
-    })
+    setSelectedDate((prev) => shiftDate(prev, activeView, -1))
   }
 
   const handleNextDay = () => {
-    setSelectedDate((prev) => {
-      const next = new Date(prev)
-      next.setDate(next.getDate() + 1)
-      return next
-    })
+    setSelectedDate((prev) => shiftDate(prev, activeView, 1))
   }
 
   return (
@@ -114,6 +101,9 @@ export default function SchedulePage({
             isLoading={isLoading}
             isError={isError}
             role={role}
+            view={activeView}
+            onViewChange={setActiveView}
+            onSelectDate={handleSelectDate}
           />
         </section>
 
@@ -137,6 +127,9 @@ export default function SchedulePage({
             isLoading={isLoading}
             isError={isError}
             role={role}
+            view={activeView}
+            onViewChange={setActiveView}
+            onSelectDate={handleSelectDate}
           />
         </section>
       </main>

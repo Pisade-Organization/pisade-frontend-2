@@ -1,7 +1,7 @@
 "use client"
 import Navbar from "@/components/Navbar"
 import AccountSettingsLayout from "@/views/settings/components/AccountSettings/AccountSettingsLayout"
-import { Settings, CreditCard, Clock, Bell } from "lucide-react"
+import { Settings, CreditCard, Bell, ShieldCheck } from "lucide-react"
 import SettingsContent, { SettingsContentType } from "../components/AccountSettings/SettingsContent"
 import { usePathname } from "next/navigation"
 import { useMemo } from "react"
@@ -24,6 +24,11 @@ const tutorSidebarItems = [
     icon: <CreditCard />,
   },
   {
+    label: "Identity Verification",
+    href: "/settings/tutor/identity-verification",
+    icon: <ShieldCheck />,
+  },
+  {
     label: "Notifications",
     href: "/settings/tutor/notifications",
     icon: <Bell />,
@@ -40,6 +45,7 @@ export default function TutorSettingsPage() {
   // Map pathname to settings type
   const settingsType = useMemo<SettingsContentType>(() => {
     if (pathname?.includes("/billing-methods")) return "billing-methods"
+    if (pathname?.includes("/identity-verification")) return "identity-verification"
     if (pathname?.includes("/notifications")) return "notifications"
     return "general" // default to general
   }, [pathname])
