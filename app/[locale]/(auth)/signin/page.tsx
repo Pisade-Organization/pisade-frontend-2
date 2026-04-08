@@ -1,8 +1,5 @@
-import SigninPage from "@/views/auth/pages/Signin";
+import { notFound } from "next/navigation"
+
 export default function Signin() {
-    return (
-
-        <SigninPage />
-
-    );
+  notFound()
 }

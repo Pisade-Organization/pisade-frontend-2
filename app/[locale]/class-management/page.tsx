@@ -1,5 +1,5 @@
-import ClassManagementPage from "@/views/class-management/pages/ClassManagement"
+import { notFound } from "next/navigation"
 
 export default function ClassManagement() {
-  return <ClassManagementPage />
+  notFound()
 }

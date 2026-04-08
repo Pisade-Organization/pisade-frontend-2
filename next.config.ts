@@ -1,5 +1,6 @@
 import { NextConfig } from 'next';
-import createNextIntlPlugin from 'next-intl/plugin';
+
+const createNextIntlPlugin = require('next-intl/plugin');
 
 const nextConfig: NextConfig = {
   images: {

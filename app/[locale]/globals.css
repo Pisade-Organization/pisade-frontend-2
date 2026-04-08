@@ -17,8 +17,10 @@
 
 .search-input-outline {
   position: relative;
-  border-radius: 12px; /* match your design */
-  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  background: linear-gradient(90.6deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.24) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .search-input-outline::before {
@@ -45,6 +47,21 @@
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: destination-out;
   pointer-events: none; /* make sure it doesn't block clicks */
+}
+
+.test-border {
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(transparent, transparent) padding-box,
+    linear-gradient(
+      110.21deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 250, 203, 0.76) 57%,
+      rgba(255, 57, 57, 0.1) 72%,
+      rgba(255, 255, 255, 0.85) 100%
+    ) border-box;
 }
 
 .glass-card {

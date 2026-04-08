@@ -4,7 +4,7 @@ import { SparkIcon } from "../icons"
 export default function FooterNewsletter() {
     return (
         <div
-            className="search-input-outline overflow-hidden relative flex flex-col max-w-[628px] w-full h-[333px] justify-center items-start px-10 py-9 gap-y-5 rounded-[12px]"
+            className="overflow-hidden relative flex flex-col max-w-[628px] w-full h-[333px] justify-center items-start px-10 py-9 gap-y-5 rounded-[12px]"
             style={{
             background:
                 "linear-gradient(90.6deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.24) 100%)",

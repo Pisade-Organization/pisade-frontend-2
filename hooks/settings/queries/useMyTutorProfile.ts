@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import { TutorService } from "@/services/tutor";
+import { TutorService } from "@/services/tutor/private";
 import type { MyTutorProfile } from "@/services/tutor/types";
 import { settingsQueryKeys } from "../queryKeys";
 

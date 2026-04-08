@@ -1,6 +1,5 @@
-import TutorSignUpPage from "@/views/auth/pages/TutorSignUp"
+import { notFound } from "next/navigation"
+
 export default function TutorSignUp() {
-    return (
-        <TutorSignUpPage />
-    )
+  notFound()
 }
