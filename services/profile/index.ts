@@ -1,6 +1,7 @@
 import apiInstanceClient from "@/services/apiInstanceClient";
 import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiResponse";
 import { servicePath } from "@/services/servicePath";
+import { resolveMediaUrl } from "@/lib/media";
 import type {
   DeleteMyAccountResponse,
   LinkGoogleProviderDto,
@@ -23,7 +24,17 @@ export const ProfileService = {
       servicePath.profile.getMyProfile,
     );
 
-    return unwrapApiResponse(response.data);
+    const profile = unwrapApiResponse(response.data);
+
+    return {
+      ...profile,
+      profile: profile.profile
+        ? {
+            ...profile.profile,
+            avatarUrl: resolveMediaUrl(profile.profile.avatarUrl),
+          }
+        : null,
+    };
   },
 
   async updateMyProfile(payload: UpdateMyProfileDto): Promise<UpdateMyProfileResponse> {
@@ -31,7 +42,17 @@ export const ProfileService = {
       ApiSuccessResponse<UpdateMyProfileResponse> | UpdateMyProfileResponse
     >(servicePath.profile.updateMyProfile, payload);
 
-    return unwrapApiResponse(response.data);
+    const result = unwrapApiResponse(response.data);
+
+    return {
+      ...result,
+      profile: result.profile
+        ? {
+            ...result.profile,
+            avatarUrl: resolveMediaUrl(result.profile.avatarUrl),
+          }
+        : result.profile,
+    };
   },
 
   async updateMyPhoneNumber(

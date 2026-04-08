@@ -5,6 +5,7 @@ import axiosBase, { AxiosError } from "axios";
 import dayjs from "dayjs";
 import { jwtDecode } from "jwt-decode";
 import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiResponse";
+import { resolveMediaUrl } from "@/lib/media";
 
 declare module "next-auth" {
   interface User {
@@ -469,7 +470,7 @@ export const authOptions: NextAuthOptions = {
         token.role = (user as any).role ?? decoded.role;
         token.onboardingStatus = (user as any).onboardingStatus ?? decoded.onboardingStatus;
         token.fullName = (user as any).fullName;
-        token.avatarUrl = (user as any).avatarUrl;
+        token.avatarUrl = resolveMediaUrl((user as any).avatarUrl);
 
         token.access_token = access_token;
         token.refresh_token = refresh_token;
@@ -525,7 +526,7 @@ export const authOptions: NextAuthOptions = {
             token.role = data.user.role ?? token.role;
             token.onboardingStatus = data.user.onboardingStatus ?? token.onboardingStatus;
             token.fullName = data.user.fullName ?? token.fullName;
-            token.avatarUrl = data.user.avatarUrl ?? token.avatarUrl;
+            token.avatarUrl = resolveMediaUrl(data.user.avatarUrl) || token.avatarUrl;
             logAuth("info", "Token refreshed with user data", {
               accessTokenExp: token.accessTokenExp,
               updatedFields: Object.keys(data.user),
