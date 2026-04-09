@@ -69,6 +69,10 @@ export interface MyTutorProfile {
   subjects: MyTutorSubject[];
   baseRate: number;
   availabilities: MyTutorAvailability[];
+  tutorRanking?: "STARTER" | "PRO" | "MASTER" | null;
+  avgRating?: number;
+  studentsCount?: number;
+  lessonsCount?: number;
 }
 
 export interface UpdateMyTutorProfileDto {

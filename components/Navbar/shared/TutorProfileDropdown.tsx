@@ -26,8 +26,8 @@ export default function TutorProfileDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button" className="rounded-full">
-          <UserAvatar avatarUrl={avatarUrl} fullName={fullName} size={44} />
+        <button type="button" className="flex h-11 w-11 items-center justify-center rounded-full overflow-hidden">
+          <UserAvatar avatarUrl={avatarUrl} fullName={fullName} size={44} className="h-11 w-11" />
         </button>
       </DropdownMenuTrigger>
 

@@ -6,10 +6,12 @@ import BaseButton from "@/components/base/BaseButton"
 import { Search } from "lucide-react"
 import { Calendar } from "lucide-react"
 import { ChevronRight } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 export default function SearchOverlay() {
   const router = useRouter()
+  const pathname = usePathname()
+  const locale = pathname?.split("/")[1] || "en"
   const { data, status } = useSession()
   return (
     <div className="py-3 flex flex-col gap-5">
@@ -27,11 +29,11 @@ export default function SearchOverlay() {
           </div>
 
           <div className="flex gap-2">
-            <BaseButton typeStyle="outline" className="w-full" onClick={() => router.push('/tutor/signup')}>
+            <BaseButton typeStyle="outline" className="w-full" onClick={() => router.push(`/${locale}/tutor/signup`)}>
               Become a tutor
             </BaseButton>
 
-            <BaseButton className="w-full" onClick={() => router.push('/signin')}>
+            <BaseButton className="w-full" onClick={() => router.push(`/${locale}/signin`)}>
               Sign in
             </BaseButton>
           </div>

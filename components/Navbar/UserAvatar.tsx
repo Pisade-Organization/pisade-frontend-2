@@ -1,6 +1,6 @@
 import Image from "next/image"
 
-export default function UserAvatar({ avatarUrl, fullName, size = 44 }: { avatarUrl?: string; fullName?: string; size?: number }) {
+export default function UserAvatar({ avatarUrl, fullName, size = 44, className = "" }: { avatarUrl?: string; fullName?: string; size?: number; className?: string }) {
   const initials = (fullName || "")
     .split(" ")
     .filter(Boolean)
@@ -10,7 +10,7 @@ export default function UserAvatar({ avatarUrl, fullName, size = 44 }: { avatarU
 
   if (!avatarUrl) {
     return (
-      <div className="rounded-full bg-neutral-200 text-neutral-700 flex items-center justify-center text-xs font-medium" style={{ width: size, height: size }}>
+      <div className={`rounded-full bg-neutral-200 text-neutral-700 flex items-center justify-center text-xs font-medium ${className}`.trim()} style={{ width: size, height: size }}>
         {initials || ""}
       </div>
     )
@@ -22,10 +22,9 @@ export default function UserAvatar({ avatarUrl, fullName, size = 44 }: { avatarU
       alt={fullName ? `${fullName} Profile picture` : "Profile picture"}
       width={size}
       height={size}
-      className="rounded-full"
+      className={`rounded-full ${className}`.trim()}
       style={{ width: size, height: size }}
     />
   )
 }
-
 

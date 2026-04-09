@@ -10,7 +10,7 @@ interface DashboardActionsProps {
 
 export default function DashboardActions({ variant, onMessagesClick }: DashboardActionsProps) {
   const iconButtonClass =
-    variant === "student_dashboard"
+    variant === "student_dashboard" || variant === "tutor_dashboard"
       ? "w-11 h-11 flex items-center justify-center"
       : "flex items-center justify-center"
 

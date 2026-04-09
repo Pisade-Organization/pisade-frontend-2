@@ -62,6 +62,7 @@ export default function AvailabilityCalendar({ availability }: AvailabilityCalen
             variant={isDesktop ? "desktop" : "mobile"}
             onPrevWeek={handlePrevWeek}
             onNextWeek={handleNextWeek}
+            view="week"
           />
         </div>
 

@@ -1,17 +1,23 @@
 import { cn } from "@/lib/utils"
 import type { BookingListItem } from "@/services/bookings/types"
+import type { MyTutorAvailability } from "@/services/tutor/types"
+import Typography from "@/components/base/Typography"
+import { Plus } from "lucide-react"
 import {
   buildPositionedEvents,
+  formatMinutesLabel,
   formatTimeRange,
   formatHourLabel,
   getHourRows,
   getMonthGridDays,
   getStatusTone,
+  getTutorAvailabilityRange,
   getWeekDays,
   isSameDay,
   mapBookingsToEvents,
   type CalendarEventItem,
   type CalendarView,
+  type TimeGridRange,
 } from "./calendar.utils"
 
 type ScheduleRole = "student" | "tutor"
@@ -25,9 +31,25 @@ interface ScheduleCalendarProps {
   view: CalendarView
   onSelectDate: (date: Date) => void
   onViewChange: (view: CalendarView) => void
+  tutorAvailabilities?: MyTutorAvailability[]
 }
 
 const HOUR_HEIGHT = 72
+const DAY_VIEW_HOUR_HEIGHT = 96
+
+function getHourlyRangePoints(range: TimeGridRange) {
+  const points: number[] = []
+
+  for (let minutes = range.startMinutes; minutes <= range.endMinutes; minutes += 60) {
+    points.push(minutes)
+  }
+
+  return points
+}
+
+function getTimeGridRowHeight(view: CalendarView) {
+  return view === "day" ? DAY_VIEW_HOUR_HEIGHT : HOUR_HEIGHT
+}
 
 function EmptyState({ message }: { message: string }) {
   return (
@@ -98,18 +120,23 @@ function MonthView({
 
   return (
     <div className="overflow-auto">
-      <section className="min-w-[760px] rounded-[28px] border border-white/70 bg-white p-3 shadow-[0_18px_50px_rgba(87,72,162,0.08)] lg:p-4">
-        <div className="grid grid-cols-7 gap-2">
+      <section className="min-w-[760px] overflow-hidden rounded-xl border border-white/70 bg-white shadow-[0_18px_50px_rgba(87,72,162,0.08)]">
+        <div className="grid grid-cols-7 border-b border-[#EEEAF8] bg-white">
           {weekdays.map((weekday) => (
-            <div key={weekday} className="px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-400">
-              {weekday}
+            <div key={weekday} className="flex flex-col items-center border border-white bg-[rgba(241,241,241,0.6)] py-2">
+              <Typography variant="body-4" color="neutral-300" className="uppercase">
+                {weekday}
+              </Typography>
             </div>
           ))}
+        </div>
 
+        <div className="grid grid-cols-7">
           {days.map((day) => {
             const dayEvents = events.filter((event) => isSameDay(event.start, day)).sort((left, right) => left.start.getTime() - right.start.getTime())
             const inMonth = day.getMonth() === selectedDate.getMonth()
             const isSelected = isSameDay(day, selectedDate)
+            const isToday = isSameDay(day, new Date())
 
             return (
               <button
@@ -120,40 +147,29 @@ function MonthView({
                   onViewChange("day")
                 }}
                 className={cn(
-                  "flex min-h-[140px] flex-col rounded-[22px] border p-3 text-left transition hover:border-[#CFC7FF] hover:bg-[#FBFAFF]",
-                  isSelected ? "border-[#CFC7FF] bg-[#F8F5FF]" : "border-[#F0EDF8] bg-[#FCFCFE]"
+                  "min-h-[116px] border-b border-r border-[#EEEAF8] px-3 py-2 text-left align-top transition hover:bg-[#FBFAFF]",
+                  isSelected && "bg-[#F8F5FF]"
                 )}
               >
-                <div className="flex items-center justify-between">
-                  <span className={cn("text-sm font-semibold", inMonth ? "text-neutral-900" : "text-neutral-300")}>{day.getDate()}</span>
-                  {isSameDay(day, new Date()) ? (
-                    <span className="rounded-full bg-[#EEE9FF] px-2 py-1 text-[11px] font-semibold text-[#5F43EA]">Today</span>
-                  ) : null}
+                <div className="flex items-start gap-2">
+                  <Typography
+                    variant="body-3"
+                    color={inMonth ? "neutral-900" : "neutral-200"}
+                    className={cn("font-semibold", isToday && inMonth && "text-[#5F43EA]")}
+                  >
+                    {day.getDate()}
+                  </Typography>
                 </div>
 
-                <div className="mt-3 flex flex-1 flex-col gap-2">
-                  {dayEvents.slice(0, 2).map((event) => {
-                    const tone = getStatusTone(event.status)
+                <div className="mt-2 flex flex-col gap-1.5">
+                  {dayEvents.length > 0 ? (
+                    <div className="flex items-center gap-1">
+                      {dayEvents.slice(0, 4).map((event) => {
+                        const tone = getStatusTone(event.status)
 
-                    return (
-                      <div
-                        key={event.id}
-                        className="rounded-xl border px-2 py-1.5"
-                        style={{
-                          backgroundColor: tone.background,
-                          borderColor: tone.border,
-                        }}
-                      >
-                        <p className="truncate text-xs font-semibold text-neutral-900">{event.participantName}</p>
-                        <p className="mt-0.5 text-[11px] text-neutral-500">
-                          {event.start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
-                        </p>
-                      </div>
-                    )
-                  })}
-
-                  {dayEvents.length > 2 ? (
-                    <p className="text-xs font-semibold text-[#5F43EA]">+{dayEvents.length - 2} more</p>
+                        return <span key={event.id} className="h-2 w-2 rounded-full" style={{ backgroundColor: tone.accent }} />
+                      })}
+                    </div>
                   ) : null}
                 </div>
               </button>
@@ -165,26 +181,64 @@ function MonthView({
   )
 }
 
-function DayColumn({ day, events }: { day: Date; events: CalendarEventItem[] }) {
-  const gridHeight = getHourRows().length * HOUR_HEIGHT
+function DayColumn({
+  day,
+  events,
+  view,
+  range,
+}: {
+  day: Date
+  events: CalendarEventItem[]
+  view: CalendarView
+  range?: TimeGridRange | null
+}) {
+  const rowHeight = getTimeGridRowHeight(view)
+  const rowPoints = range ? getHourlyRangePoints(range) : getHourRows().map((hour) => hour * 60)
+  const gridHeight = rowPoints.length > 0 ? Math.max((rowPoints.length - 1) * rowHeight, rowHeight) : rowHeight
+  const slotStarts = rowPoints.slice(0, -1)
   const positionedEvents = buildPositionedEvents(events)
+  const startOffsetMinutes = range?.startMinutes ?? 0
 
   return (
     <div className="relative border-l border-[#EEEAF8] first:border-l-0">
-      {getHourRows().map((hour) => (
+      {rowPoints.map((minutes) => (
         <div
-          key={`${day.toISOString()}-${hour}`}
+          key={`${day.toISOString()}-${minutes}`}
           className="absolute left-0 right-0 border-t border-[#F1EDF9]"
-          style={{ top: hour * HOUR_HEIGHT }}
+          style={{ top: range ? ((minutes - startOffsetMinutes) / 60) * rowHeight : (minutes / 60) * rowHeight }}
         />
       ))}
 
       <div className="relative" style={{ height: gridHeight }}>
+        {view === "day"
+          ? slotStarts.map((minutes) => {
+              const top = range ? ((minutes - startOffsetMinutes) / 60) * rowHeight : (minutes / 60) * rowHeight
+
+              return (
+                <div
+                  key={`${day.toISOString()}-slot-${minutes}`}
+                  className="group absolute inset-x-0"
+                  style={{ top, height: rowHeight }}
+                >
+                  <div className="absolute left-2 right-2 top-1/2 h-[2px] -translate-y-1/2 bg-electric-violet-400 opacity-0 transition-opacity group-hover:opacity-100" />
+                  <div className="absolute left-2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-electric-violet-400 opacity-0 transition-opacity group-hover:opacity-100" />
+                  <div className="absolute right-2 top-1/2 h-4 w-4 translate-x-1/2 -translate-y-1/2 rounded-full bg-electric-violet-400 opacity-0 transition-opacity group-hover:opacity-100" />
+                  <div className="absolute left-1/2 top-1/2 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-electric-violet-500 opacity-0 transition-opacity group-hover:opacity-100">
+                    <Plus className="h-5 w-5 text-white" />
+                  </div>
+                </div>
+              )
+            })
+          : null}
+
         {positionedEvents.map((event) => {
           const startMinutes = event.start.getHours() * 60 + event.start.getMinutes()
           const endMinutes = event.end.getHours() * 60 + event.end.getMinutes()
-          const top = (startMinutes / 60) * HOUR_HEIGHT
-          const height = Math.max(((endMinutes - startMinutes) / 60) * HOUR_HEIGHT, 56)
+          const top = range ? ((startMinutes - startOffsetMinutes) / 60) * rowHeight : (startMinutes / 60) * rowHeight
+          const height = Math.max(
+            ((endMinutes - startMinutes) / 60) * rowHeight,
+            56,
+          )
           const widthPercent = 100 / event.laneCount
           const gap = 6
 
@@ -212,80 +266,115 @@ function TimeCalendar({
   selectedDate,
   events,
   view,
+  onViewChange,
+  range,
 }: {
   selectedDate: Date
   events: CalendarEventItem[]
   view: CalendarView
+  onViewChange: (view: CalendarView) => void
+  range?: TimeGridRange | null
 }) {
+  const rowHeight = getTimeGridRowHeight(view)
   const columns = view === "day" ? [selectedDate] : getWeekDays(selectedDate)
-  const gridHeight = getHourRows().length * HOUR_HEIGHT
+  const rowPoints = range ? getHourlyRangePoints(range) : getHourRows().map((hour) => hour * 60)
+  const gridHeight = rowPoints.length > 0 ? Math.max((rowPoints.length - 1) * rowHeight, rowHeight) : rowHeight
+  const startOffsetMinutes = range?.startMinutes ?? 0
 
   return (
-    <div className="overflow-auto">
-      <div className="min-w-[760px] rounded-[28px] border border-white/70 bg-white shadow-[0_18px_50px_rgba(87,72,162,0.08)]">
+    <div className={cn(view === "week" ? "overflow-x-auto overflow-y-hidden touch-pan-x" : "overflow-auto")}>
+      <div className={cn(
+        "overflow-hidden rounded-xl border border-white/70 bg-white shadow-[0_18px_50px_rgba(87,72,162,0.08)]",
+        view === "week" ? "min-w-full lg:min-w-[760px]" : "min-w-[760px]"
+      )}>
         <div className="grid grid-cols-[72px_minmax(0,1fr)]">
-          <div className="border-b border-[#EEEAF8] bg-[#FAFAFE]" />
+          <div className="rounded-tl-xl border-b border-[#EEEAF8] bg-white" />
 
           <div
-            className="grid border-b border-[#EEEAF8] bg-[#FAFAFE]"
-            style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(160px, 1fr))` }}
+            className={cn(
+              "grid border-b border-[#EEEAF8] bg-white",
+              view === "week" ? "grid-cols-7 lg:[grid-template-columns:repeat(7,minmax(160px,1fr))]" : "grid-cols-1"
+            )}
           >
             {columns.map((day) => {
-              const isSelected = isSameDay(day, selectedDate)
               const isToday = isSameDay(day, new Date())
+
+              if (view === "week") {
+                return (
+                  <div
+                    key={day.toISOString()}
+                    className="flex flex-col items-center border border-white bg-[rgba(241,241,241,0.6)] py-2"
+                  >
+                    <Typography variant="body-4" color={isToday ? "electric-violet-700" : "neutral-300"} className="uppercase">
+                      {day.toLocaleDateString("en-US", { weekday: "short" })}
+                    </Typography>
+                    <Typography variant="body-4" color={isToday ? "electric-violet-700" : "neutral-300"}>
+                      {day.getDate()}
+                    </Typography>
+                  </div>
+                )
+              }
+
+              const isSelected = isSameDay(day, selectedDate)
 
               return (
                 <div key={day.toISOString()} className="border-l border-[#EEEAF8] px-3 py-4 first:border-l-0">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-400">
-                    {day.toLocaleDateString("en-US", { weekday: "short" })}
-                  </p>
-                  <div className="mt-2 flex items-center gap-2">
-                    <span
-                      className={cn(
-                        "flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-semibold",
-                        isSelected
-                          ? "bg-[#EEE9FF] text-[#5F43EA]"
-                          : isToday
-                            ? "bg-[#F5F4FB] text-neutral-900"
-                            : "bg-transparent text-neutral-700"
-                      )}
-                    >
-                      {day.getDate()}
-                    </span>
-                    <span className="text-sm text-neutral-500">
-                      {day.toLocaleDateString("en-US", { month: "short", year: columns.length === 1 ? "numeric" : undefined })}
-                    </span>
+                  <div className={cn(view === "day" ? "hidden" : "block")}>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-400">
+                      {day.toLocaleDateString("en-US", { weekday: "short" })}
+                    </p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span
+                        className={cn(
+                          "flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-semibold",
+                          isSelected
+                            ? "bg-[#EEE9FF] text-[#5F43EA]"
+                            : isToday
+                              ? "bg-[#F5F4FB] text-neutral-900"
+                              : "bg-transparent text-neutral-700"
+                        )}
+                      >
+                        {day.getDate()}
+                      </span>
+                      <span className="text-sm text-neutral-500">
+                        {day.toLocaleDateString("en-US", { month: "short", year: columns.length === 1 ? "numeric" : undefined })}
+                      </span>
+                    </div>
                   </div>
                 </div>
               )
             })}
           </div>
 
-          <div className="relative border-r border-[#EEEAF8] bg-[#FCFBFF]" style={{ height: gridHeight }}>
-            {getHourRows().map((hour) => (
+          <div className="relative border-r border-[#EEEAF8] bg-white" style={{ height: gridHeight }}>
+            {rowPoints.map((minutes) => (
               <div
-                key={hour}
+                key={minutes}
                 className="absolute left-0 right-0 border-t border-[#F1EDF9]"
-                style={{ top: hour * HOUR_HEIGHT }}
+                style={{ top: range ? ((minutes - startOffsetMinutes) / 60) * rowHeight : (minutes / 60) * rowHeight }}
               >
-                <span className="absolute -top-3 left-3 bg-[#FCFBFF] px-1 text-xs font-medium text-neutral-400">
-                  {formatHourLabel(hour)}
-                </span>
+                <Typography
+                  variant="body-3"
+                  color="neutral-400"
+                  className="absolute -top-3 left-3 bg-white px-1"
+                >
+                  {range ? formatMinutesLabel(minutes) : formatHourLabel(minutes / 60)}
+                </Typography>
               </div>
             ))}
           </div>
 
           <div
-            className="grid"
-            style={{
-              height: gridHeight,
-              gridTemplateColumns: `repeat(${columns.length}, minmax(160px, 1fr))`,
-            }}
+            className={cn(
+              "grid",
+              view === "week" ? "grid-cols-7 lg:[grid-template-columns:repeat(7,minmax(160px,1fr))]" : "grid-cols-1"
+            )}
+            style={{ height: gridHeight }}
           >
             {columns.map((day) => {
               const dayEvents = events.filter((event) => isSameDay(event.start, day))
 
-              return <DayColumn key={day.toISOString()} day={day} events={dayEvents} />
+              return <DayColumn key={day.toISOString()} day={day} events={dayEvents} view={view} range={range} />
             })}
           </div>
         </div>
@@ -303,8 +392,14 @@ export default function ScheduleCalendar({
   view,
   onSelectDate,
   onViewChange,
+  tutorAvailabilities = [],
 }: ScheduleCalendarProps) {
   const events = mapBookingsToEvents(bookings, role)
+  const isTimeGridView = view === "day" || view === "week"
+  const tutorAvailabilityRange = role === "tutor" && isTimeGridView
+    ? getTutorAvailabilityRange(tutorAvailabilities)
+    : null
+  const shouldRenderTimeGrid = events.length > 0 || (role === "tutor" && isTimeGridView && tutorAvailabilityRange !== null)
 
   if (isLoading) {
     return (
@@ -325,7 +420,7 @@ export default function ScheduleCalendar({
     )
   }
 
-  if (events.length === 0) {
+  if (!shouldRenderTimeGrid && events.length === 0) {
     return (
       <EmptyState
         message={
@@ -341,5 +436,5 @@ export default function ScheduleCalendar({
     return <MonthView selectedDate={selectedDate} events={events} onSelectDate={onSelectDate} onViewChange={onViewChange} />
   }
 
-  return <TimeCalendar selectedDate={selectedDate} events={events} view={view} />
+  return <TimeCalendar selectedDate={selectedDate} events={events} view={view} onViewChange={onViewChange} range={tutorAvailabilityRange} />
 }

@@ -14,6 +14,7 @@ interface AuthVerifyEmailProps {
 export default function AuthVerifyEmail({ emailTo, onBack, type = AUTH_TYPES.SIGNIN }: AuthVerifyEmailProps) {
     const [countdown, setCountdown] = useState(30);
     const [isResendActive, setIsResendActive] = useState(false);
+    const backLabel = type === AUTH_TYPES.TUTOR_SIGNUP ? "Back to Tutor Sign Up" : "Back to Sign In";
 
     useEffect(() => {
         if (countdown > 0) {
@@ -90,7 +91,7 @@ export default function AuthVerifyEmail({ emailTo, onBack, type = AUTH_TYPES.SIG
                     className="cursor-pointer flex items-center gap-2 text-label-2 text-deep-royal-indigo-700 hover:opacity-80 transition-all duration-200"
                 >
                     <ArrowLeft width={20} height={20} className="text-neutral-700" />
-                    Back to Sign In
+                    {backLabel}
                 </button>
             </div>
         </div>

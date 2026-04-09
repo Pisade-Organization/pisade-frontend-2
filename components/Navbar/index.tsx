@@ -40,9 +40,9 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
   const sessionStatus = status === "loading" ? stableStatus : status
   const userRole = sessionData?.user?.role as Role | undefined
 
-  const onLogoClick = () => router.push("/")
-  const onSigninClick = () => router.push("/signin")
-  const onBecomeTutorClick = () => router.push("/tutor/signup")
+  const onLogoClick = () => router.push(localePrefix || "/")
+  const onSigninClick = () => router.push(`${localePrefix}/signin`)
+  const onBecomeTutorClick = () => router.push(`${localePrefix}/tutor/signup`)
 
   const isAuth = sessionStatus === "authenticated"
   const onMessagesClick = () => router.push(`${localePrefix}/messages`)

@@ -1,6 +1,6 @@
 "use client"
 import { AUTH_TYPES } from "../types/auth.enum"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 export default function AuthHeader({
     type = AUTH_TYPES.SIGNIN
@@ -8,6 +8,12 @@ export default function AuthHeader({
     type?: AUTH_TYPES
 }) {
     const router = useRouter()
+    const pathname = usePathname()
+    const locale = pathname?.split("/")[1] || "en"
+
+    const signinPath = `/${locale}/signin`
+    const tutorSignupPath = `/${locale}/tutor/signup`
+
     return (
         <div className="w-full flex flex-col justify-center items-center gap-y-2">       
             <div className="text-headline-2 text-deep-royal-indigo-900">
@@ -20,10 +26,9 @@ export default function AuthHeader({
                 { type === AUTH_TYPES.SIGNIN && (
                     <>
                         <span className="">
-                            Sign up as a student here
+                            Want to teach on Pisade?
                         </span>
-                        <span>or</span>
-                        <span className="underline cursor-pointer" onClick={() => router.push('tutor/signup')}>
+                        <span className="underline cursor-pointer" onClick={() => router.push(tutorSignupPath)}>
                             Sign up as a tutor
                         </span>
                     </>
@@ -34,7 +39,7 @@ export default function AuthHeader({
                         <span>
                             Already have an account?
                         </span>
-                        <span className="underline cursor-pointer" onClick={() => router.push('/signin')}>
+                        <span className="underline cursor-pointer" onClick={() => router.push(signinPath)}>
                             Log in
                         </span>
                     </>

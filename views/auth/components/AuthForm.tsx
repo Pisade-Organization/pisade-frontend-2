@@ -75,7 +75,7 @@ export default function AuthForm({ setEmailTo, setIsEmailSent, type = AUTH_TYPES
                     className="w-full"
                     variant="secondary"
                 >
-                    {loading ? 'Sending...' : 'Log In'}
+                    {loading ? 'Sending...' : isTutorSignup ? 'Sign up as a tutor' : 'Log In'}
                 </BaseButton>
 
                 <div className="text-neutral-700 text-body-2" >

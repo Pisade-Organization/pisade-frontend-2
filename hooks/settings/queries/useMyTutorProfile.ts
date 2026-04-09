@@ -4,10 +4,11 @@ import { TutorService } from "@/services/tutor/private";
 import type { MyTutorProfile } from "@/services/tutor/types";
 import { settingsQueryKeys } from "../queryKeys";
 
-export function useMyTutorProfile() {
+export function useMyTutorProfile(enabled = true) {
   return useQuery<MyTutorProfile, AxiosError>({
     queryKey: settingsQueryKeys.tutorProfile(),
     queryFn: () => TutorService.getMyTutorProfile(),
     retry: 1,
+    enabled,
   });
 }

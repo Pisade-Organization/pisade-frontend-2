@@ -1,12 +1,17 @@
 import Image from "next/image"
-export default function MobileBackground() {
+
+interface MobileBackgroundProps {
+  className?: string
+}
+
+export default function MobileBackground({ className }: MobileBackgroundProps) {
   return (
     <Image 
       src="/images/schedule/wallpaper.jpg"
       width={375}
       height={142}
       alt="Wallpaper"
-      className="h-auto max-h-[123px] w-full"
+      className={className ?? "h-auto max-h-[123px] w-full"}
     />
   )
 }

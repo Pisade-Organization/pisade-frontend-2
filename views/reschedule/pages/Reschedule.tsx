@@ -192,12 +192,12 @@ export default function Reschedule() {
         <div className="flex-1 overflow-y-auto">
           <div className="w-full flex flex-col gap-5 px-4 py-5">
             <ScheduleHeader
-              timezone={timezone}
-              onTimezoneChange={setTimezone}
               weekStartDate={currentWeekStart}
               onPrevWeek={handlePrevWeek}
               onNextWeek={handleNextWeek}
               variant="mobile"
+              view="week"
+              onViewChange={() => {}}
             />
 
             <ScheduleContent
@@ -248,12 +248,12 @@ export default function Reschedule() {
             />
             
             <ScheduleHeader
-              timezone={timezone}
-              onTimezoneChange={setTimezone}
               weekStartDate={currentWeekStart}
               onPrevWeek={handlePrevWeek}
               onNextWeek={handleNextWeek}
               variant="desktop"
+              view="week"
+              onViewChange={() => {}}
             />
 
             <ScheduleContent

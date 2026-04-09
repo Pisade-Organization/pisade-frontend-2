@@ -12,6 +12,17 @@ export interface CalendarEventItem {
   status: string
 }
 
+export interface TutorAvailabilitySlot {
+  dayOfWeek: number | string
+  startTime: string
+  endTime: string
+}
+
+export interface TimeGridRange {
+  startMinutes: number
+  endMinutes: number
+}
+
 export function startOfDay(date: Date) {
   const next = new Date(date)
   next.setHours(0, 0, 0, 0)
@@ -149,10 +160,27 @@ export function getHourRows() {
   return Array.from({ length: 24 }, (_, hour) => hour)
 }
 
+export function getHalfHourRows(range: TimeGridRange) {
+  const rows: number[] = []
+
+  for (let minutes = range.startMinutes; minutes <= range.endMinutes; minutes += 30) {
+    rows.push(minutes)
+  }
+
+  return rows
+}
+
 export function formatHourLabel(hour: number) {
   return new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
   }).format(new Date(2026, 0, 1, hour))
+}
+
+export function formatMinutesLabel(minutes: number) {
+  const hours = Math.floor(minutes / 60)
+  const mins = minutes % 60
+
+  return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`
 }
 
 export function formatTimeRange(start: Date, end: Date) {
@@ -162,6 +190,34 @@ export function formatTimeRange(start: Date, end: Date) {
   })
 
   return `${formatter.format(start)} - ${formatter.format(end)}`
+}
+
+export function timeToMinutes(value: string) {
+  const [hours, minutes] = value.split(":").map(Number)
+  return hours * 60 + minutes
+}
+
+export function getTutorAvailabilityRange(availabilities: TutorAvailabilitySlot[]): TimeGridRange | null {
+  if (availabilities.length === 0) {
+    return null
+  }
+
+  let startMinutes = Number.POSITIVE_INFINITY
+  let endMinutes = Number.NEGATIVE_INFINITY
+
+  availabilities.forEach((slot) => {
+    startMinutes = Math.min(startMinutes, timeToMinutes(slot.startTime))
+    endMinutes = Math.max(endMinutes, timeToMinutes(slot.endTime))
+  })
+
+  if (!Number.isFinite(startMinutes) || !Number.isFinite(endMinutes) || endMinutes <= startMinutes) {
+    return null
+  }
+
+  return {
+    startMinutes,
+    endMinutes,
+  }
 }
 
 export function mapBookingsToEvents(bookings: BookingListItem[], role: "student" | "tutor") {

@@ -1,31 +1,44 @@
 import Typography from "@/components/base/Typography"
+import type { CalendarView } from "@/views/schedule/components/ScheduleContent/calendar.utils"
 
 interface DateRangeLabelProps {
   startDate: Date;
   endDate: Date;
+  view: CalendarView;
 }
 
 export default function DateRangeLabel({
   startDate,
   endDate,
+  view,
 }: DateRangeLabelProps) {
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  };
+  const label = (() => {
+    if (view === "day") {
+      return startDate.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
+    }
 
-  const formatYear = (date: Date) => {
-    return date.toLocaleDateString("en-US", { year: "numeric" });
-  };
+    if (view === "month") {
+      return startDate.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      });
+    }
 
-  const startFormatted = formatDate(startDate);
-  const endFormatted = formatDate(endDate);
-  const year = formatYear(endDate);
+    const startFormatted = startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const endFormatted = endDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const year = endDate.toLocaleDateString("en-US", { year: "numeric" });
 
-  const label = `${startFormatted} - ${endFormatted}, ${year}`;
+    return `${startFormatted} - ${endFormatted}, ${year}`;
+  })();
 
   return (
     <Typography
-      variant={{ base: "label-3", lg: "label-1" }}
+      variant={{ base: "body-4", lg: "label-1" }}
       color="neutral-700"
     >
       {label}
