@@ -21,6 +21,16 @@ function getBackendRemotePattern() {
   }
 }
 
+function getBackendRewriteDestination() {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL;
+
+  if (!backendUrl) {
+    return null;
+  }
+
+  return `${backendUrl.replace(/\/$/, "")}/:path*`;
+}
+
 const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
@@ -31,18 +41,24 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'ui-avatars.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'flagcdn.com',
-      },
-      {
-        protocol: 'https',
         hostname: 'img.youtube.com',
       },
       ...getBackendRemotePattern(),
     ],
+  },
+  async rewrites() {
+    const backendDestination = getBackendRewriteDestination();
+
+    if (!backendDestination) {
+      return [];
+    }
+
+    return [
+      {
+        source: "/api/backend/:path*",
+        destination: backendDestination,
+      },
+    ];
   },
 };
 

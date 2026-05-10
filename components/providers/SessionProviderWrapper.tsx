@@ -2,12 +2,12 @@
 
 import { usePathname } from "next/navigation";
 import { SessionProvider, useSession, signOut } from "next-auth/react";
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { AuthHydrationGate } from "./AuthHydrationGate";
+import TopToast from "@/components/shared/TopToast";
 
 const FATAL_AUTH_ERRORS = new Set([
   "ProfileNotFound",
-  "UserDeletedOrInvalid",
   "RefreshTokenInvalid",
 ]);
 
@@ -19,10 +19,17 @@ function SessionErrorWatcher({ children }: { children: ReactNode }) {
   const lastSessionUpdateAt = useRef(0);
   const MIN_SESSION_UPDATE_INTERVAL = 30_000;
   const authError = (session as any)?.error as string | undefined;
+  const [showRefreshWarning, setShowRefreshWarning] = useState(false);
 
   useEffect(() => {
     if (!authError) {
       lastRetriedFatalError.current = null;
+      setShowRefreshWarning(false);
+      return;
+    }
+
+    if (authError === "RefreshTokenInvalid") {
+      setShowRefreshWarning(true);
     }
   }, [authError]);
 
@@ -73,7 +80,18 @@ function SessionErrorWatcher({ children }: { children: ReactNode }) {
     };
   }, [status, update]);
 
-  return <>{children}</>;
+  return (
+    <>
+      {showRefreshWarning ? (
+        <TopToast
+          tone="info"
+          message="Reconnecting your session. Some data may be temporarily unavailable."
+          onClose={() => setShowRefreshWarning(false)}
+        />
+      ) : null}
+      {children}
+    </>
+  );
 }
 
 export default function SessionProviderWrapper({ children }: { children: ReactNode }) {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import { useStepNine } from "@/hooks/tutors/onboarding/queries/useStepNine"
@@ -76,24 +76,6 @@ export default function OnboardingStepNine() {
   const saveStepNine = useSaveStepNine()
   const { registerStepActions, unregisterStepActions } = useOnboardingNavigation()
   
-  // Use refs to access latest values without including them in dependencies
-  const saveStepNineRef = useRef(saveStepNine)
-  const stepNineDataRef = useRef(stepNineData)
-  const sessionRef = useRef(session)
-  const documentTypeRef = useRef(documentType)
-  const idCardKeyRef = useRef(idCardKey)
-  const passportKeyRef = useRef(passportKey)
-  
-  // Keep refs in sync
-  useEffect(() => {
-    saveStepNineRef.current = saveStepNine
-    stepNineDataRef.current = stepNineData
-    sessionRef.current = session
-    documentTypeRef.current = documentType
-    idCardKeyRef.current = idCardKey
-    passportKeyRef.current = passportKey
-  })
-
   // Load existing data
   useEffect(() => {
     if (stepNineData) {
@@ -115,15 +97,13 @@ export default function OnboardingStepNine() {
     
     if (error || !file) {
       setIdCardKey(null)
-      idCardKeyRef.current = null
       return
     }
 
-    const userId = sessionRef.current?.user?.id
+    const userId = session?.user?.id
     if (!userId) {
       setIdCardError("User ID not found in session")
       setIdCardKey(null)
-      idCardKeyRef.current = null
       return
     }
 
@@ -151,12 +131,10 @@ export default function OnboardingStepNine() {
       }
 
       setIdCardKey(presignedResponse.key)
-      idCardKeyRef.current = presignedResponse.key
       setIdCardError(null)
     } catch (err) {
       setIdCardError(err instanceof Error ? err.message : "Failed to upload ID card")
       setIdCardKey(null)
-      idCardKeyRef.current = null
     } finally {
       setIsUploadingIdCard(false)
     }
@@ -169,15 +147,13 @@ export default function OnboardingStepNine() {
     
     if (error || !file) {
       setPassportKey(null)
-      passportKeyRef.current = null
       return
     }
 
-    const userId = sessionRef.current?.user?.id
+    const userId = session?.user?.id
     if (!userId) {
       setPassportError("User ID not found in session")
       setPassportKey(null)
-      passportKeyRef.current = null
       return
     }
 
@@ -205,36 +181,35 @@ export default function OnboardingStepNine() {
       }
 
       setPassportKey(presignedResponse.key)
-      passportKeyRef.current = presignedResponse.key
       setPassportError(null)
     } catch (err) {
       setPassportError(err instanceof Error ? err.message : "Failed to upload passport")
       setPassportKey(null)
-      passportKeyRef.current = null
     } finally {
       setIsUploadingPassport(false)
     }
   }
 
   // Register step actions
+  // Register with live closure dependencies to avoid stale refs.
   useEffect(() => {
     const validate = async () => {
       setSubmitError(null)
 
       // Check if document type is selected
-      if (!documentTypeRef.current) {
+      if (!documentType) {
         return false
       }
 
-      const hasIdCardDocument = Boolean(idCardKeyRef.current || stepNineDataRef.current?.idCardUrl)
-      const hasPassportDocument = Boolean(passportKeyRef.current || stepNineDataRef.current?.passportUrl)
+      const hasIdCardDocument = Boolean(idCardKey || stepNineData?.idCardUrl)
+      const hasPassportDocument = Boolean(passportKey || stepNineData?.passportUrl)
       
       // Check if the selected document type has a file uploaded
-      if (documentTypeRef.current === "ID Card") {
+      if (documentType === "ID Card") {
         if (!hasIdCardDocument) {
           return false
         }
-      } else if (documentTypeRef.current === "Passport") {
+      } else if (documentType === "Passport") {
         if (!hasPassportDocument) {
           return false
         }
@@ -244,28 +219,28 @@ export default function OnboardingStepNine() {
     }
 
     const save = async () => {
-      const apiDocumentType = displayToApi[documentTypeRef.current] as ApiDocumentType
+      const apiDocumentType = displayToApi[documentType] as ApiDocumentType
       
       const payload: any = {
         documentType: apiDocumentType,
       }
       
       // Add document keys based on what's uploaded
-      if (idCardKeyRef.current) {
-        payload.idCardKey = idCardKeyRef.current
+      if (idCardKey) {
+        payload.idCardKey = idCardKey
       }
-      if (passportKeyRef.current) {
-        payload.passportKey = passportKeyRef.current
+      if (passportKey) {
+        payload.passportKey = passportKey
       }
 
-      const existingDocumentType = stepNineDataRef.current?.documentType as DocumentTypeApi | undefined
-      const hasNewDocumentUpload = Boolean(idCardKeyRef.current || passportKeyRef.current)
+      const existingDocumentType = stepNineData?.documentType as DocumentTypeApi | undefined
+      const hasNewDocumentUpload = Boolean(idCardKey || passportKey)
 
       if (!hasNewDocumentUpload && existingDocumentType === apiDocumentType) {
         return
       }
 
-      await saveStepNineRef.current.mutateAsync(payload)
+      await saveStepNine.mutateAsync(payload)
     }
 
     const submit = async () => {
@@ -287,7 +262,18 @@ export default function OnboardingStepNine() {
     return () => {
       unregisterStepActions(9)
     }
-  }, [registerStepActions, unregisterStepActions, router, safeLocale, update])
+  }, [
+    registerStepActions,
+    unregisterStepActions,
+    router,
+    safeLocale,
+    update,
+    documentType,
+    idCardKey,
+    passportKey,
+    stepNineData,
+    saveStepNine,
+  ])
 
   if (isLoading) return <p>Loading...</p>
 

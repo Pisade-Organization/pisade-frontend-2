@@ -6,25 +6,18 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import ResponsiveDropdown from "./ResponsiveDropdown";
 
-const SUBJECTS = [
-  "Show All",
-  "Thai",
-  "Maths",
-  "English",
-  "Biology",
-  "Science",
-  "Geology",
-  "Medicine",
-  "Chemistry",
-  "Physics",
-];
+interface SubjectDropdownProps {
+  options: string[];
+  value: string;
+  onChange: (value: string) => void;
+}
 
-export function SubjectDropdown() {
-  const [selected, setSelected] = useState("Show All");
+export function SubjectDropdown({ options, value, onChange }: SubjectDropdownProps) {
   const [open, setOpen] = useState(false);
 
-  const isShowAll = selected === "Show All";
+  const isShowAll = value === "Show All";
   const dropdownHeight = 260;
+  const subjectOptions = ["Show All", ...options];
 
   return (
     <ResponsiveDropdown
@@ -55,7 +48,7 @@ export function SubjectDropdown() {
                   transition={{ duration: 0.2 }}
                   className="text-[15px] text-neutral-800 font-normal truncate"
                 >
-                  {isShowAll ? "Subject" : selected}
+                  {isShowAll ? "Subject" : value}
                 </motion.span>
               ) : isShowAll ? (
                 <motion.span
@@ -91,7 +84,7 @@ export function SubjectDropdown() {
                     transition={{ duration: 0.25, delay: 0.2 }}
                     className="text-[15px] text-neutral-800 font-normal truncate"
                   >
-                    {selected}
+                    {value}
                   </motion.span>
                 </motion.div>
               )}
@@ -101,16 +94,16 @@ export function SubjectDropdown() {
         </button>
       )}
     >
-      {SUBJECTS.map((subject) => (
+      {subjectOptions.map((subject) => (
         <button
           key={subject}
           onClick={() => {
-            setSelected(subject)
+            onChange(subject)
             setOpen(false)
           }}
           className={cn(
             "flex items-center w-full border-b px-4 py-2 text-[15px] text-left transition",
-            selected === subject
+            value === subject
               ? "bg-electric-violet-50 text-electric-violet-600 font-medium"
               : "text-neutral-700 hover:bg-neutral-50"
           )}

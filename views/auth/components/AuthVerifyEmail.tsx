@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react"
 import { useState, useEffect } from "react"
 import { AuthService } from "@/services/auth"
 import { AUTH_TYPES } from "../types/auth.enum"
+import type { AxiosError } from "axios"
 
 interface AuthVerifyEmailProps {
     emailTo: string;
@@ -14,6 +15,7 @@ interface AuthVerifyEmailProps {
 export default function AuthVerifyEmail({ emailTo, onBack, type = AUTH_TYPES.SIGNIN }: AuthVerifyEmailProps) {
     const [countdown, setCountdown] = useState(30);
     const [isResendActive, setIsResendActive] = useState(false);
+    const [error, setError] = useState("");
     const backLabel = type === AUTH_TYPES.TUTOR_SIGNUP ? "Back to Tutor Sign Up" : "Back to Sign In";
 
     useEffect(() => {
@@ -33,6 +35,7 @@ export default function AuthVerifyEmail({ emailTo, onBack, type = AUTH_TYPES.SIG
                 // Reset countdown and disable resend
                 setCountdown(30);
                 setIsResendActive(false);
+                setError("");
                 
                 // Call your backend to resend the email
                 await AuthService.sendMagicLink({
@@ -40,8 +43,17 @@ export default function AuthVerifyEmail({ emailTo, onBack, type = AUTH_TYPES.SIG
                     intent: type === AUTH_TYPES.TUTOR_SIGNUP ? "TUTOR_SIGNUP" : undefined,
                 });
                 console.log("Magic link resent successfully to:", emailTo);
-            } catch (error) {
-                console.error("Failed to resend magic link:", error);
+            } catch (err) {
+                const axiosError = err as AxiosError<{ message?: string | string[] }>;
+                const status = axiosError.response?.status;
+                if (status === 429) {
+                    setError("Too many attempts, please wait before trying again.");
+                } else if (status === 400) {
+                    setError("Invalid email.");
+                } else {
+                    setError("Something went wrong, please try again.");
+                }
+                console.error("Failed to resend magic link:", err);
                 // Re-enable the button on error
                 setIsResendActive(true);
                 setCountdown(0);
@@ -82,6 +94,9 @@ export default function AuthVerifyEmail({ emailTo, onBack, type = AUTH_TYPES.SIG
                 >
                     Resend link {isResendActive ? '' : `(${countdown}s)`}
                 </button>
+                {error ? (
+                    <p className="mt-3 text-body-3 text-red-600">{error}</p>
+                ) : null}
             </div>
 
             {/* Back to Sign In button - positioned differently on mobile vs desktop */}

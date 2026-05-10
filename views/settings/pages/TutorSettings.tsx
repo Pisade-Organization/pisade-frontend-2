@@ -5,6 +5,7 @@ import { Settings, CreditCard, Bell, ShieldCheck } from "lucide-react"
 import SettingsContent, { SettingsContentType } from "../components/AccountSettings/SettingsContent"
 import { usePathname } from "next/navigation"
 import { useMemo } from "react"
+import { useSession } from "next-auth/react"
 import {
   useMyNotificationPreferences,
   useMyProfile,
@@ -37,6 +38,7 @@ const tutorSidebarItems = [
 
 export default function TutorSettingsPage() {
   const pathname = usePathname()
+  const { data: session } = useSession()
   const { data: profileData } = useMyProfile()
   const { data: tutorData } = useMyTutorProfile()
   const { data: notificationPreferences } = useMyNotificationPreferences()
@@ -57,7 +59,10 @@ export default function TutorSettingsPage() {
     phoneNumber: profileData?.phoneNumber ?? "",
     email: profileData?.email ?? "",
     emailVerified: profileData?.emailVerified ?? false,
-    avatarUrl: profileData?.profile?.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",
+    avatarUrl:
+      session?.user?.avatarUrl ||
+      profileData?.profile?.avatarUrl ||
+      "https://ui-avatars.com/api/?name=Tutor",
     timezone: profileData?.profile?.timezone ?? "Asia/Bangkok",
     teachingInfoProps: {
       subject: tutorData?.specialties?.join(", ") || "",

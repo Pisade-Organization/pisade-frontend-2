@@ -1,5 +1,4 @@
 "use client"
-import { useState } from "react"
 
 import FilterHeader from "./FilterHeader"
 import FilterGrid from "./FilterGrid"
@@ -21,9 +20,32 @@ interface FilterPanelProps {
     setMinPrice: React.Dispatch<React.SetStateAction<number>>;
     maxPrice: number;
     setMaxPrice: React.Dispatch<React.SetStateAction<number>>;
+    subject: string;
+    onSubjectChange: (value: string) => void;
+    language: string[];
+    onLanguageChange: (value: string[]) => void;
+    ranking: string;
+    onRankingChange: (value: string) => void;
+    subjectOptions: string[];
+    languageOptions: string[];
 }
 
-export default function FilterPanel({ mode, setMode, minPrice, setMinPrice, maxPrice, setMaxPrice }: FilterPanelProps) {
+export default function FilterPanel({
+    mode,
+    setMode,
+    minPrice,
+    setMinPrice,
+    maxPrice,
+    setMaxPrice,
+    subject,
+    onSubjectChange,
+    language,
+    onLanguageChange,
+    ranking,
+    onRankingChange,
+    subjectOptions,
+    languageOptions,
+}: FilterPanelProps) {
     return (
         <div className="w-full pt-8 pb-5 lg:pb-10 px-4 lg:px-20
             flex flex-col justify-center items-center gap-y-4
@@ -34,11 +56,11 @@ export default function FilterPanel({ mode, setMode, minPrice, setMinPrice, maxP
             </div>
 
             <FilterGrid>
-                <SubjectDropdown />
+                <SubjectDropdown options={subjectOptions} value={subject} onChange={onSubjectChange} />
                 <AvailabilityDropdown />
-                <RankingDropdown />
+                <RankingDropdown value={ranking} onChange={onRankingChange} />
                 <SpecialtyDropdown />
-                <LanguageDropdown />
+                <LanguageDropdown options={languageOptions} value={language} onChange={onLanguageChange} />
                 <EducationLevelDropdown />
                 <PriceRangeFilter
                     minPrice={minPrice} setMinPrice={setMinPrice}

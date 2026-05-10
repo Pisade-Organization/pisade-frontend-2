@@ -1,5 +1,6 @@
 import apiInstancePublic from "../apiInstancePublic";
 import { servicePath } from "../servicePath";
+import { unwrapApiResponse, type ApiSuccessResponse } from "../apiResponse";
 import type {
   SendMagicLinkDto,
   VerifyMagicLinkDto,
@@ -19,21 +20,25 @@ export const AuthService = {
    * Verify a magic link token and get tokens + user data.
    */
   async verifyMagicLink(data: VerifyMagicLinkDto): Promise<VerifyMagicLinkResponse> {
-    const res = await apiInstancePublic.post<VerifyMagicLinkResponse>(
+    const res = await apiInstancePublic.post<
+      ApiSuccessResponse<VerifyMagicLinkResponse> | VerifyMagicLinkResponse
+    >(
       servicePath.auth.verifyMagicLink,
       data
     );
-    return res.data;
+    return unwrapApiResponse(res.data);
   },
 
   /**
    * Refresh expired access token.
    */
   async refreshToken(data: RefreshTokenDto): Promise<VerifyMagicLinkResponse> {
-    const res = await apiInstancePublic.post<VerifyMagicLinkResponse>(
+    const res = await apiInstancePublic.post<
+      ApiSuccessResponse<VerifyMagicLinkResponse> | VerifyMagicLinkResponse
+    >(
       servicePath.auth.refresh,
       data
     );
-    return res.data;
+    return unwrapApiResponse(res.data);
   },
 };

@@ -17,42 +17,6 @@ import { BookingsService } from "@/services/bookings"
 import type { BookingListItem } from "@/services/bookings/types"
 
 type TutorCollectionVariant = "favorite" | "current" | "active" | "past"
-type StudentTutorCollectionVariant = "favorite" | "current"
-
-const MOCK_TUTORS: Record<StudentTutorCollectionVariant, DashboardTutorCardItem> = {
-  favorite: {
-    id: "mock-favorite-tutor",
-    fullName: "Ariana Kongsawat",
-    avatarUrl: "https://ui-avatars.com/api/?name=Ariana+Kongsawat",
-    bio: "Conversation-focused English tutor with practical learning approach.",
-    baseRate: 450,
-    specialties: ["Conversation", "IELTS Speaking"],
-    subjects: ["English"],
-    languages: ["Thai (NATIVE)", "English (NATIVE)"],
-    avgRating: 4.9,
-    studentsCount: 128,
-    lessonsCount: 1040,
-    availability: [{ dayOfWeek: 1, startTime: "09:00", endTime: "12:00" }],
-    videoUrl: "https://example.com/mock-favorite-video.mp4",
-    videoThumbnailUrl: "https://images.unsplash.com/photo-1601933471666-8cc6c4dffb7f?w=800&q=80",
-  },
-  current: {
-    id: "mock-current-tutor",
-    fullName: "Napat Chaiyaporn",
-    avatarUrl: "https://ui-avatars.com/api/?name=Napat+Chaiyaporn",
-    bio: "Math tutor helping students improve confidence and exam results.",
-    baseRate: 550,
-    specialties: ["Calculus", "SAT Math"],
-    subjects: ["Mathematics"],
-    languages: ["Thai (NATIVE)", "English (INTERMEDIATE)"],
-    avgRating: 4.8,
-    studentsCount: 92,
-    lessonsCount: 780,
-    availability: [{ dayOfWeek: 3, startTime: "14:00", endTime: "18:00" }],
-    videoUrl: "https://example.com/mock-current-video.mp4",
-    videoThumbnailUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?w=800&q=80",
-  },
-}
 
 const dayOfWeekMap: Record<number, string> = {
   0: "Sun",
@@ -85,8 +49,8 @@ function toTutorCard(item: DashboardTutorCardItem): TutorCardProps {
     id: item.id,
     fullName: item.fullName,
     isActive: true,
-    avatarUrl: item.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",
-    flagUrl: "https://flagcdn.com/w40/th.png",
+    avatarUrl: item.avatarUrl ?? "/images/avatars/default-avatar.svg",
+    flagUrl: "/images/flags/default-th.svg",
     bio: item.bio ?? "",
     baseRate: item.baseRate,
     specialties: item.specialties ?? [],
@@ -114,8 +78,8 @@ function toStudentCard(item: BookingListItem): TutorCardProps {
     id: student?.id ?? item.id,
     fullName,
     isActive: true,
-    avatarUrl: student?.avatarUrl ?? "https://ui-avatars.com/api/?name=Student",
-    flagUrl: "https://flagcdn.com/w40/th.png",
+    avatarUrl: student?.avatarUrl ?? "/images/avatars/default-avatar.svg",
+    flagUrl: "/images/flags/default-th.svg",
     bio: "",
     baseRate: 0,
     specialties: [],
@@ -219,18 +183,12 @@ export default function TutorCollectionPage({ variant }: TutorCollectionPageProp
     return (query.data?.pages ?? []).flatMap((page) => page.data).map(toTutorCard)
   }, [query.data?.pages])
 
-  const useMockTutor = !isTutorStudentsVariant && query.isSuccess && tutors.length === 0
   const tutorStudents = variant === "active" ? activeStudents : pastStudents
-  const studentVariant = variant === "favorite" ? "favorite" : "current"
-  const tutorsToRender = useMockTutor
-    ? [toTutorCard(MOCK_TUTORS[studentVariant])]
-    : isTutorStudentsVariant
-      ? tutorStudents
-      : tutors
+  const tutorsToRender = isTutorStudentsVariant ? tutorStudents : tutors
 
   const firstPage = query.data?.pages?.[0]
   const total = isTutorStudentsVariant ? tutorStudents.length : firstPage?.total ?? 0
-  const displayTotal = useMockTutor ? 1 : total
+  const displayTotal = total
   const isLoading =
     isTutorStudentsVariant && isTutor
       ? activeBookingsQuery.isLoading || pastBookingsQuery.isLoading
@@ -319,7 +277,7 @@ export default function TutorCollectionPage({ variant }: TutorCollectionPageProp
               )}
             </div>
 
-            {!isTutorStudentsVariant && query.hasNextPage && !useMockTutor ? (
+            {!isTutorStudentsVariant && query.hasNextPage ? (
               <div className="mt-6 flex justify-center">
                 <BaseButton
                   onClick={() => query.fetchNextPage()}

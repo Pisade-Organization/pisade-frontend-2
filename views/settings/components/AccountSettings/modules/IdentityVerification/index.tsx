@@ -12,7 +12,7 @@ import { OnboardingProvider } from "@/views/onboarding/context/OnboardingProvide
 import { useOnboardingNavigation } from "@/views/onboarding/hooks/useOnboardingNavigation"
 import { AlertCircle, BadgeCheck, Clock3, ShieldCheck } from "lucide-react"
 import { useSession } from "next-auth/react"
-import { type ReactNode } from "react"
+import { useEffect, type ReactNode } from "react"
 
 function getVerificationStatus(onboardingStatus?: string) {
   if (onboardingStatus === "APPROVED") {
@@ -116,8 +116,16 @@ export default function IdentityVerification() {
   const { data: session } = useSession()
   const status = getVerificationStatus(session?.user?.onboardingStatus)
 
+  useEffect(() => {
+    return () => {
+      if (document.body.style.pointerEvents === "none") {
+        document.body.style.pointerEvents = ""
+      }
+    }
+  }, [])
+
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full flex flex-col gap-4 lg:mx-auto lg:max-w-5xl">
       <div className="w-full rounded-2xl border border-neutral-100 bg-white px-4 py-5 lg:px-12 lg:py-8">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex flex-col gap-2">

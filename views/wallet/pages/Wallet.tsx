@@ -14,7 +14,7 @@ import TutorWithdrawSection from "@/views/wallet/components/TutorWithdrawSection
 import WalletHeader from "@/views/wallet/components/WalletHeader"
 import WalletLayout from "@/views/wallet/components/WalletLayout"
 import WalletNavbar from "@/views/wallet/components/WalletNavbar"
-import type { WalletBankAccount, WalletPageProps } from "@/views/wallet/types"
+import type { WalletPageProps } from "@/views/wallet/types"
 import { useMyWalletSummary } from "@/hooks/settings/queries"
 
 type MobileWalletSection = "overview" | "held-funds" | "transaction-history"
@@ -27,21 +27,6 @@ export default function WalletPage({ role }: WalletPageProps) {
   const [activeMobileSection, setActiveMobileSection] = useState<MobileWalletSection>("overview")
   const [isStudentTopUpOpen, setIsStudentTopUpOpen] = useState(false)
   const [isTutorWithdrawOpen, setIsTutorWithdrawOpen] = useState(false)
-  const bankAccounts: WalletBankAccount[] = [
-    {
-      id: "bank-1",
-      accountName: "Tran Huyen",
-      lastFourDigits: "3761",
-      isDefault: true,
-    },
-    {
-      id: "bank-2",
-      accountName: "Tran Huyen",
-      lastFourDigits: "3761",
-      isDefault: false,
-    },
-  ]
-
   const isMobileDetailView = !isDesktop && activeMobileSection !== "overview"
   const mobileDetailTitle =
     activeMobileSection === "held-funds" ? "Held Funds" : "Transaction history"
@@ -107,10 +92,10 @@ export default function WalletPage({ role }: WalletPageProps) {
               </>
             )}
             {role === "tutor" ? (
-              <BankAccountSection
+                <BankAccountSection
                 title="Bank Account"
                 description="Add a bank account to send and receive payments directly in the app."
-                bankAccounts={bankAccounts}
+                bankAccounts={[]}
               />
             ) : null}
             {role === "tutor" ? (

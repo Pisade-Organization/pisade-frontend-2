@@ -25,7 +25,7 @@ export default function RecordYourVideo({
         Record Your Video
       </Typography>
 
-      <div className="hidden lg:block w-screen relative -left-4 lg:-left-8 border-t border-electric-violet-50"/>
+      <div className="hidden lg:block w-full border-t border-electric-violet-50"/>
 
       <div className="w-full flex flex-col lg:flex-row justify-center items-center gap-6">
         <div className="w-full lg:flex-1">

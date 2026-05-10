@@ -1,12 +1,13 @@
 "use client"
 import { useState, useEffect } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import SearchHero from "../components/SearchHero"
 import FilterPanel from "../components/filters/FilterPanel"
 import TutorListCard from "../components/TutorCard/TutorListCard"
 import { TutorCardProps } from "../types"
 import TutorGridCard from "../components/TutorCard/TutorGridCard"
 import Navbar from "@/components/Navbar"
-import { fetchTutorsPaginated } from "@/services/tutor"
+import { fetchLanguageOptions, fetchSubjectOptions, fetchTutorsPaginated } from "@/services/tutor"
 import Footer from "@/components/footer/Footer"
 
 function TutorListSkeleton() {
@@ -46,9 +47,19 @@ function TutorGridSkeleton() {
 }
 
 export default function SearchPage() {
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
     const [mode, setMode] = useState<'list' | 'grid'>('list')
-    const [minPrice, setMinPrice] = useState<number>(0)
-    const [maxPrice, setMaxPrice] = useState<number>(3000);
+    const [minPrice, setMinPrice] = useState<number>(Number(searchParams.get("minPrice") ?? 0))
+    const [maxPrice, setMaxPrice] = useState<number>(Number(searchParams.get("maxPrice") ?? 3000));
+    const [subject, setSubject] = useState<string>(searchParams.get("subject") || "Show All")
+    const [language, setLanguage] = useState<string[]>(
+        searchParams.get("language")?.split(",").filter(Boolean) ?? ["Show all languages"],
+    )
+    const [ranking, setRanking] = useState<string>(searchParams.get("ranking") || "Show all in this ranking")
+    const [subjectOptions, setSubjectOptions] = useState<string[]>([])
+    const [languageOptions, setLanguageOptions] = useState<string[]>([])
     const [tutors, setTutors] = useState<TutorCardProps[]>([])
     const [loading, setLoading] = useState(true)
     const [loadingMore, setLoadingMore] = useState(false)
@@ -57,11 +68,51 @@ export default function SearchPage() {
     const [totalTutors, setTotalTutors] = useState(0)
     const [loadError, setLoadError] = useState(false)
     const TUTORS_PER_PAGE = 6
+    const sort = ranking === "Starter"
+      ? "ranking"
+      : ranking === "Pro"
+        ? "ranking"
+        : ranking === "Master"
+          ? "ranking"
+          : undefined
+
+    const activeFilters = {
+        minPrice,
+        maxPrice,
+        subject: subject === "Show All" ? undefined : subject,
+        language:
+            language.length === 1 && language[0] === "Show all languages"
+                ? undefined
+                : language[0],
+        sort: sort as "rating" | "ranking" | "price_low" | "price_high" | undefined,
+    }
+
+    const syncUrl = () => {
+        const params = new URLSearchParams()
+        if (activeFilters.minPrice > 0) params.set("minPrice", String(activeFilters.minPrice))
+        if (activeFilters.maxPrice < 3000) params.set("maxPrice", String(activeFilters.maxPrice))
+        if (activeFilters.subject) params.set("subject", activeFilters.subject)
+        if (activeFilters.language) params.set("language", activeFilters.language)
+        if (ranking !== "Show all in this ranking") params.set("ranking", ranking)
+        const query = params.toString()
+        router.replace(query ? `${pathname}?${query}` : pathname)
+    }
+
+    useEffect(() => {
+        void fetchSubjectOptions().then(setSubjectOptions)
+        void fetchLanguageOptions().then(setLanguageOptions)
+    }, [])
+
+    useEffect(() => {
+        syncUrl()
+        setCurrentPage(1)
+        setTutors([])
+    }, [minPrice, maxPrice, subject, language, ranking])
 
     useEffect(() => {
         const fetchTutors = async () => {
             try {
-                const response = await fetchTutorsPaginated(1, TUTORS_PER_PAGE)
+                const response = await fetchTutorsPaginated(1, TUTORS_PER_PAGE, activeFilters)
                 setTutors(response.tutors as TutorCardProps[])
                 setTotalTutors(response.total)
                 setHasMore(response.hasMore)
@@ -75,7 +126,7 @@ export default function SearchPage() {
         }
 
         fetchTutors()
-    }, [])
+    }, [minPrice, maxPrice, subject, language, ranking])
 
     const loadMoreTutors = async () => {
         if (loadingMore || !hasMore) return
@@ -84,7 +135,7 @@ export default function SearchPage() {
         
         try {
             const nextPage = currentPage + 1
-            const response = await fetchTutorsPaginated(nextPage, TUTORS_PER_PAGE)
+            const response = await fetchTutorsPaginated(nextPage, TUTORS_PER_PAGE, activeFilters)
             
             setTutors(prev => [...prev, ...response.tutors as TutorCardProps[]])
             setCurrentPage(nextPage)
@@ -104,6 +155,14 @@ export default function SearchPage() {
                 mode={mode} setMode={setMode} 
                 minPrice={minPrice} setMinPrice={setMinPrice}
                 maxPrice={maxPrice} setMaxPrice={setMaxPrice}
+                subject={subject}
+                onSubjectChange={setSubject}
+                language={language}
+                onLanguageChange={setLanguage}
+                ranking={ranking}
+                onRankingChange={setRanking}
+                subjectOptions={subjectOptions}
+                languageOptions={languageOptions}
             />
             
             {/* TUTOR CARDS */}

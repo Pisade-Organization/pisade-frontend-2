@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { useSession } from "next-auth/react"
 import Navbar from "@/components/Navbar"
 import SidebarLayout from "../components/SidebarLayout"
 import ScheduleContent from "../components/ScheduleContent"
@@ -30,6 +31,7 @@ export default function SchedulePage({
 }: SchedulePageProps) {
   const [selectedDate, setSelectedDate] = useState(() => new Date())
   const [activeView, setActiveView] = useState<CalendarView>("day")
+  const { data: session } = useSession()
 
   const { from, to } = useMemo(() => {
     const range = getVisibleRange(selectedDate, activeView)
@@ -48,7 +50,7 @@ export default function SchedulePage({
   const bookings = bookingsData?.data ?? []
 
   const fullName = profile?.profile?.fullName ?? (role === "student" ? "Student" : "Tutor")
-  const avatarUrl = profile?.profile?.avatarUrl
+  const avatarUrl = session?.user?.avatarUrl ?? profile?.profile?.avatarUrl
   const timezone = profile?.profile?.timezone ?? "Asia/Bangkok"
   const tutorRanking = role === "tutor" ? (tutorProfile?.tutorRanking ?? null) : null
   const avgRating = role === "tutor" ? (tutorProfile?.avgRating ?? 0) : undefined

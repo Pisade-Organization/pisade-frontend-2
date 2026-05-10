@@ -222,11 +222,15 @@ export default function VideoUploadPlaceholder({
       )}
 
       {/* Choice Dialog */}
-      <Dialog open={showChoiceDialog && hasRecorded && hasLink} onOpenChange={(open) => {
+      <Dialog
+        modal={false}
+        open={showChoiceDialog && hasRecorded && hasLink}
+        onOpenChange={(open) => {
         if (!open) {
           onCloseDialog()
         }
-      }}>
+      }}
+      >
         <DialogContent 
           hideOverlay={true}
           hideClose={true}

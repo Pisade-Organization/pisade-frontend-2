@@ -20,6 +20,7 @@ export default function ProIcon({
       alt={alt}
       width={width}
       height={height}
+      style={{ width, height }}
       className={className}
     />
   );

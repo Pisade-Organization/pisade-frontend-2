@@ -13,7 +13,6 @@ const roleProtectedRoutes: Record<string, Role[]> = {
   "/tutor/dashboard": [Role.TUTOR],
   "/tutor/schedule": [Role.TUTOR],
   "/tutor/earnings-and-withdrawals": [Role.TUTOR],
-  "/tutor/wallet": [Role.TUTOR],
   "/tutor/students": [Role.TUTOR],
   "/tutor/class-management": [Role.TUTOR],
   "/tutor/onboarding": [Role.TUTOR],
@@ -95,7 +94,7 @@ function getRoleHome(locale: string, role?: Role, onboardingStatus?: string): st
 
 const handleI18nRouting = createIntlMiddleware(routing);
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (!pathname.startsWith("/en") && !pathname.startsWith("/th")) {

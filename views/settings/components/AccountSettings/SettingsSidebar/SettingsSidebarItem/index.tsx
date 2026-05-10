@@ -13,10 +13,10 @@ export default function SettingsSidebarItem({
 }: SettingsSidebarItemI) {
   return (
     <Link
-      href={disabled ? "#" : href}
+      href={href}
       onClick={onClick}
       className={clsx(
-        "w-full flex justify-start items-center gap-3 rounded-lg py-4 px-5 transition-colors",
+        "w-full flex justify-start items-center gap-3 rounded-lg py-4 px-5 transition-colors pointer-events-auto",
         isActive
           ? "bg-electric-violet-25 border border-electric-violet-50"
           : "bg-white",

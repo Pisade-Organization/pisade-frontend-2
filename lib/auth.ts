@@ -79,6 +79,7 @@ type Decoded = {
 const SKEW = 90; // refresh 90s before exp
 const REVALIDATE_EVERY = 5 * 60; // re-check user/profile every 5 minutes
 const REFRESH_FAILURE_WINDOW = 15 * 60; // failure counting window: 15 minutes
+// Allow a few refresh failures to tolerate transient backend/network issues before forcing sign-out.
 const MAX_REFRESH_FAILURES = 5; // only hard logout after repeated permanent failures
 const MAX_EXP_VALUE = 253402300799; // Year 9999 in seconds (to detect millisecond timestamps)
 const EPOCH_THRESHOLD = 1e12; // Threshold to differentiate seconds vs milliseconds

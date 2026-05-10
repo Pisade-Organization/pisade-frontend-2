@@ -1,11 +1,13 @@
 import axios from "axios";
 import { getSession } from "next-auth/react";
+import type { Session } from "next-auth";
+import { getApiBaseUrl } from "@/services/apiBaseUrl";
 
 const SESSION_CACHE_TTL_MS = 15_000;
 
-let cachedSession: any | null = null;
+let cachedSession: Session | null = null;
 let cachedSessionAt = 0;
-let sessionRequestInFlight: Promise<any | null> | null = null;
+let sessionRequestInFlight: Promise<Session | null> | null = null;
 
 async function getCachedSession() {
   const now = Date.now();
@@ -32,13 +34,13 @@ async function getCachedSession() {
 }
 
 const apiInstanceClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  baseURL: getApiBaseUrl(),
   withCredentials: true,
 });
 
 apiInstanceClient.interceptors.request.use(async (config) => {
   const session = await getCachedSession();
-  const token = (session as any)?.access_token;
+  const token = session?.access_token;
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

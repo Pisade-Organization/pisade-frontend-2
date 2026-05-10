@@ -6,30 +6,26 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import ResponsiveDropdown from "./ResponsiveDropdown";
 
-const LANGUAGES = [
-  "Show all languages",
-  "English",
-  "Thai",
-  "French",
-  "Arabic",
-  "Chinese",
-  "Japanese",
-  "Vietnamese",
-];
+interface LanguageDropdownProps {
+  options: string[];
+  value: string[];
+  onChange: (value: string[]) => void;
+}
 
-export function LanguageDropdown() {
+export function LanguageDropdown({ options, value, onChange }: LanguageDropdownProps) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<string[]>(["Show all languages"]);
+  const selected = value;
+  const languageOptions = ["Show all languages", ...options];
 
   const dropdownHeight = 260;
 
   const toggleSelection = (item: string) => {
     if (item === "Show all languages") {
-      setSelected(["Show all languages"]);
+      onChange(["Show all languages"]);
       return;
     }
 
-    setSelected((prev) => {
+    onChange(((prev) => {
       const filtered = prev.filter((s) => s !== "Show all languages");
       if (filtered.includes(item)) {
         const next = filtered.filter((s) => s !== item);
@@ -37,7 +33,7 @@ export function LanguageDropdown() {
       } else {
         return [...filtered, item];
       }
-    });
+    })(selected));
   };
 
   const isShowAll =
@@ -118,7 +114,7 @@ export function LanguageDropdown() {
         </button>
       )}
     >
-      {LANGUAGES.map((lang) => (
+      {languageOptions.map((lang) => (
         <button
           key={lang}
           onClick={() => toggleSelection(lang)}

@@ -8,8 +8,8 @@ import {
   TutorDetailData,
 } from "./types";
 
-const DEFAULT_FLAG_URL = "https://flagcdn.com/w40/th.png";
-const DEFAULT_AVATAR_URL = "https://ui-avatars.com/api/?name=Tutor";
+const DEFAULT_FLAG_URL = "/images/flags/default-th.svg";
+const DEFAULT_AVATAR_URL = "/images/avatars/default-avatar.svg";
 
 type RawTutor = Record<string, unknown>;
 
@@ -229,7 +229,19 @@ export async function fetchTutorDetailData(tutorId: string): Promise<TutorDetail
 /**
  * Fetch tutors with pagination (for search page)
  */
-export async function fetchTutorsPaginated(page: number = 1, limit: number = 6): Promise<{
+type SearchTutorFilters = {
+  subject?: string;
+  language?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sort?: "rating" | "ranking" | "price_low" | "price_high";
+};
+
+export async function fetchTutorsPaginated(
+  page: number = 1,
+  limit: number = 6,
+  filters: SearchTutorFilters = {},
+): Promise<{
   tutors: Tutor[];
   total: number;
   page: number;
@@ -242,7 +254,7 @@ export async function fetchTutorsPaginated(page: number = 1, limit: number = 6):
       | ApiSuccessResponse<{ tutors: RawTutor[]; total: number; page: number; totalPages: number }>
       | { tutors: RawTutor[]; total: number; page: number; totalPages: number }
     >(servicePath.tutor.getAllTutors, {
-      params: { page, limit },
+      params: { page, limit, ...filters },
     });
 
     const data = unwrapApiResponse(response.data);
@@ -265,6 +277,30 @@ export async function fetchTutorsPaginated(page: number = 1, limit: number = 6):
       hasMore: false,
       isError: true,
     };
+  }
+}
+
+export async function fetchSubjectOptions(): Promise<string[]> {
+  try {
+    const response = await apiInstancePublic.get<
+      ApiSuccessResponse<Array<{ id: string; name: string }>> | Array<{ id: string; name: string }>
+    >("/subjects");
+    const data = unwrapApiResponse(response.data);
+    return Array.isArray(data) ? data.map((item) => item.name).filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchLanguageOptions(): Promise<string[]> {
+  try {
+    const response = await apiInstancePublic.get<
+      ApiSuccessResponse<Array<{ id: string; name: string }>> | Array<{ id: string; name: string }>
+    >("/languages");
+    const data = unwrapApiResponse(response.data);
+    return Array.isArray(data) ? data.map((item) => item.name).filter(Boolean) : [];
+  } catch {
+    return [];
   }
 }
 

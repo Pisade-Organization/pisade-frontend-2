@@ -14,9 +14,12 @@ interface AccountSettingsLayoutProps {
 
 export default function AccountSettingsLayout({ items, children }: AccountSettingsLayoutProps) {
   const pathname = usePathname()
+  const locale = pathname.split("/")[1]
+  const localePrefix = locale === "en" || locale === "th" ? `/${locale}` : ""
 
   // Remove locale prefix from pathname for comparison (e.g., /en/settings/student/general -> /settings/student/general)
   const pathnameWithoutLocale = pathname.replace(/^\/(en|th)/, "")
+  const withLocale = (href: string) => `${localePrefix}${href}`
 
   // Map items for SettingsTab - combine payment-method and payment-history into single "Payment" tab
   const tabItems = items
@@ -29,12 +32,17 @@ export default function AccountSettingsLayout({ items, children }: AccountSettin
       if (href.includes("/payment-method")) {
         // Check if current path is payment-method or payment-history to mark as active
         const isActive = pathnameWithoutLocale.includes("/payment-method") || pathnameWithoutLocale.includes("/payment-history")
-        return { label: "Payment", href, isActive }
+        return { label: "Payment", href: withLocale(href), isActive }
       }
       // For other items, check if current path matches
       const isActive = pathnameWithoutLocale === href || pathnameWithoutLocale.startsWith(href + "/")
-      return { label, href, isActive }
+      return { label, href: withLocale(href), isActive }
     })
+
+  const desktopItems = items.map((item) => ({
+    ...item,
+    href: withLocale(item.href),
+  }))
 
   return (
     <div className="
@@ -53,12 +61,12 @@ export default function AccountSettingsLayout({ items, children }: AccountSettin
         </div>
 
         {/* Desktop: SettingsSidebar */}
-        <div className="hidden lg:block">
-          <SettingsSidebar items={items} currentPath={pathnameWithoutLocale} />
+        <div className="hidden lg:block lg:shrink-0 lg:relative lg:z-20">
+          <SettingsSidebar items={desktopItems} currentPath={pathname} />
         </div>
 
         {/* Main content */}
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 min-w-0 relative z-10">{children}</main>
       </div>
 
 

@@ -1,4 +1,4 @@
-import TutorSummary from "./TutorSummary/ index";
+import TutorSummary from "./TutorSummary";
 import CancellationNotice from "./CancellationNotice";
 import LessonInfo from "./LessonInfo";
 import CheckoutInfo from "./CheckoutInfo";

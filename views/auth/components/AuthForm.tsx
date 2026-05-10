@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { z } from "zod";
 import { AuthService } from "@/services/auth";
+import type { AxiosError } from "axios";
 import AuthTermsNotice from "./AuthTermsNotice";
 import GoogleButton from "./GoogleButton";
 import BaseInput from "@/components/base/BaseInput";
@@ -20,8 +21,33 @@ export default function AuthForm({ setEmailTo, setIsEmailSent, type = AUTH_TYPES
     const [error, setError] = useState<string>("");
 
     const isTutorSignup = type === AUTH_TYPES.TUTOR_SIGNUP
-    
-    
+
+    const getMagicLinkErrorMessage = (err: unknown): string => {
+        const axiosError = err as AxiosError<{ message?: string | string[] }>;
+        const status = axiosError.response?.status;
+
+        if (status === 429) {
+            return "Too many attempts, please try again shortly.";
+        }
+
+        if (status === 400) {
+            return "Invalid email.";
+        }
+
+        if (!status || status >= 500) {
+            return "Something went wrong, please try again.";
+        }
+
+        const message = axiosError.response?.data?.message;
+        if (typeof message === "string" && message.trim()) {
+            return message;
+        }
+        if (Array.isArray(message) && message.length > 0) {
+            return message[0];
+        }
+
+        return "Failed to send magic link.";
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,9 +63,9 @@ export default function AuthForm({ setEmailTo, setIsEmailSent, type = AUTH_TYPES
             }
             setEmailTo(email);
             setIsEmailSent(true);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
-            setError("Failed to send magic link.");
+            setError(getMagicLinkErrorMessage(err));
         } finally {
             setLoading(false);
         }

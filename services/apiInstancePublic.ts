@@ -1,7 +1,8 @@
 import axios from "axios";
+import { getApiBaseUrl } from "@/services/apiBaseUrl";
 
 const apiInstancePublic = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  baseURL: getApiBaseUrl(),
   withCredentials: false,
   timeout: 10000,
 });

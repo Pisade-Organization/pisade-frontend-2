@@ -26,7 +26,7 @@ export default function AddThumbnail({
         Add a thumbnail (optional)
       </Typography>
       
-      <div className="hidden lg:block w-screen relative -left-4 lg:-left-8 border-t border-electric-violet-50"/>
+      <div className="hidden lg:block w-full border-t border-electric-violet-50"/>
       
       <ThumbnailGuidelines />
       <ThumbnailUpload 

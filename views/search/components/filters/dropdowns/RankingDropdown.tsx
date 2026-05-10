@@ -36,11 +36,15 @@ const RANKINGS = [
   },
 ];
 
-export function RankingDropdown() {
-  const [selected, setSelected] = useState("Show all in this ranking");
+interface RankingDropdownProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export function RankingDropdown({ value, onChange }: RankingDropdownProps) {
   const [open, setOpen] = useState(false);
 
-  const isShowAll = selected === "Show all in this ranking";
+  const isShowAll = value === "Show all in this ranking";
   const dropdownHeight = 400;
 
   return (
@@ -73,7 +77,7 @@ export function RankingDropdown() {
                   transition={{ duration: 0.2 }}
                   className="text-[15px] text-neutral-800 font-normal truncate"
                 >
-                  {isShowAll ? "Tutor Ranking" : selected}
+                  {isShowAll ? "Tutor Ranking" : value}
                 </motion.span>
               ) : isShowAll ? (
                 <motion.span
@@ -109,7 +113,7 @@ export function RankingDropdown() {
                     transition={{ duration: 0.25, delay: 0.2 }}
                     className="text-[15px] text-neutral-800 font-normal truncate"
                   >
-                    {selected}
+                    {value}
                   </motion.span>
                 </motion.div>
               )}
@@ -123,12 +127,12 @@ export function RankingDropdown() {
         <button
           key={ranking.id}
           onClick={() => {
-            setSelected(ranking.name)
+            onChange(ranking.name)
             setOpen(false)
           }}
           className={cn(
             "flex items-start w-full border-b px-4 py-3 text-left transition",
-            selected === ranking.name
+            value === ranking.name
               ? "bg-electric-violet-50 text-electric-violet-600"
               : "text-neutral-700 hover:bg-neutral-50"
           )}
@@ -148,7 +152,7 @@ export function RankingDropdown() {
               <span
                 className={cn(
                   "font-semibold text-sm",
-                  selected === ranking.name
+                  value === ranking.name
                     ? "text-electric-violet-600"
                     : "text-neutral-900"
                 )}

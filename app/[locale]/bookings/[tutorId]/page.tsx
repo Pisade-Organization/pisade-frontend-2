@@ -10,7 +10,7 @@ import { fetchTutorDetailData } from "@/services/tutor";
 import { TutorDetailData } from "@/services/tutor/types";
 import { BookingDialogI } from "@/components/dialogs/BookLessonDialog/types";
 import Navbar from "@/components/Navbar";
-import TutorSummary from "@/components/shared/BookingSummary/TutorSummary/ index";
+import TutorSummary from "@/components/shared/BookingSummary/TutorSummary";
 import CancellationNotice from "@/components/shared/BookingSummary/CancellationNotice";
 import LessonInfo from "@/components/shared/BookingSummary/LessonInfo";
 import TimezoneSelector from "@/components/dialogs/BookLessonDialog/TimezoneSelector";

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import VideoGuidelines from "./VideoGuidelines"
 import VideoRequirements from "./VideoRequirements"
@@ -35,35 +35,20 @@ export default function OnboardingStepSix() {
   const { data: stepSixData, isLoading } = useStepSix()
   const saveStepSix = useSaveStepSix()
   const { registerStepActions, unregisterStepActions, setCanContinue } = useOnboardingNavigation()
-  
-  // Use refs to access latest values without including them in dependencies
-  const saveStepSixRef = useRef(saveStepSix)
-  const sessionRef = useRef(session)
-  const stepSixDataRef = useRef(stepSixData)
-  const videoKeyRef = useRef(videoKey)
-  const thumbnailKeyRef = useRef(thumbnailKey)
-  const selectedSourceRef = useRef(selectedSource)
-  const videoLinkRef = useRef(videoLink)
-  const isUploadingVideoRef = useRef(isUploadingVideo)
-  const isUploadingThumbnailRef = useRef(isUploadingThumbnail)
-  const videoUploadErrorRef = useRef(videoUploadError)
-  const thumbnailErrorRef = useRef(thumbnailError)
-  
-  // Keep refs in sync
-  useEffect(() => {
-    saveStepSixRef.current = saveStepSix
-    sessionRef.current = session
-    stepSixDataRef.current = stepSixData
-    videoKeyRef.current = videoKey
-    thumbnailKeyRef.current = thumbnailKey
-    selectedSourceRef.current = selectedSource
-    videoLinkRef.current = videoLink
-    isUploadingVideoRef.current = isUploadingVideo
-    isUploadingThumbnailRef.current = isUploadingThumbnail
-    videoUploadErrorRef.current = videoUploadError
-    thumbnailErrorRef.current = thumbnailError
-  })
 
+  // Defensive cleanup: ensure dialog lifecycle never leaves the page non-interactive.
+  useEffect(() => {
+    if (!showChoiceDialog && document.body.style.pointerEvents === "none") {
+      document.body.style.pointerEvents = ""
+    }
+
+    return () => {
+      if (document.body.style.pointerEvents === "none") {
+        document.body.style.pointerEvents = ""
+      }
+    }
+  }, [showChoiceDialog])
+  
   // Load existing data
   useEffect(() => {
     if (stepSixData) {
@@ -106,7 +91,7 @@ export default function OnboardingStepSix() {
 
   // Handle video upload (when blob is recorded)
   const handleVideoUpload = async (blob: Blob) => {
-    const userId = sessionRef.current?.user?.id
+    const userId = session?.user?.id
     if (!userId) {
       setVideoUploadError("User ID not found in session")
       return
@@ -140,14 +125,12 @@ export default function OnboardingStepSix() {
         throw new Error("Failed to upload video")
       }
 
-      // Step 3: Store the key in state and ref immediately
+      // Step 3: Store the key in state
       setVideoKey(presignedResponse.key)
-      videoKeyRef.current = presignedResponse.key
       setVideoUploadError(null)
     } catch (err) {
       setVideoUploadError(err instanceof Error ? err.message : "Failed to upload video")
       setVideoKey(null)
-      videoKeyRef.current = null
     } finally {
       setIsUploadingVideo(false)
     }
@@ -160,15 +143,13 @@ export default function OnboardingStepSix() {
     
     if (error || !file) {
       setThumbnailKey(null)
-      thumbnailKeyRef.current = null
       return
     }
 
-    const userId = sessionRef.current?.user?.id
+    const userId = session?.user?.id
     if (!userId) {
       setThumbnailError("User ID not found in session")
       setThumbnailKey(null)
-      thumbnailKeyRef.current = null
       return
     }
 
@@ -197,37 +178,32 @@ export default function OnboardingStepSix() {
         throw new Error("Failed to upload thumbnail")
       }
 
-      // Step 3: Store the key in state and ref immediately
-      console.log('Thumbnail upload successful, storing key:', presignedResponse.key)
+      // Step 3: Store the key in state
       setThumbnailKey(presignedResponse.key)
-      // Update ref immediately to ensure it's available for save function
-      thumbnailKeyRef.current = presignedResponse.key
       setThumbnailError(null)
     } catch (err) {
       setThumbnailError(err instanceof Error ? err.message : "Failed to upload thumbnail")
       setThumbnailKey(null)
-      thumbnailKeyRef.current = null
     } finally {
       setIsUploadingThumbnail(false)
     }
   }
 
-  // Register step actions
+  // Register using live closures so callbacks always use current state.
   useEffect(() => {
     const validate = async () => {
-      if (isUploadingVideoRef.current || isUploadingThumbnailRef.current) {
+      if (isUploadingVideo || isUploadingThumbnail) {
         return false
       }
 
-      if (videoUploadErrorRef.current || thumbnailErrorRef.current) {
+      if (videoUploadError || thumbnailError) {
         return false
       }
 
-      const selectedSource = selectedSourceRef.current
-      const hasExistingVideoLink = Boolean(stepSixDataRef.current?.videoLink)
+      const hasExistingVideoLink = Boolean(stepSixData?.videoLink)
 
       if (selectedSource === "link") {
-        const trimmedVideoLink = videoLinkRef.current.trim()
+        const trimmedVideoLink = videoLink.trim()
 
         if (!trimmedVideoLink && !hasExistingVideoLink) {
           return false
@@ -249,21 +225,20 @@ export default function OnboardingStepSix() {
         thumbnailKey?: string | null
       } = {}
 
-      const selectedSource = selectedSourceRef.current
-      const hasExistingRecordedVideo = Boolean(stepSixDataRef.current?.videoUrl)
-      const existingVideoLink = stepSixDataRef.current?.videoLink?.trim() || ""
-      const trimmedVideoLink = videoLinkRef.current.trim()
+      const hasExistingRecordedVideo = Boolean(stepSixData?.videoUrl)
+      const existingVideoLink = stepSixData?.videoLink?.trim() || ""
+      const trimmedVideoLink = videoLink.trim()
       const hasNewVideoUpload =
-        Boolean(videoKeyRef.current && videoKeyRef.current.includes("/temp/"))
+        Boolean(videoKey && videoKey.includes("/temp/"))
       const hasNewThumbnailUpload =
-        Boolean(thumbnailKeyRef.current && thumbnailKeyRef.current.includes("/temp/"))
+        Boolean(thumbnailKey && thumbnailKey.includes("/temp/"))
 
       // Save only newly uploaded temp files.
       if (
         selectedSource === "recorded" &&
         hasNewVideoUpload
       ) {
-        payload.videoKey = videoKeyRef.current ?? undefined
+        payload.videoKey = videoKey ?? undefined
       }
 
       if (
@@ -279,7 +254,7 @@ export default function OnboardingStepSix() {
       }
 
       if (hasNewThumbnailUpload) {
-        payload.thumbnailKey = thumbnailKeyRef.current
+        payload.thumbnailKey = thumbnailKey
       }
 
       if (
@@ -295,14 +270,27 @@ export default function OnboardingStepSix() {
         return
       }
 
-      await saveStepSixRef.current.mutateAsync(payload)
+      await saveStepSix.mutateAsync(payload)
     }
 
     registerStepActions(6, { validate, save })
     return () => {
       unregisterStepActions(6)
     }
-  }, [registerStepActions, unregisterStepActions])
+  }, [
+    registerStepActions,
+    unregisterStepActions,
+    selectedSource,
+    stepSixData,
+    videoLink,
+    videoKey,
+    thumbnailKey,
+    isUploadingVideo,
+    isUploadingThumbnail,
+    videoUploadError,
+    thumbnailError,
+    saveStepSix,
+  ])
 
   if (isLoading) return <p>Loading...</p>
 

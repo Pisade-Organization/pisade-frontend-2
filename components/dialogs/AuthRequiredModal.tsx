@@ -8,9 +8,11 @@ import BaseButton from "@/components/base/BaseButton";
 import Typography from "@/components/base/Typography";
 import { X } from "lucide-react";
 import BaseInput from "@/components/base/BaseInput";
-import { BaseCheckbox } from "@/components/base/Checkbox";
 import GoogleButton from "@/views/auth/components/GoogleButton";
 import { AUTH_TYPES } from "@/views/auth/types/auth.enum";
+import { AuthService } from "@/services/auth";
+import { z } from "zod";
+import type { AxiosError } from "axios";
 
 interface AuthRequiredModalProps {
   open: boolean;
@@ -26,12 +28,41 @@ export default function AuthRequiredModal({
   const router = useRouter();
   const pathname = usePathname();
   const locale = pathname?.split("/")[1] || "en";
-  const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
-  const handleSignIn = () => {
+  const handleOpenSignIn = () => {
     onOpenChange(false);
     router.push(`/${locale}/signin`);
+  };
+
+  const handleSignUp = async () => {
+    const parsed = z.string().email().safeParse(email.trim());
+    if (!parsed.success) {
+      setError("Please enter a valid email.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    try {
+      await AuthService.sendMagicLink({ email: parsed.data });
+      setEmailSent(true);
+    } catch (err) {
+      const axiosError = err as AxiosError<{ message?: string | string[] }>;
+      const message = axiosError.response?.data?.message;
+      if (typeof message === "string" && message.trim()) {
+        setError(message);
+      } else if (Array.isArray(message) && message.length > 0) {
+        setError(message[0]);
+      } else {
+        setError("Failed to send magic link. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,7 +111,7 @@ export default function AuthRequiredModal({
             <DialogDescription asChild>
               <Typography variant={{ base: "body-3", lg: "body-2" }} color="neutral-400" className="text-center">
                 Already have an account?{" "}
-                <button type="button" className="underline" onClick={handleSignIn}>
+                <button type="button" className="underline" onClick={handleOpenSignIn}>
                   Log in
                 </button>
               </Typography>
@@ -89,32 +120,28 @@ export default function AuthRequiredModal({
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 lg:gap-5">
-          <BaseInput
-            type="email"
-            title="Email"
-            required
-            placeholder="Enter your email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-
-          <div className="flex justify-start items-center gap-2">
-            <BaseCheckbox
-              checked={rememberMe}
-              onChange={setRememberMe}
-              aria-label="Remember me"
+        {emailSent ? (
+          <Typography variant={{ base: "body-2", lg: "body-2" }} color="neutral-700" className="text-center">
+            Check your inbox at <span className="font-medium">{email}</span> to continue.
+          </Typography>
+        ) : (
+          <div className="flex flex-col gap-4 lg:gap-5">
+            <BaseInput
+              type="email"
+              title="Email"
+              required
+              placeholder="Enter your email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              errorMessage={error}
             />
-            <Typography variant={{ base: "body-3", lg: "body-2" }} color="neutral-800" className="text-center">
-              Remember me
-            </Typography>
           </div>
-        </div>
+        )}
 
         {/* SIGN UP BUTTON OR CONTINUE WITH GOOGLE */}
         <div className="flex flex-col gap-4">
-          <BaseButton onClick={handleSignIn} disabled={!email.trim()}>
-            Sign up
+          <BaseButton onClick={emailSent ? () => onOpenChange(false) : handleSignUp} disabled={!email.trim() || loading}>
+            {loading ? "Sending..." : emailSent ? "Done" : "Sign up"}
           </BaseButton>
           <Typography variant={{ base: "body-3" }} color="neutral-700" className="text-center">
             or

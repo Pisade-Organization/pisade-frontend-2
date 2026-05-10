@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useStepEight } from "@/hooks/tutors/onboarding/queries/useStepEight"
 import { useSaveStepEight } from "@/hooks/tutors/onboarding/mutations/useUpdateStepEight"
 import { useOnboardingNavigation } from "../../hooks/useOnboardingNavigation"
@@ -62,26 +62,6 @@ export default function OnboardingStepEight() {
   const saveStepEight = useSaveStepEight()
   const { registerStepActions, unregisterStepActions } = useOnboardingNavigation()
   
-  // Use refs to access latest values without including them in dependencies
-  const saveStepEightRef = useRef(saveStepEight)
-  const stepEightDataRef = useRef(stepEightData)
-  const lessonPriceRef = useRef(lessonPrice)
-  const withdrawalMethodRef = useRef(withdrawalMethod)
-  const phoneNumberRef = useRef(phoneNumber)
-  const bankNameRef = useRef(bankName)
-  const accountNumberRef = useRef(accountNumber)
-  
-  // Keep refs in sync
-  useEffect(() => {
-    saveStepEightRef.current = saveStepEight
-    stepEightDataRef.current = stepEightData
-    lessonPriceRef.current = lessonPrice
-    withdrawalMethodRef.current = withdrawalMethod
-    phoneNumberRef.current = phoneNumber
-    bankNameRef.current = bankName
-    accountNumberRef.current = accountNumber
-  })
-
   // Load existing data
   useEffect(() => {
     if (stepEightData) {
@@ -117,26 +97,27 @@ export default function OnboardingStepEight() {
   }, [stepEightData])
 
   // Register step actions
+  // Register with live closure dependencies so callbacks always use current step state.
   useEffect(() => {
     const validate = async () => {
       // Validate lesson price is provided
-      if (!lessonPriceRef.current || lessonPriceRef.current.trim() === '') {
+      if (!lessonPrice || lessonPrice.trim() === '') {
         return false
       }
       
       // Validate withdrawal method specific fields
-      if (withdrawalMethodRef.current === "Prompt Pay") {
+      if (withdrawalMethod === "Prompt Pay") {
         // Phone number should be provided and valid (non-empty after removing leading 0)
-        const phone = phoneNumberRef.current.trim()
+        const phone = phoneNumber.trim()
         if (!phone || phone.length === 0) {
           return false
         }
-      } else if (withdrawalMethodRef.current === "Bank transfer") {
+      } else if (withdrawalMethod === "Bank transfer") {
         // Bank name and account number should be provided
-        if (!bankNameRef.current || bankNameRef.current.trim() === '') {
+        if (!bankName || bankName.trim() === '') {
           return false
         }
-        if (!accountNumberRef.current || accountNumberRef.current.trim() === '') {
+        if (!accountNumber || accountNumber.trim() === '') {
           return false
         }
       }
@@ -145,36 +126,46 @@ export default function OnboardingStepEight() {
     }
 
     const save = async () => {
-      const apiWithdrawalMethod = displayToApi[withdrawalMethodRef.current]
+      const apiWithdrawalMethod = displayToApi[withdrawalMethod]
       
       const payload = normalizeStepEightPayload({
-        lessonPrice: lessonPriceRef.current ? parseInt(lessonPriceRef.current, 10) : undefined,
+        lessonPrice: lessonPrice ? parseInt(lessonPrice, 10) : undefined,
         withdrawalMethod: apiWithdrawalMethod,
-        withdrawalPhoneNumber: phoneNumberRef.current || undefined,
-        bankName: bankNameRef.current || undefined,
-        bankAccountNumber: accountNumberRef.current || undefined,
+        withdrawalPhoneNumber: phoneNumber || undefined,
+        bankName: bankName || undefined,
+        bankAccountNumber: accountNumber || undefined,
       })
 
       const existingPayload = normalizeStepEightPayload({
-        lessonPrice: stepEightDataRef.current?.lessonPrice ?? undefined,
-        withdrawalMethod: stepEightDataRef.current?.withdrawalMethod as ApiWithdrawalMethod | undefined,
-        withdrawalPhoneNumber: stepEightDataRef.current?.withdrawalPhoneNumber ?? undefined,
-        bankName: stepEightDataRef.current?.bankName ?? undefined,
-        bankAccountNumber: stepEightDataRef.current?.bankAccountNumber ?? undefined,
+        lessonPrice: stepEightData?.lessonPrice ?? undefined,
+        withdrawalMethod: stepEightData?.withdrawalMethod as ApiWithdrawalMethod | undefined,
+        withdrawalPhoneNumber: stepEightData?.withdrawalPhoneNumber ?? undefined,
+        bankName: stepEightData?.bankName ?? undefined,
+        bankAccountNumber: stepEightData?.bankAccountNumber ?? undefined,
       })
 
       if (JSON.stringify(payload) === JSON.stringify(existingPayload)) {
         return
       }
 
-      await saveStepEightRef.current.mutateAsync(payload)
+      await saveStepEight.mutateAsync(payload)
     }
 
     registerStepActions(8, { validate, save })
     return () => {
       unregisterStepActions(8)
     }
-  }, [registerStepActions, unregisterStepActions])
+  }, [
+    registerStepActions,
+    unregisterStepActions,
+    lessonPrice,
+    withdrawalMethod,
+    phoneNumber,
+    bankName,
+    accountNumber,
+    stepEightData,
+    saveStepEight,
+  ])
 
   if (isLoading) return <p>Loading...</p>
 
