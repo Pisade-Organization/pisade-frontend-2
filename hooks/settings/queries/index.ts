@@ -10,3 +10,4 @@ export * from "./useMyWalletSummary";
 export * from "./useMyWalletTransactions";
 export * from "./useTutorWalletSummary";
 export * from "./useTutorWithdrawals";
+export * from "./useTutorPayoutAccount";

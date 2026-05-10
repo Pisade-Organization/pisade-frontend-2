@@ -125,6 +125,34 @@ export interface CheckoutBookingDto {
   savePaymentMethod?: boolean;
 }
 
+export interface CheckoutBookingConfirmedResponse {
+  status: "CONFIRMED";
+  bookingId: string;
+  paymentTransactionId: string;
+}
+
+export interface CheckoutBookingPendingTopupResponse {
+  status: "PENDING_TOPUP";
+  bookingId: string;
+  shortfall: number;
+  topupAmount: number;
+  topupTransactionId: string;
+  payment: {
+    provider: "STRIPE";
+    method: "PROMPTPAY" | "CARD";
+    paymentIntentId: string;
+    status: string;
+    clientSecret?: string | null;
+    qrCodeUrl?: string | null;
+    expiresAt?: string | null;
+    nextAction?: unknown;
+  };
+}
+
+export type CheckoutBookingResponse =
+  | CheckoutBookingConfirmedResponse
+  | CheckoutBookingPendingTopupResponse;
+
 export interface CancelBookingDto {
   reason: string;
 }

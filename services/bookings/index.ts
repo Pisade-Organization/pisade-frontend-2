@@ -5,6 +5,7 @@ import type {
   BookingDetail,
   CancelBookingDto,
   CheckoutBookingDto,
+  CheckoutBookingResponse,
   CreateBookingDto,
   CreateBookingResponse,
   GetBookingsParams,
@@ -38,9 +39,14 @@ export const BookingsService = {
     return unwrapApiResponse(response.data);
   },
 
-  async checkout(bookingId: string, payload: CheckoutBookingDto) {
+  async checkout(
+    bookingId: string,
+    payload: CheckoutBookingDto,
+  ): Promise<CheckoutBookingResponse> {
     const path = servicePath.bookings.checkout.replace(":id", bookingId);
-    const response = await apiInstanceClient.post(path, payload);
+    const response = await apiInstanceClient.post<
+      ApiSuccessResponse<CheckoutBookingResponse> | CheckoutBookingResponse
+    >(path, payload);
     return unwrapApiResponse(response.data);
   },
 

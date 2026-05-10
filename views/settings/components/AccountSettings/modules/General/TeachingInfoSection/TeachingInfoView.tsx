@@ -11,9 +11,8 @@ export default function TeachingInfoView({
 }: TeachingInfoViewI) {
   return (
     <>
-      <InfoRow label="Subject you teach" value={subject} />
-      <InfoRow label="Language" value={languages} />
+      <InfoRow label="Subject you teach" value={subject || "-"} />
+      <InfoRow label="Language" value={languages || "-"} />
     </>
   )
 }
-

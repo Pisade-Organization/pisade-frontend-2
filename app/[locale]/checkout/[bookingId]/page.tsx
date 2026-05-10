@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation"
+import Checkout from "@/views/checkout/pages/Checkout";
 
 export default function CheckoutPage() {
-  notFound()
+  return <Checkout />;
 }

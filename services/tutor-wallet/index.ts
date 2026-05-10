@@ -3,6 +3,8 @@ import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiRespon
 import { servicePath } from "@/services/servicePath";
 import type {
   GetTutorWithdrawalsParams,
+  TutorPayoutAccount,
+  TutorPayoutAccountLinkResponse,
   RequestTutorWithdrawDto,
   RequestTutorWithdrawResponse,
   TutorWalletSummary,
@@ -34,6 +36,32 @@ export const TutorWalletService = {
     const response = await apiInstanceClient.get<
       ApiSuccessResponse<TutorWalletSummary> | TutorWalletSummary
     >(servicePath.tutorWallet.getSummary);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async getPayoutAccount(): Promise<TutorPayoutAccount> {
+    const response = await apiInstanceClient.get<
+      ApiSuccessResponse<TutorPayoutAccount> | TutorPayoutAccount
+    >(servicePath.tutorWallet.getPayoutAccount);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async createPayoutAccountOnboardingLink(): Promise<TutorPayoutAccountLinkResponse> {
+    const response = await apiInstanceClient.post<
+      | ApiSuccessResponse<TutorPayoutAccountLinkResponse>
+      | TutorPayoutAccountLinkResponse
+    >(servicePath.tutorWallet.createPayoutAccountOnboardingLink);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async createPayoutAccountDashboardLink(): Promise<TutorPayoutAccountLinkResponse> {
+    const response = await apiInstanceClient.post<
+      | ApiSuccessResponse<TutorPayoutAccountLinkResponse>
+      | TutorPayoutAccountLinkResponse
+    >(servicePath.tutorWallet.createPayoutAccountDashboardLink);
 
     return unwrapApiResponse(response.data);
   },

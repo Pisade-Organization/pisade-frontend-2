@@ -1,5 +1,5 @@
 "use client"
-import { createContext, useCallback, useContext, useMemo, useState, useEffect, ReactNode } from "react"
+import { createContext, useCallback, useContext, useMemo, useState, useEffect, useRef, ReactNode } from "react"
 
 type Direction = "increasing" | "decreasing"
 
@@ -34,9 +34,9 @@ export function OnboardingProvider({ children, initialStep = 1, totalSteps = 9 }
   const [step, setStepState] = useState<number>(initialStep)
   const [direction, setDirection] = useState<Direction>("increasing")
   const [isBusy, setIsBusy] = useState<boolean>(false)
-  const [actionsRegistry, setActionsRegistry] = useState<Map<number, StepActions>>(new Map())
   const [canContinue, setCanContinue] = useState<boolean>(true)
   const [hasInitialized, setHasInitialized] = useState<boolean>(false)
+  const actionsRegistryRef = useRef<Map<number, StepActions>>(new Map())
 
   // Update step when initialStep changes (e.g., when API data loads)
   useEffect(() => {
@@ -77,26 +77,18 @@ export function OnboardingProvider({ children, initialStep = 1, totalSteps = 9 }
   }, [totalSteps])
 
   const registerStepActions = useCallback((s: number, actions: StepActions) => {
-    setActionsRegistry(prev => {
-      const nextMap = new Map(prev)
-      nextMap.set(s, actions)
-      return nextMap
-    })
+    actionsRegistryRef.current.set(s, actions)
   }, [])
 
   const unregisterStepActions = useCallback((s: number) => {
-    setActionsRegistry(prev => {
-      const nextMap = new Map(prev)
-      nextMap.delete(s)
-      return nextMap
-    })
+    actionsRegistryRef.current.delete(s)
   }, [])
 
   const isFinalStep = step === totalSteps
   const continueLabel = isFinalStep ? "Submit" : "Continue"
 
   const performContinue = useCallback(async () => {
-    const actions = actionsRegistry.get(step)
+    const actions = actionsRegistryRef.current.get(step)
     setIsBusy(true)
     try {
       if (actions?.validate) {
@@ -116,7 +108,7 @@ export function OnboardingProvider({ children, initialStep = 1, totalSteps = 9 }
     } finally {
       setIsBusy(false)
     }
-  }, [actionsRegistry, step, isFinalStep, next])
+  }, [step, isFinalStep, next])
 
   const performBack = useCallback(() => {
     if (isBusy) return
@@ -170,5 +162,4 @@ export function useOnboardingContext(): OnboardingContextValue {
   }
   return ctx
 }
-
 

@@ -66,7 +66,8 @@ export interface MyTutorAvailability {
 export interface MyTutorProfile {
   videoUrl: string | null;
   specialties: string[];
-  subjects: MyTutorSubject[];
+  subjects: string[];
+  languages: string[];
   baseRate: number;
   availabilities: MyTutorAvailability[];
   tutorRanking?: "STARTER" | "PRO" | "MASTER" | null;

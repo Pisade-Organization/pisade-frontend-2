@@ -20,6 +20,7 @@ export const settingsQueryKeys = {
     [...settingsQueryKeys.all, "wallet-transactions", params] as const,
 
   tutorWalletSummary: () => [...settingsQueryKeys.all, "tutor-wallet-summary"] as const,
+  tutorPayoutAccount: () => [...settingsQueryKeys.all, "tutor-payout-account"] as const,
   tutorWithdrawals: (params: GetTutorWithdrawalsParams) =>
     [...settingsQueryKeys.all, "tutor-withdrawals", params] as const,
 };

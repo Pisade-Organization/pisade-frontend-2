@@ -1,6 +1,10 @@
+"use client"
+
+import { useState } from "react"
 import Image from "next/image"
 
 export default function UserAvatar({ avatarUrl, fullName, size = 44, className = "" }: { avatarUrl?: string; fullName?: string; size?: number; className?: string }) {
+  const [imageFailed, setImageFailed] = useState(false)
   const initials = (fullName || "")
     .split(" ")
     .filter(Boolean)
@@ -8,7 +12,7 @@ export default function UserAvatar({ avatarUrl, fullName, size = 44, className =
     .map((part) => part[0]?.toUpperCase())
     .join("")
 
-  if (!avatarUrl) {
+  if (!avatarUrl || imageFailed) {
     return (
       <div className={`rounded-full bg-neutral-200 text-neutral-700 flex items-center justify-center text-xs font-medium ${className}`.trim()} style={{ width: size, height: size }}>
         {initials || ""}
@@ -24,7 +28,7 @@ export default function UserAvatar({ avatarUrl, fullName, size = 44, className =
       height={size}
       className={`rounded-full ${className}`.trim()}
       style={{ width: size, height: size }}
+      onError={() => setImageFailed(true)}
     />
   )
 }
-

@@ -1,145 +1,226 @@
 "use client"
-import { useState, useEffect } from "react"
-import BillingMethodsHeader from "./BillingMethodsHeader"
-import BillingMethodCard from "./BillingMethodCard"
-import BaseButton from "@/components/base/BaseButton"
-import { Plus } from "lucide-react"
-import DesktopAddBillingMethodDialog from "./AddBillingMethod/DesktopAddBillingMethodDialog"
-import MobileAddBillingMethodPage from "./AddBillingMethod/MobileAddBillingMethodPage"
-import DeleteCardDialog from "./DeleteCardDialog"
-import useMediaQuery from "@/hooks/useMediaQuery"
 
-const billingMethods: Array<{
-  fullName: string
-  lastFourDigits: string
-  isDefault: boolean
-  cardType: string
-}> = []
+import { useState } from "react"
+import BaseButton from "@/components/base/BaseButton"
+import Typography from "@/components/base/Typography"
+import BillingMethodsHeader from "./BillingMethodsHeader"
+import {
+  useCreateTutorPayoutAccountDashboardLink,
+  useCreateTutorPayoutAccountOnboardingLink,
+} from "@/hooks/settings/mutations"
+import { useTutorPayoutAccount } from "@/hooks/settings/queries"
+import { RefreshCcw, ShieldCheck, University } from "lucide-react"
+
+function formatRequirement(requirement: string) {
+  return requirement
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ")
+}
 
 export default function BillingMethods() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isMobilePageOpen, setIsMobilePageOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [selectedCardForDelete, setSelectedCardForDelete] = useState<{
-    lastFourDigits: string
-    cardType: string
-    index: number
-  } | null>(null)
-  const isDesktop = useMediaQuery("(min-width: 1024px)")
-  const isMobile = !isDesktop
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const payoutAccountQuery = useTutorPayoutAccount()
+  const onboardingLinkMutation = useCreateTutorPayoutAccountOnboardingLink()
+  const dashboardLinkMutation = useCreateTutorPayoutAccountDashboardLink()
 
-  // Keep overlays consistent when breakpoint changes
-  useEffect(() => {
-    if (isMobile) {
-      setIsDialogOpen(false)
-    } else {
-      setIsMobilePageOpen(false)
-    }
-  }, [isMobile])
+  const payoutAccount = payoutAccountQuery.data
+  const isConnected = payoutAccount?.isConnected ?? false
+  const isReadyForWithdrawals = payoutAccount?.payoutsEnabled ?? false
 
-  // Prevent body scroll when mobile page is open
-  useEffect(() => {
-    if (isMobile && isMobilePageOpen) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = ""
-    }
-    return () => {
-      document.body.style.overflow = ""
-    }
-  }, [isMobile, isMobilePageOpen])
+  const handleConnect = async () => {
+    setErrorMessage(null)
 
-  const handleAddMethod = () => {
-    if (isMobile) {
-      setIsMobilePageOpen(true)
-    } else {
-      setIsDialogOpen(true)
+    try {
+      const result = await onboardingLinkMutation.mutateAsync()
+      window.location.assign(result.url)
+    } catch {
+      setErrorMessage("Unable to open Stripe onboarding right now.")
     }
   }
 
-  const handleDeleteCard = (index: number) => {
-    const card = billingMethods[index]
-    if (!card) return
-    setSelectedCardForDelete({
-      lastFourDigits: card.lastFourDigits,
-      cardType: card.cardType,
-      index,
-    })
-    setIsDeleteDialogOpen(true)
-  }
+  const handleManage = async () => {
+    setErrorMessage(null)
 
-  const handleConfirmDelete = () => {
-    if (selectedCardForDelete) {
-      console.log("Deleting card:", selectedCardForDelete)
-      setIsDeleteDialogOpen(false)
-      setSelectedCardForDelete(null)
+    try {
+      const result = await dashboardLinkMutation.mutateAsync()
+      window.open(result.url, "_blank", "noopener,noreferrer")
+    } catch {
+      setErrorMessage("Unable to open the Stripe payout dashboard right now.")
     }
-  }
-
-  const handleSetDefault = (index: number) => {
-    console.log("Setting card as default:", index)
   }
 
   return (
-    <>
-      {/* Hide main content when mobile page is open */}
-      <div className={`bg-white w-full flex flex-col gap-4 lg:py-8 lg:px-12 rounded-2xl ${isMobile && isMobilePageOpen ? 'hidden' : ''}`}>
-        <BillingMethodsHeader />
+    <div className="bg-white w-full flex flex-col gap-4 lg:py-8 lg:px-12 rounded-2xl">
+      <BillingMethodsHeader />
 
-        <div className="w-full flex flex-col gap-3">
-          { billingMethods.map((card, index) => (
-            <BillingMethodCard
-              key={index}
-              fullName={card.fullName}
-              lastFourDigits={card.lastFourDigits}
-              isDefault={card.isDefault}
-              cardType={card.cardType}
-              onSetDefault={() => handleSetDefault(index)}
-              onDelete={() => handleDeleteCard(index)}
-            />
-          ))}
+      <section className="rounded-2xl border border-neutral-50 p-4 lg:p-5 flex flex-col gap-4">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-electric-violet-400" />
+              <Typography variant={{ base: "label-2", lg: "title-2" }} color="neutral-800">
+                Stripe Payout Account
+              </Typography>
+            </div>
 
-
-          <div>
-            <BaseButton 
-              variant="secondary"
-              typeStyle="borderless"
-              className=""
-              iconLeft={<Plus className="text-deep-royal-indigo-700 w-5 h-5" />}
-              onClick={handleAddMethod}
-            >
-              Add Method
-            </BaseButton>
+            <Typography variant={{ base: "body-3", lg: "body-2" }} color="neutral-500">
+              Tutors connect a Stripe Express account for real payout methods and withdrawal
+              verification.
+            </Typography>
           </div>
 
+          <div className="flex flex-wrap gap-2">
+            <BaseButton
+              type="button"
+              variant="secondary"
+              typeStyle="outline"
+              onClick={() => payoutAccountQuery.refetch()}
+              disabled={payoutAccountQuery.isFetching}
+              iconLeft={<RefreshCcw className="h-4 w-4" />}
+            >
+              Refresh
+            </BaseButton>
+
+            {!isConnected ? (
+              <BaseButton
+                type="button"
+                variant="secondary"
+                onClick={handleConnect}
+                disabled={onboardingLinkMutation.isPending}
+              >
+                Connect Stripe
+              </BaseButton>
+            ) : (
+              <BaseButton
+                type="button"
+                variant="secondary"
+                onClick={handleManage}
+                disabled={dashboardLinkMutation.isPending}
+              >
+                Manage in Stripe
+              </BaseButton>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Desktop: Show Dialog */}
-      {!isMobile && (
-        <DesktopAddBillingMethodDialog 
-          open={isDialogOpen} 
-          onOpenChange={setIsDialogOpen} 
-        />
-      )}
+        {errorMessage ? (
+          <div className="rounded-xl bg-red-50 px-4 py-3">
+            <Typography variant={{ base: "body-3" }} color="red-normal">
+              {errorMessage}
+            </Typography>
+          </div>
+        ) : null}
 
-      {/* Mobile: Show Page as Full-Screen Overlay */}
-      {isMobile && isMobilePageOpen && (
-        <MobileAddBillingMethodPage 
-          onBack={() => setIsMobilePageOpen(false)}
-        />
-      )}
+        {payoutAccountQuery.isLoading ? (
+          <Typography variant={{ base: "body-3" }} color="neutral-500">
+            Loading payout account details...
+          </Typography>
+        ) : null}
 
-      {/* Delete Card Dialog */}
-      <DeleteCardDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        onConfirm={handleConfirmDelete}
-        cardInfo={selectedCardForDelete ? {
-          lastFourDigits: selectedCardForDelete.lastFourDigits,
-          cardType: selectedCardForDelete.cardType,
-        } : undefined}
-      />
-    </>
+        {!payoutAccountQuery.isLoading && payoutAccount ? (
+          <>
+            <div className="grid gap-3 lg:grid-cols-3">
+              <div className="rounded-xl bg-neutral-25 px-4 py-3">
+                <Typography variant={{ base: "body-4" }} color="neutral-400">
+                  Connection
+                </Typography>
+                <Typography variant={{ base: "label-2" }} color="neutral-800">
+                  {isConnected ? "Connected" : "Not connected"}
+                </Typography>
+              </div>
+
+              <div className="rounded-xl bg-neutral-25 px-4 py-3">
+                <Typography variant={{ base: "body-4" }} color="neutral-400">
+                  Details Submitted
+                </Typography>
+                <Typography variant={{ base: "label-2" }} color="neutral-800">
+                  {payoutAccount.detailsSubmitted ? "Yes" : "No"}
+                </Typography>
+              </div>
+
+              <div className="rounded-xl bg-neutral-25 px-4 py-3">
+                <Typography variant={{ base: "body-4" }} color="neutral-400">
+                  Withdrawals
+                </Typography>
+                <Typography variant={{ base: "label-2" }} color="neutral-800">
+                  {isReadyForWithdrawals ? "Enabled" : "Blocked"}
+                </Typography>
+              </div>
+            </div>
+
+            {payoutAccount.requirementsDue.length > 0 ? (
+              <div className="rounded-xl bg-amber-50 px-4 py-3 flex flex-col gap-2">
+                <Typography variant={{ base: "label-3" }} color="neutral-800">
+                  Stripe still needs:
+                </Typography>
+
+                <div className="flex flex-wrap gap-2">
+                  {payoutAccount.requirementsDue.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded-full bg-white px-3 py-1 text-body-4 text-neutral-700 border border-amber-200"
+                    >
+                      {formatRequirement(item)}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            <div className="flex flex-col gap-3">
+              <Typography variant={{ base: "label-2", lg: "label-1" }} color="neutral-800">
+                Payout Methods
+              </Typography>
+
+              {payoutAccount.externalAccounts.length === 0 ? (
+                <div className="rounded-xl border border-dashed border-neutral-100 px-4 py-5">
+                  <Typography variant={{ base: "body-3" }} color="neutral-500">
+                    No bank account is visible yet. Finish Stripe onboarding and add a payout bank
+                    account there.
+                  </Typography>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {payoutAccount.externalAccounts.map((account) => (
+                    <div
+                      key={account.id}
+                      className="rounded-xl border border-neutral-50 px-4 py-3 flex items-start justify-between gap-3"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-full bg-electric-violet-25 p-2">
+                          <University className="h-4 w-4 text-electric-violet-400" />
+                        </div>
+
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            <Typography variant={{ base: "label-3", lg: "label-2" }} color="neutral-800">
+                              {account.bankName || "Bank account"}
+                            </Typography>
+                            {account.isDefault ? (
+                              <span className="rounded-[4px] bg-electric-violet-25 px-2 py-[2px] text-body-4 text-electric-violet-400">
+                                Default
+                              </span>
+                            ) : null}
+                          </div>
+
+                          <Typography variant={{ base: "body-4", lg: "body-3" }} color="neutral-500">
+                            •••• {account.last4 || "----"} {account.currency?.toUpperCase() || ""}
+                          </Typography>
+                        </div>
+                      </div>
+
+                      <Typography variant={{ base: "body-4" }} color="neutral-400">
+                        {account.status || "pending"}
+                      </Typography>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        ) : null}
+      </section>
+    </div>
   )
 }

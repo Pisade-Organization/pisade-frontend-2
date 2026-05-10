@@ -64,6 +64,9 @@ export const servicePath = {
       requestWithdraw: "/tutor-wallet/withdraw", // POST
       getWithdrawals: "/tutor-wallet/withdrawals", // GET
       getSummary: "/tutor-wallet/summary", // GET
+      getPayoutAccount: "/tutor-wallet/payout-account", // GET
+      createPayoutAccountOnboardingLink: "/tutor-wallet/payout-account/onboarding-link", // POST
+      createPayoutAccountDashboardLink: "/tutor-wallet/payout-account/dashboard-link", // POST
     },
     onboarding: {
       getCurrentStep: "/onboarding/current-step", // GET

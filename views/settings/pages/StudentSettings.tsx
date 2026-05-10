@@ -5,6 +5,7 @@ import { Settings, CreditCard, Clock, Bell } from "lucide-react"
 import SettingsContent, { SettingsContentType } from "../components/AccountSettings/SettingsContent"
 import { usePathname } from "next/navigation"
 import { useMemo } from "react"
+import { useSession } from "next-auth/react"
 import { useMyNotificationPreferences, useMyProfile } from "@/hooks/settings/queries"
 import { useUpdateMyNotificationPreferences } from "@/hooks/settings/mutations"
 
@@ -33,6 +34,7 @@ const studentSidebarItems = [
 
 export default function StudentSettingsPage() {
   const pathname = usePathname()
+  const { data: session } = useSession()
   const { data: profileData } = useMyProfile()
   const { data: notificationPreferences } = useMyNotificationPreferences()
   const updateNotificationPreferences = useUpdateMyNotificationPreferences()
@@ -46,13 +48,16 @@ export default function StudentSettingsPage() {
   }, [pathname])
 
   const generalProps = {
-    fullName: profileData?.profile?.fullName ?? "",
+    fullName: session?.user?.fullName || profileData?.profile?.fullName || "",
     countryOfBirth: profileData?.profile?.countryOfBirth ?? "TH",
     nationality: profileData?.profile?.nationality ?? "TH",
     phoneNumber: profileData?.phoneNumber ?? "",
-    email: profileData?.email ?? "",
+    email: session?.user?.email || profileData?.email || "",
     emailVerified: profileData?.emailVerified ?? false,
-    avatarUrl: profileData?.profile?.avatarUrl ?? "https://ui-avatars.com/api/?name=User",
+    avatarUrl:
+      session?.user?.avatarUrl ||
+      profileData?.profile?.avatarUrl ||
+      "https://ui-avatars.com/api/?name=User",
     timezone: profileData?.profile?.timezone ?? "Asia/Bangkok",
   }
 

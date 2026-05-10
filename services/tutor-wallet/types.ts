@@ -30,10 +30,37 @@ export interface TutorWalletSummary {
   [key: string]: unknown;
 }
 
+export interface TutorPayoutExternalAccount {
+  id: string;
+  bankName: string | null;
+  country: string | null;
+  currency: string | null;
+  isDefault: boolean;
+  last4: string | null;
+  status: string | null;
+}
+
+export interface TutorPayoutAccount {
+  accountId: string | null;
+  isConnected: boolean;
+  detailsSubmitted: boolean;
+  chargesEnabled: boolean;
+  payoutsEnabled: boolean;
+  country: string | null;
+  defaultCurrency: string | null;
+  requirementsDue: string[];
+  externalAccounts: TutorPayoutExternalAccount[];
+}
+
+export interface TutorPayoutAccountLinkResponse {
+  url: string;
+  expiresAt?: string | null;
+}
+
 export interface RequestTutorWithdrawDto {
   amount: number;
-  method: 'BANK' | 'PAYPAL';
-  accountInfo: string;
+  method?: 'BANK' | 'PAYPAL';
+  accountInfo?: string;
 }
 
 export interface RequestTutorWithdrawResponse {

@@ -117,10 +117,18 @@ export default function IdentityVerification() {
   const status = getVerificationStatus(session?.user?.onboardingStatus)
 
   useEffect(() => {
-    return () => {
+    const restoreBodyInteractivity = () => {
       if (document.body.style.pointerEvents === "none") {
         document.body.style.pointerEvents = ""
       }
+    }
+
+    restoreBodyInteractivity()
+    const frameId = window.requestAnimationFrame(restoreBodyInteractivity)
+
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      restoreBodyInteractivity()
     }
   }, [])
 

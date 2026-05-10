@@ -15,12 +15,13 @@ import WalletHeader from "@/views/wallet/components/WalletHeader"
 import WalletLayout from "@/views/wallet/components/WalletLayout"
 import WalletNavbar from "@/views/wallet/components/WalletNavbar"
 import type { WalletPageProps } from "@/views/wallet/types"
-import { useMyWalletSummary } from "@/hooks/settings/queries"
+import { useMyWalletSummary, useTutorPayoutAccount } from "@/hooks/settings/queries"
 
 type MobileWalletSection = "overview" | "held-funds" | "transaction-history"
 
 export default function WalletPage({ role }: WalletPageProps) {
   const { data: walletSummary } = useMyWalletSummary()
+  const { data: payoutAccount } = useTutorPayoutAccount(role === "tutor")
   const availableBalance = Number(walletSummary?.balance ?? 0)
   const temporarilyHold = Number(walletSummary?.pending ?? 0)
   const isDesktop = useMediaQuery("(min-width: 1024px)")
@@ -38,6 +39,15 @@ export default function WalletPage({ role }: WalletPageProps) {
 
     setIsTutorWithdrawOpen(true)
   }
+
+  const tutorBankAccounts =
+    payoutAccount?.externalAccounts.map((account) => ({
+      id: account.id,
+      bankName: account.bankName ?? undefined,
+      accountName: account.bankName || "Bank account",
+      lastFourDigits: account.last4 ?? undefined,
+      isDefault: account.isDefault,
+    })) ?? []
 
   return (
     <>
@@ -92,10 +102,11 @@ export default function WalletPage({ role }: WalletPageProps) {
               </>
             )}
             {role === "tutor" ? (
-                <BankAccountSection
+              <BankAccountSection
                 title="Bank Account"
                 description="Add a bank account to send and receive payments directly in the app."
-                bankAccounts={[]}
+                bankAccounts={tutorBankAccounts}
+                onAddBankAccount={() => setIsTutorWithdrawOpen(true)}
               />
             ) : null}
             {role === "tutor" ? (

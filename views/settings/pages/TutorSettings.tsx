@@ -52,12 +52,14 @@ export default function TutorSettingsPage() {
     return "general" // default to general
   }, [pathname])
 
+  const isIdentityVerificationRoute = settingsType === "identity-verification"
+
   const generalProps = {
-    fullName: profileData?.profile?.fullName ?? "",
+    fullName: session?.user?.fullName || profileData?.profile?.fullName || "",
     countryOfBirth: profileData?.profile?.countryOfBirth ?? "TH",
     nationality: profileData?.profile?.nationality ?? "TH",
     phoneNumber: profileData?.phoneNumber ?? "",
-    email: profileData?.email ?? "",
+    email: session?.user?.email || profileData?.email || "",
     emailVerified: profileData?.emailVerified ?? false,
     avatarUrl:
       session?.user?.avatarUrl ||
@@ -65,8 +67,8 @@ export default function TutorSettingsPage() {
       "https://ui-avatars.com/api/?name=Tutor",
     timezone: profileData?.profile?.timezone ?? "Asia/Bangkok",
     teachingInfoProps: {
-      subject: tutorData?.specialties?.join(", ") || "",
-      languages: "",
+      subject: tutorData?.subjects?.join(", ") || "",
+      languages: tutorData?.languages?.join(", ") || "",
     },
   }
 
@@ -92,13 +94,15 @@ export default function TutorSettingsPage() {
     <div className="lg:bg-neutral-25 lg:min-h-screen">
       <Navbar variant="tutor_dashboard" />
       <div className="bg-white lg:bg-transparent border-t border-neutral-25 py-3 px-4 flex flex-col gap-2 lg:gap-0 lg:px-20 lg:pb-8">
-        <AccountSettingsLayout items={tutorSidebarItems}>
+        <div className={isIdentityVerificationRoute ? "relative isolate z-[60]" : undefined}>
+          <AccountSettingsLayout items={tutorSidebarItems}>
           <SettingsContent
             type={settingsType}
             generalProps={generalProps}
             notificationsProps={notificationsProps}
           />
-        </AccountSettingsLayout>
+          </AccountSettingsLayout>
+        </div>
       </div>
     </div>
   )
