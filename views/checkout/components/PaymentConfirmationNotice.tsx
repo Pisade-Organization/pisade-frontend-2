@@ -9,7 +9,7 @@ export default function PaymentConfirmationNotice({ totalAmount }: PaymentConfir
 
   return (
     <div className="w-full flex flex-col gap-1">
-      <Typography variant={{ base: "body-3" }} color="neutral-500">
+      <Typography variant={{ base: "body-3" }} color="neutral-500" as="div">
         By pressing the "Confirm payment {formattedAmount}" button, you agree to{" "}
         <Typography 
           variant={{ base: "body-3" }} 
@@ -27,4 +27,3 @@ export default function PaymentConfirmationNotice({ totalAmount }: PaymentConfir
     </div>
   )
 }
-

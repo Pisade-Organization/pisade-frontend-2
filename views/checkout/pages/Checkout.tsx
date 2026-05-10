@@ -417,13 +417,13 @@ export default function Checkout() {
           <SummaryPanel className="rounded-2xl border border-neutral-50 bg-white">
             <BookingSummary
               variant="checkout"
-              tutorName={booking?.tutor.name ?? "Tutor"}
+              tutorName={booking?.tutor?.name ?? "Tutor"}
               countryUrl="https://flagcdn.com/w40/th.png"
-              avatarUrl={booking?.tutor.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor"}
+              avatarUrl={booking?.tutor?.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor"}
               subject="Lesson"
-              rating={booking?.tutor.rating ?? 0}
-              studentsCount={booking?.tutor.studentCount ?? 0}
-              lessonsCount={booking?.tutor.lessonCount ?? 0}
+              rating={booking?.tutor?.rating ?? 0}
+              studentsCount={booking?.tutor?.studentCount ?? 0}
+              lessonsCount={booking?.tutor?.lessonCount ?? 0}
               cancellationDeadline={cancellationDeadline}
               lessonName="Booked lesson"
               date={lessonDate}
