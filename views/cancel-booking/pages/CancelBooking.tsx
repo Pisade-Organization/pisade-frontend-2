@@ -9,6 +9,7 @@ import Footer from "@/components/footer/Footer";
 import BookingSummary from "@/components/shared/BookingSummary";
 import { useBookingDetail } from "@/hooks/bookings/queries";
 import { useCancelBooking } from "@/hooks/bookings/mutations";
+import { getApiErrorMessage } from "@/lib/apiErrorMessage";
 import type { CancelReason } from "../components/CancelClassReasonForm/ReasonList/types";
 import {
   DesktopOnly,
@@ -54,6 +55,12 @@ export default function CancelBooking() {
       },
     );
   };
+  const cancelErrorMessage = cancelBookingMutation.isError
+    ? getApiErrorMessage(
+      cancelBookingMutation.error,
+      "Failed to cancel booking. Please try again.",
+    )
+    : undefined;
 
   return (
     <PageRoot className="bg-white">
@@ -82,11 +89,7 @@ export default function CancelBooking() {
           <CancelClassReasonForm
             onSubmit={handleCancelBooking}
             isSubmitting={cancelBookingMutation.isPending}
-            errorMessage={
-              cancelBookingMutation.isError
-                ? "Failed to cancel booking. Please try again."
-                : undefined
-            }
+            errorMessage={cancelErrorMessage}
           />
 
           <SummaryPanel className="border border-neutral-50 rounded-2xl">
@@ -94,7 +97,7 @@ export default function CancelBooking() {
               variant="cancel"
               tutorName={booking?.tutor.name ?? "Tutor"}
               countryUrl="https://flagcdn.com/w40/th.png"
-              avatarUrl={booking?.tutor.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor"}
+              avatarUrl={booking?.tutor.avatarUrl ?? "/signin-avatar.png"}
               subject="Lesson"
               rating={booking?.tutor.rating ?? 0}
               studentsCount={booking?.tutor.studentCount ?? 0}

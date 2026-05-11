@@ -15,6 +15,7 @@ import { useRescheduleBooking } from "@/hooks/bookings/mutations";
 import { fetchTutorDetailData } from "@/services/tutor";
 import { TutorDetailData } from "@/services/tutor/types";
 import { buildBookingAvailabilityFromTutor } from "@/lib/bookingAvailability";
+import { getApiErrorMessage } from "@/lib/apiErrorMessage";
 import {
   DesktopOnly,
   MobileOnly,
@@ -155,7 +156,7 @@ export default function Reschedule() {
     variant: "reschedule" as const,
     tutorName: booking?.tutor.name ?? "Tutor",
     countryUrl: "https://flagcdn.com/w40/th.png",
-    avatarUrl: booking?.tutor.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",
+    avatarUrl: booking?.tutor.avatarUrl ?? "/signin-avatar.png",
     subject: "Lesson",
     rating: booking?.tutor.rating ?? 0,
     studentsCount: booking?.tutor.studentCount ?? 0,
@@ -176,6 +177,12 @@ export default function Reschedule() {
 
   const actionLabel = rescheduleMutation.isPending ? "Rescheduling..." : "Reschedule"
   const actionDisabled = !selectedSlot || rescheduleMutation.isPending
+  const rescheduleErrorMessage = rescheduleMutation.isError
+    ? getApiErrorMessage(
+      rescheduleMutation.error,
+      "Failed to reschedule booking. Please try again.",
+    )
+    : null
 
   // Mobile: Full-screen layout
   if (isMobile) {
@@ -222,8 +229,8 @@ export default function Reschedule() {
               </BaseButton>
             </div>
 
-            {rescheduleMutation.isError ? (
-              <p className="text-sm text-red-500">Failed to reschedule. Please try again.</p>
+            {rescheduleErrorMessage ? (
+              <p className="text-sm text-red-500">{rescheduleErrorMessage}</p>
             ) : null}
           </div>
         </div>
@@ -274,8 +281,8 @@ export default function Reschedule() {
               </BaseButton>
             </div>
 
-            {rescheduleMutation.isError ? (
-              <p className="text-sm text-red-500">Failed to reschedule. Please try again.</p>
+            {rescheduleErrorMessage ? (
+              <p className="text-sm text-red-500">{rescheduleErrorMessage}</p>
             ) : null}
           </PrimaryPanel>
 

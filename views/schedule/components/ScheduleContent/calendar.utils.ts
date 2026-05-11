@@ -10,6 +10,15 @@ export interface CalendarEventItem {
   start: Date
   end: Date
   status: string
+  allowedActions: {
+    pay: boolean
+    cancel: boolean
+    reschedule: boolean
+    join: boolean
+  }
+  meetingUrl: string | null
+  canJoin: boolean
+  joinAvailableAt: Date | null
 }
 
 export interface TutorAvailabilitySlot {
@@ -305,6 +314,12 @@ export function mapBookingsToEvents(bookings: BookingListItem[], role: "student"
         start: new Date(booking.schedule.startTime),
         end: new Date(booking.schedule.endTime),
         status: booking.status,
+        allowedActions: booking.allowedActions,
+        meetingUrl: booking.meeting?.url ?? null,
+        canJoin: booking.meeting?.canJoin ?? false,
+        joinAvailableAt: booking.meeting?.joinAvailableAt
+          ? new Date(booking.meeting.joinAvailableAt)
+          : null,
       }
     })
 }

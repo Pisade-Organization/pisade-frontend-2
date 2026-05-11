@@ -171,7 +171,7 @@ function normalizeTutor(raw: RawTutor): Tutor {
     videoUrl,
     videoThumbnailUrl,
     selfIntroduction,
-    isActive: Boolean(raw.isActive ?? true),
+    isActive: Boolean(raw.isActive ?? false),
     tutorRanking: (raw.tutorRanking as Tutor["tutorRanking"]) ?? "STARTER",
     reviews: Array.isArray(raw.reviews)
       ? raw.reviews.map((review) => ({

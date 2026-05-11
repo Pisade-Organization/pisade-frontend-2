@@ -22,6 +22,8 @@ type SchedulePageProps = {
   role?: ScheduleRole
 }
 
+const ENABLE_SCHEDULE_MOCK_CARD = false
+
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -56,6 +58,17 @@ export default function SchedulePage({
     () => filterBookingsForVisibleRange(bookingsData?.data ?? [], selectedDate, activeView),
     [activeView, bookingsData?.data, selectedDate],
   )
+  const bookingsWithMock = useMemo(() => {
+    const hasRenderableBooking = bookings.some((booking) => (
+      role === "student" ? booking.status !== "EXPIRED" : true
+    ))
+
+    if (!ENABLE_SCHEDULE_MOCK_CARD || hasRenderableBooking) {
+      return bookings
+    }
+
+    return bookings
+  }, [bookings, selectedDate])
 
   const fullName = profile?.profile?.fullName ?? (role === "student" ? "Student" : "Tutor")
   const avatarUrl = session?.user?.avatarUrl ?? profile?.profile?.avatarUrl
@@ -122,7 +135,7 @@ export default function SchedulePage({
             onPreviousDay={handlePreviousDay}
             onNextDay={handleNextDay}
             onToday={handleToday}
-            bookings={bookings}
+            bookings={bookingsWithMock}
             isLoading={isLoading}
             isError={isError}
             role={role}
@@ -155,7 +168,7 @@ export default function SchedulePage({
             onPreviousDay={handlePreviousDay}
             onNextDay={handleNextDay}
             onToday={handleToday}
-            bookings={bookings}
+            bookings={bookingsWithMock}
             isLoading={isLoading}
             isError={isError}
             role={role}

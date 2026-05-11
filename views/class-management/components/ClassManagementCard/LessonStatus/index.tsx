@@ -49,10 +49,23 @@ export default function LessonStatus({ startTime, endTime, status }: LessonStatu
   const formattedStartTime = formatTime(startTime)
   const formattedEndTime = formatTime(endTime)
   const dateTimeString = `${dateLabel}, ${formattedStartTime} - ${formattedEndTime}`
+  const statusClassMap: Record<LessonStatusType, string> = {
+    [LessonStatusType.Processing]: "text-orange-normal",
+    [LessonStatusType.Booked]: "text-blue-normal",
+    [LessonStatusType.Completed]: "text-neutral-800",
+    [LessonStatusType.Upcoming]: "text-electric-violet-400",
+    [LessonStatusType.Cancelled]: "text-red-normal",
+    [LessonStatusType.InProgress]: "text-green-normal",
+  }
 
   return (
     <div className="w-full inline-flex ">
-      <Typography variant={{ base: "label-4", lg: "label-2" }} color="electric-violet-700">{status}</Typography>
+      <Typography
+        variant="label-4"
+        className={`${statusClassMap[status]} overflow-hidden text-ellipsis whitespace-nowrap font-rethink [font-feature-settings:'liga'_off]`}
+      >
+        {status}
+      </Typography>
       <Dot className="text-neutral-100 w-[3.5px] h-[3.5px]" />
       <Typography variant={{ base: "label-4", lg: "label-2" }} color="neutral-500">{dateTimeString}</Typography>
     </div>
