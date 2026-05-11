@@ -1,5 +1,5 @@
 "use client"
-import Image from "next/image"
+import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 
 export default function TutorAvatar({
@@ -11,17 +11,28 @@ export default function TutorAvatar({
     fullName: string
     className?: string
 }) {
+    const [currentSrc, setCurrentSrc] = useState(avatarUrl || "/images/avatars/default-avatar.svg")
+
+    useEffect(() => {
+        setCurrentSrc(avatarUrl || "/images/avatars/default-avatar.svg")
+    }, [avatarUrl])
+
     return (
         <div className={cn("relative w-20 h-20 lg:w-48 lg:h-48 shrink-0 rounded-full",
             className
         )}>
-            <Image
-                src={avatarUrl}
-                width={192}
-                height={192}
-                alt={`Tutor profile of ${fullName}`}
-                className="rounded-full w-20 h-20 lg:w-48 lg:h-48 object-cover relative z-10"
-            />
+            <div className="relative z-10 h-full w-full overflow-hidden rounded-full bg-neutral-200">
+                <img
+                    src={currentSrc}
+                    alt={`Tutor profile of ${fullName}`}
+                    className="h-full w-full object-cover"
+                    onError={() => {
+                        if (currentSrc !== "/images/avatars/default-avatar.svg") {
+                            setCurrentSrc("/images/avatars/default-avatar.svg")
+                        }
+                    }}
+                />
+            </div>
 
             <div 
             className="

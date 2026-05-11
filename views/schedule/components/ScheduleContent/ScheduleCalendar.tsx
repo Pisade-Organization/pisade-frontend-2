@@ -2,16 +2,17 @@ import { cn } from "@/lib/utils"
 import type { BookingListItem } from "@/services/bookings/types"
 import type { MyTutorAvailability } from "@/services/tutor/types"
 import Typography from "@/components/base/Typography"
-import { Plus } from "lucide-react"
 import {
   buildPositionedEvents,
   formatMinutesLabel,
   formatTimeRange,
   formatHourLabel,
   getHourRows,
+  getTimeGridLoadingBlocks,
   getMonthGridDays,
   getStatusTone,
   getTutorAvailabilityRange,
+  getTimeGridColumnHeader,
   getWeekDays,
   isSameDay,
   mapBookingsToEvents,
@@ -219,14 +220,7 @@ function DayColumn({
                   key={`${day.toISOString()}-slot-${minutes}`}
                   className="group absolute inset-x-0"
                   style={{ top, height: rowHeight }}
-                >
-                  <div className="absolute left-2 right-2 top-1/2 h-[2px] -translate-y-1/2 bg-electric-violet-400 opacity-0 transition-opacity group-hover:opacity-100" />
-                  <div className="absolute left-2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-electric-violet-400 opacity-0 transition-opacity group-hover:opacity-100" />
-                  <div className="absolute right-2 top-1/2 h-4 w-4 translate-x-1/2 -translate-y-1/2 rounded-full bg-electric-violet-400 opacity-0 transition-opacity group-hover:opacity-100" />
-                  <div className="absolute left-1/2 top-1/2 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-electric-violet-500 opacity-0 transition-opacity group-hover:opacity-100">
-                    <Plus className="h-5 w-5 text-white" />
-                  </div>
-                </div>
+                />
               )
             })
           : null}
@@ -285,7 +279,7 @@ function TimeCalendar({
     <div className={cn(view === "week" ? "overflow-x-auto overflow-y-hidden touch-pan-x" : "overflow-auto")}>
       <div className={cn(
         "overflow-hidden rounded-xl border border-white/70 bg-white shadow-[0_18px_50px_rgba(87,72,162,0.08)]",
-        view === "week" ? "min-w-full lg:min-w-[760px]" : "min-w-[760px]"
+        view === "week" ? "min-w-full lg:min-w-[760px]" : "min-w-full"
       )}>
         <div className="grid grid-cols-[72px_minmax(0,1fr)]">
           <div className="rounded-tl-xl border-b border-[#EEEAF8] bg-white" />
@@ -297,7 +291,7 @@ function TimeCalendar({
             )}
           >
             {columns.map((day) => {
-              const isToday = isSameDay(day, new Date())
+              const header = getTimeGridColumnHeader(day, selectedDate, view)
 
               if (view === "week") {
                 return (
@@ -305,39 +299,37 @@ function TimeCalendar({
                     key={day.toISOString()}
                     className="flex flex-col items-center border border-white bg-[rgba(241,241,241,0.6)] py-2"
                   >
-                    <Typography variant="body-4" color={isToday ? "electric-violet-700" : "neutral-300"} className="uppercase">
-                      {day.toLocaleDateString("en-US", { weekday: "short" })}
+                    <Typography variant="body-4" color={header.isToday ? "electric-violet-700" : "neutral-300"} className="uppercase">
+                      {header.weekdayLabel}
                     </Typography>
-                    <Typography variant="body-4" color={isToday ? "electric-violet-700" : "neutral-300"}>
-                      {day.getDate()}
+                    <Typography variant="body-4" color={header.isToday ? "electric-violet-700" : "neutral-300"}>
+                      {header.dayNumberLabel}
                     </Typography>
                   </div>
                 )
               }
 
-              const isSelected = isSameDay(day, selectedDate)
-
               return (
                 <div key={day.toISOString()} className="border-l border-[#EEEAF8] px-3 py-4 first:border-l-0">
-                  <div className={cn(view === "day" ? "hidden" : "block")}>
+                  <div className={cn(header.showHeader ? "block" : "hidden")}>
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-400">
-                      {day.toLocaleDateString("en-US", { weekday: "short" })}
+                      {header.weekdayLabel}
                     </p>
                     <div className="mt-2 flex items-center gap-2">
                       <span
                         className={cn(
                           "flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-semibold",
-                          isSelected
+                          header.isSelected
                             ? "bg-[#EEE9FF] text-[#5F43EA]"
-                            : isToday
+                            : header.isToday
                               ? "bg-[#F5F4FB] text-neutral-900"
                               : "bg-transparent text-neutral-700"
                         )}
                       >
-                        {day.getDate()}
+                        {header.dayNumberLabel}
                       </span>
                       <span className="text-sm text-neutral-500">
-                        {day.toLocaleDateString("en-US", { month: "short", year: columns.length === 1 ? "numeric" : undefined })}
+                        {header.monthLabel}
                       </span>
                     </div>
                   </div>
@@ -383,6 +375,158 @@ function TimeCalendar({
   )
 }
 
+function TimeCalendarSkeleton({
+  selectedDate,
+  view,
+  range,
+}: {
+  selectedDate: Date
+  view: CalendarView
+  range?: TimeGridRange | null
+}) {
+  const rowHeight = getTimeGridRowHeight(view)
+  const columns = view === "day" ? [selectedDate] : getWeekDays(selectedDate)
+  const rowPoints = range ? getHourlyRangePoints(range) : getHourRows().map((hour) => hour * 60)
+  const gridHeight = rowPoints.length > 0 ? Math.max((rowPoints.length - 1) * rowHeight, rowHeight) : rowHeight
+  const startOffsetMinutes = range?.startMinutes ?? 0
+  const loadingBlocks = getTimeGridLoadingBlocks(view)
+  const gap = 6
+
+  return (
+    <div className={cn(view === "week" ? "overflow-x-auto overflow-y-hidden touch-pan-x" : "overflow-auto")}>
+      <div className={cn(
+        "overflow-hidden rounded-xl border border-white/70 bg-white shadow-[0_18px_50px_rgba(87,72,162,0.08)]",
+        view === "week" ? "min-w-full lg:min-w-[760px]" : "min-w-full"
+      )}>
+        <div className="grid grid-cols-[72px_minmax(0,1fr)]">
+          <div className="rounded-tl-xl border-b border-[#EEEAF8] bg-white" />
+
+          <div
+            className={cn(
+              "grid border-b border-[#EEEAF8] bg-white",
+              view === "week" ? "grid-cols-7 lg:[grid-template-columns:repeat(7,minmax(160px,1fr))]" : "grid-cols-1"
+            )}
+          >
+            {columns.map((day) => {
+              const header = getTimeGridColumnHeader(day, selectedDate, view)
+
+              if (view === "week") {
+                return (
+                  <div
+                    key={day.toISOString()}
+                    className="flex flex-col items-center border border-white bg-[rgba(241,241,241,0.6)] py-2"
+                  >
+                    <Typography variant="body-4" color={header.isToday ? "electric-violet-700" : "neutral-300"} className="uppercase">
+                      {header.weekdayLabel}
+                    </Typography>
+                    <Typography variant="body-4" color={header.isToday ? "electric-violet-700" : "neutral-300"}>
+                      {header.dayNumberLabel}
+                    </Typography>
+                  </div>
+                )
+              }
+
+              return (
+                <div key={day.toISOString()} className="border-l border-[#EEEAF8] px-3 py-4 first:border-l-0">
+                  <div className={cn(header.showHeader ? "block" : "hidden")}>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-neutral-400">
+                      {header.weekdayLabel}
+                    </p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span
+                        className={cn(
+                          "flex h-10 w-10 items-center justify-center rounded-2xl text-sm font-semibold",
+                          header.isSelected
+                            ? "bg-[#EEE9FF] text-[#5F43EA]"
+                            : header.isToday
+                              ? "bg-[#F5F4FB] text-neutral-900"
+                              : "bg-transparent text-neutral-700"
+                        )}
+                      >
+                        {header.dayNumberLabel}
+                      </span>
+                      <span className="text-sm text-neutral-500">{header.monthLabel}</span>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="relative border-r border-[#EEEAF8] bg-white" style={{ height: gridHeight }}>
+            {rowPoints.map((minutes) => (
+              <div
+                key={minutes}
+                className="absolute left-0 right-0 border-t border-[#F1EDF9]"
+                style={{ top: range ? ((minutes - startOffsetMinutes) / 60) * rowHeight : (minutes / 60) * rowHeight }}
+              >
+                <Typography
+                  variant="body-3"
+                  color="neutral-400"
+                  className="absolute -top-3 left-3 bg-white px-1"
+                >
+                  {range ? formatMinutesLabel(minutes) : formatHourLabel(minutes / 60)}
+                </Typography>
+              </div>
+            ))}
+          </div>
+
+          <div
+            className={cn(
+              "grid",
+              view === "week" ? "grid-cols-7 lg:[grid-template-columns:repeat(7,minmax(160px,1fr))]" : "grid-cols-1"
+            )}
+            style={{ height: gridHeight }}
+          >
+            {columns.map((day, dayIndex) => (
+              <div key={day.toISOString()} className="relative border-l border-[#EEEAF8] first:border-l-0">
+                {rowPoints.map((minutes) => (
+                  <div
+                    key={`${day.toISOString()}-${minutes}`}
+                    className="absolute left-0 right-0 border-t border-[#F1EDF9]"
+                    style={{ top: range ? ((minutes - startOffsetMinutes) / 60) * rowHeight : (minutes / 60) * rowHeight }}
+                  />
+                ))}
+
+                <div className="relative" style={{ height: gridHeight }}>
+                  {loadingBlocks
+                    .filter((block) => block.dayIndex === dayIndex)
+                    .map((block, blockIndex) => {
+                      const top = range
+                        ? ((block.startMinutes - startOffsetMinutes) / 60) * rowHeight
+                        : (block.startMinutes / 60) * rowHeight
+                      const height = Math.max((block.durationMinutes / 60) * rowHeight, 56)
+                      const widthPercent = 100 / block.laneCount
+
+                      return (
+                        <div
+                          key={`${day.toISOString()}-loading-${blockIndex}`}
+                          className="absolute px-[3px]"
+                          style={{
+                            top,
+                            height,
+                            left: `calc(${block.lane * widthPercent}% + ${block.lane * gap}px)`,
+                            width: `calc(${widthPercent}% - ${gap}px)`,
+                          }}
+                        >
+                          <div className="h-full animate-pulse rounded-2xl border border-[#EEEAF8] bg-[linear-gradient(180deg,#F9F7FF_0%,#F2EEF9_100%)] p-3 shadow-[0_10px_24px_rgba(37,20,104,0.05)]">
+                            <div className="h-3 w-20 rounded-full bg-white/80" />
+                            <div className="mt-3 h-5 w-3/4 rounded-full bg-white/85" />
+                            <div className="mt-2 h-3 w-1/2 rounded-full bg-white/70" />
+                          </div>
+                        </div>
+                      )
+                    })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function ScheduleCalendar({
   bookings,
   isLoading,
@@ -399,17 +543,19 @@ export default function ScheduleCalendar({
   const tutorAvailabilityRange = role === "tutor" && isTimeGridView
     ? getTutorAvailabilityRange(tutorAvailabilities)
     : null
-  const shouldRenderTimeGrid = events.length > 0 || (role === "tutor" && isTimeGridView && tutorAvailabilityRange !== null)
-
   if (isLoading) {
-    return (
-      <section className="rounded-[28px] border border-white/70 bg-white p-6 shadow-[0_18px_50px_rgba(87,72,162,0.08)] lg:p-8">
-        <div className="grid gap-3">
-          <div className="h-8 w-48 animate-pulse rounded-full bg-neutral-100" />
-          <div className="h-[520px] animate-pulse rounded-[24px] bg-neutral-100" />
-        </div>
-      </section>
-    )
+    if (view === "month") {
+      return (
+        <section className="rounded-[28px] border border-white/70 bg-white p-6 shadow-[0_18px_50px_rgba(87,72,162,0.08)] lg:p-8">
+          <div className="grid gap-3">
+            <div className="h-8 w-48 animate-pulse rounded-full bg-neutral-100" />
+            <div className="h-[520px] animate-pulse rounded-[24px] bg-neutral-100" />
+          </div>
+        </section>
+      )
+    }
+
+    return <TimeCalendarSkeleton selectedDate={selectedDate} view={view} range={tutorAvailabilityRange} />
   }
 
   if (isError) {
@@ -420,19 +566,19 @@ export default function ScheduleCalendar({
     )
   }
 
-  if (!shouldRenderTimeGrid && events.length === 0) {
-    return (
-      <EmptyState
-        message={
-          role === "tutor"
-            ? "New bookings for the selected range will appear directly on this calendar."
-            : "Once you book a lesson, it will appear here at its exact time slot."
-        }
-      />
-    )
-  }
-
   if (view === "month") {
+    if (events.length === 0) {
+      return (
+        <EmptyState
+          message={
+            role === "tutor"
+              ? "New bookings for the selected range will appear directly on this calendar."
+              : "Once you book a lesson, it will appear here at its exact time slot."
+          }
+        />
+      )
+    }
+
     return <MonthView selectedDate={selectedDate} events={events} onSelectDate={onSelectDate} onViewChange={onViewChange} />
   }
 

@@ -1,8 +1,9 @@
 "use client"
-import Image from "next/image"
+import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import { TUTOR_RANKING } from "@/types/tutorRanking.enum"
 import { StarterIcon, ProIcon, MasterIcon } from "@/components/icons"
+
 export default function TutorAvatar({
     fullName,
     avatarUrl,
@@ -16,17 +17,28 @@ export default function TutorAvatar({
     tutorRanking: TUTOR_RANKING
     className?: string
 }) {
+    const [currentSrc, setCurrentSrc] = useState(avatarUrl || "/images/avatars/default-avatar.svg")
+
+    useEffect(() => {
+        setCurrentSrc(avatarUrl || "/images/avatars/default-avatar.svg")
+    }, [avatarUrl])
+
     return (
         <div className={cn("relative w-16 h-16 lg:w-24 lg:h-24 shrink-0 rounded-full",
             className
         )}>
-            <Image
-                src={avatarUrl}
-                width={96}
-                height={96}
-                alt={`Tutor profile of ${fullName}`}
-                className="rounded-full w-16 h-16 lg:w-24 lg:h-24 object-cover relative z-10"
-            />
+            <div className="relative z-10 h-full w-full overflow-hidden rounded-full bg-neutral-200">
+                <img
+                    src={currentSrc}
+                    alt={`Tutor profile of ${fullName}`}
+                    className="h-full w-full object-cover"
+                    onError={() => {
+                        if (currentSrc !== "/images/avatars/default-avatar.svg") {
+                            setCurrentSrc("/images/avatars/default-avatar.svg")
+                        }
+                    }}
+                />
+            </div>
             {isActive && (
                 <div className="absolute top-2 lg:top-3 left-0 w-[10px] h-[10px] lg:w-4 lg:h-4 bg-green-600 rounded-full border-2 border-white z-20" />
             )}

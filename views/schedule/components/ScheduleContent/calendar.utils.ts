@@ -23,6 +23,23 @@ export interface TimeGridRange {
   endMinutes: number
 }
 
+export interface TimeGridColumnHeader {
+  weekdayLabel: string
+  dayNumberLabel: string
+  monthLabel: string
+  isToday: boolean
+  isSelected: boolean
+  showHeader: boolean
+}
+
+export interface TimeGridLoadingBlock {
+  dayIndex: number
+  startMinutes: number
+  durationMinutes: number
+  lane: number
+  laneCount: number
+}
+
 export function startOfDay(date: Date) {
   const next = new Date(date)
   next.setHours(0, 0, 0, 0)
@@ -97,6 +114,17 @@ export function getVisibleRange(date: Date, view: CalendarView) {
   return { from: startOfMonthGrid(date), to: endOfMonthGrid(date) }
 }
 
+export function getFetchRange(date: Date, view: CalendarView) {
+  const visibleRange = getVisibleRange(date, view)
+  const from = new Date(visibleRange.from)
+  const to = new Date(visibleRange.to)
+
+  from.setDate(from.getDate() - 1)
+  to.setDate(to.getDate() + 1)
+
+  return { from, to }
+}
+
 export function formatHeaderLabel(date: Date, view: CalendarView) {
   if (view === "day") {
     return date.toLocaleDateString("en-US", {
@@ -144,6 +172,42 @@ export function getWeekDays(date: Date) {
     next.setDate(start.getDate() + index)
     return next
   })
+}
+
+export function getTimeGridColumnHeader(
+  day: Date,
+  selectedDate: Date,
+  view: CalendarView,
+): TimeGridColumnHeader {
+  return {
+    weekdayLabel: day.toLocaleDateString("en-US", { weekday: "short" }),
+    dayNumberLabel: day.toLocaleDateString("en-US", { day: "numeric" }),
+    monthLabel: day.toLocaleDateString("en-US", {
+      month: "short",
+      year: view === "day" ? "numeric" : undefined,
+    }),
+    isToday: isSameDay(day, new Date()),
+    isSelected: isSameDay(day, selectedDate),
+    showHeader: view !== "day",
+  }
+}
+
+export function getTimeGridLoadingBlocks(view: CalendarView): TimeGridLoadingBlock[] {
+  if (view === "day") {
+    return [
+      { dayIndex: 0, startMinutes: 8 * 60, durationMinutes: 90, lane: 0, laneCount: 1 },
+      { dayIndex: 0, startMinutes: 11 * 60 + 30, durationMinutes: 60, lane: 0, laneCount: 1 },
+      { dayIndex: 0, startMinutes: 14 * 60, durationMinutes: 120, lane: 0, laneCount: 1 },
+    ]
+  }
+
+  return [
+    { dayIndex: 0, startMinutes: 9 * 60, durationMinutes: 60, lane: 0, laneCount: 1 },
+    { dayIndex: 1, startMinutes: 10 * 60 + 30, durationMinutes: 90, lane: 0, laneCount: 1 },
+    { dayIndex: 2, startMinutes: 13 * 60, durationMinutes: 60, lane: 0, laneCount: 1 },
+    { dayIndex: 3, startMinutes: 15 * 60, durationMinutes: 120, lane: 0, laneCount: 1 },
+    { dayIndex: 5, startMinutes: 11 * 60, durationMinutes: 60, lane: 0, laneCount: 1 },
+  ]
 }
 
 export function getMonthGridDays(date: Date) {
@@ -243,6 +307,19 @@ export function mapBookingsToEvents(bookings: BookingListItem[], role: "student"
         status: booking.status,
       }
     })
+}
+
+export function filterBookingsForVisibleRange(
+  bookings: BookingListItem[],
+  selectedDate: Date,
+  view: CalendarView,
+) {
+  const { from, to } = getVisibleRange(selectedDate, view)
+
+  return bookings.filter((booking) => {
+    const start = new Date(booking.schedule.startTime)
+    return start >= from && start <= to
+  })
 }
 
 export function getStatusTone(status: string) {

@@ -2,7 +2,7 @@ import apiInstancePublic from "@/services/apiInstancePublic";
 import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiResponse";
 import { servicePath } from "@/services/servicePath";
 import { formatLanguageLabel } from "@/lib/language";
-import { resolveMediaUrl } from "@/lib/media";
+import { resolveMediaUrl, resolveMediaUrlOrFallback } from "@/lib/media";
 import {
   Tutor,
   TutorDetailData,
@@ -157,8 +157,8 @@ function normalizeTutor(raw: RawTutor): Tutor {
     id: String(raw.id ?? ""),
     userId: String(raw.userId ?? ""),
     fullName: String(raw.fullName ?? "Tutor"),
-    avatarUrl: resolveMediaUrl(String(raw.avatarUrl ?? DEFAULT_AVATAR_URL)),
-    flagUrl: resolveMediaUrl(String(raw.flagUrl ?? DEFAULT_FLAG_URL)),
+    avatarUrl: resolveMediaUrlOrFallback(toSafeString(raw.avatarUrl), DEFAULT_AVATAR_URL),
+    flagUrl: resolveMediaUrlOrFallback(toSafeString(raw.flagUrl), DEFAULT_FLAG_URL),
     bio: String(raw.bio ?? ""),
     baseRate: Number(raw.baseRate ?? 0),
     specialties,
@@ -176,7 +176,10 @@ function normalizeTutor(raw: RawTutor): Tutor {
     reviews: Array.isArray(raw.reviews)
       ? raw.reviews.map((review) => ({
           id: String((review as any).id ?? ""),
-          avatarUrl: resolveMediaUrl(String((review as any).avatarUrl ?? DEFAULT_AVATAR_URL)),
+          avatarUrl: resolveMediaUrlOrFallback(
+            toSafeString((review as any).avatarUrl),
+            DEFAULT_AVATAR_URL,
+          ),
           fullName: String((review as any).fullName ?? "Student"),
           rating: Number((review as any).rating ?? 0),
           date: String((review as any).date ?? (review as any).createdAt ?? ""),

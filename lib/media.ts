@@ -17,3 +17,10 @@ export function resolveMediaUrl(value?: string | null): string {
 
   return raw.startsWith("/") ? `${baseUrl}${raw}` : `${baseUrl}/${raw}`
 }
+
+export function resolveMediaUrlOrFallback(
+  value: string | null | undefined,
+  fallback: string,
+): string {
+  return resolveMediaUrl(value) || fallback
+}

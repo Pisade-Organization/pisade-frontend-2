@@ -8,7 +8,12 @@ import ScheduleContent from "../components/ScheduleContent"
 import { useBookings } from "@/hooks/bookings/queries"
 import { useMyProfile, useMyWalletSummary, useTutorWalletSummary } from "@/hooks/settings/queries"
 import { useMyTutorProfile } from "@/hooks/settings/queries/useMyTutorProfile"
-import { getVisibleRange, shiftDate, type CalendarView } from "../components/ScheduleContent/calendar.utils"
+import {
+  filterBookingsForVisibleRange,
+  getFetchRange,
+  shiftDate,
+  type CalendarView,
+} from "../components/ScheduleContent/calendar.utils"
 
 type ScheduleRole = "student" | "tutor"
 
@@ -34,7 +39,7 @@ export default function SchedulePage({
   const { data: session } = useSession()
 
   const { from, to } = useMemo(() => {
-    const range = getVisibleRange(selectedDate, activeView)
+    const range = getFetchRange(selectedDate, activeView)
 
     return {
       from: range.from.toISOString(),
@@ -47,7 +52,10 @@ export default function SchedulePage({
   const { data: walletSummary } = useMyWalletSummary(role === "student")
   const { data: tutorWalletSummary } = useTutorWalletSummary(role === "tutor")
 
-  const bookings = bookingsData?.data ?? []
+  const bookings = useMemo(
+    () => filterBookingsForVisibleRange(bookingsData?.data ?? [], selectedDate, activeView),
+    [activeView, bookingsData?.data, selectedDate],
+  )
 
   const fullName = profile?.profile?.fullName ?? (role === "student" ? "Student" : "Tutor")
   const avatarUrl = session?.user?.avatarUrl ?? profile?.profile?.avatarUrl

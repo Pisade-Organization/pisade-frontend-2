@@ -1,6 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { buildTutorProfilePath } from '@/lib/tutorProfilePath';
 import { TutorCardProps } from '@/views/search/types';
 import TutorAvatar from '@/views/search/components/TutorCard/TutorAvatar';
 import TutorHeader from '@/views/search/components/TutorCard/TutorHeader';
@@ -28,9 +29,11 @@ export default function TutorCard({
   tutorRanking,
 }: TutorCardProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split('/')[1] || 'en';
 
   const onCardClick = () => {
-    router.push(`/tutor/${id}`);
+    router.push(buildTutorProfilePath(locale, id));
   };
 
   return (

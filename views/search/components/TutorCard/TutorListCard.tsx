@@ -1,5 +1,6 @@
 "use client"
 import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { TutorCardProps } from "../../types"
 import TutorAvatar from "./TutorAvatar"
 import TutorHeader from "./TutorHeader"
@@ -14,6 +15,7 @@ import Image from "next/image"
 import BaseButton from "@/components/base/BaseButton"
 import { Dialog, DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Play, X } from "lucide-react"
+import { buildTutorProfilePath } from "@/lib/tutorProfilePath"
 
 function getYouTubeEmbedUrl(url: string): string | null {
     try {
@@ -92,9 +94,12 @@ export default function TutorListCard({
     videoUrl,
   }: TutorCardProps) { 
     const router = useRouter()
+    const pathname = usePathname()
     const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
     const firstName = fullName.trim().split(/\s+/)[0] || "Tutor"
     const thumbnailSrc = videoThumbnailUrl || avatarUrl
+    const locale = pathname.split("/")[1] || "en"
+    const tutorProfilePath = buildTutorProfilePath(locale, id)
     const embedUrl = useMemo(
         () => getYouTubeEmbedUrl(videoUrl) || getVimeoEmbedUrl(videoUrl),
         [videoUrl],
@@ -103,7 +108,7 @@ export default function TutorListCard({
     const canPlayDirectVideo = isDirectVideoUrl(videoUrl)
 
     const onCardClick = () => {
-        router.push(`/tutor/${id}`)
+        router.push(tutorProfilePath)
     }
 
     const handleVideoThumbnailClick = (e: MouseEvent) => {
@@ -126,7 +131,7 @@ export default function TutorListCard({
 
     const handleSeeProfileClick = (e: MouseEvent) => {
         e.stopPropagation()
-        router.push(`/tutor/${id}`)
+        router.push(tutorProfilePath)
     }
 
     return (

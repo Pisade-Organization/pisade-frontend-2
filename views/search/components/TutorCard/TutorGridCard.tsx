@@ -9,7 +9,8 @@ import { TutorCardProps } from "../../types"
 import SpecialtyBadges from "./SpecialtyBadges"
 import TutorLanguages from "./TutorLanguages"
 import TutorBio from "./TutorBio"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { buildTutorProfilePath } from "@/lib/tutorProfilePath"
 
 export default function TutorGridCard({
     id,
@@ -30,9 +31,12 @@ export default function TutorGridCard({
     videoThumbnailUrl,
 }: TutorCardProps) {
     const router = useRouter()
+    const pathname = usePathname()
+    const locale = pathname.split("/")[1] || "en"
+    const tutorProfilePath = buildTutorProfilePath(locale, id)
 
     const onCardClick = () => {
-        router.push(`/tutor/${id}`)
+        router.push(tutorProfilePath)
     }
   return (
     <div
