@@ -38,10 +38,7 @@ export default function BookingDialog({
       
       <TimezoneSelector
         timezone={timezone}
-        onTimezoneChange={(tz) => {
-          // Handle timezone change
-          console.log("Timezone changed to:", tz);
-        }}
+        onTimezoneChange={() => {}}
       />
 
       <DateNavigator

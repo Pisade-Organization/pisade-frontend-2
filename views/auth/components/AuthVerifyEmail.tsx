@@ -42,7 +42,6 @@ export default function AuthVerifyEmail({ emailTo, onBack, type = AUTH_TYPES.SIG
                     email: emailTo,
                     intent: type === AUTH_TYPES.TUTOR_SIGNUP ? "TUTOR_SIGNUP" : undefined,
                 });
-                console.log("Magic link resent successfully to:", emailTo);
             } catch (err) {
                 const axiosError = err as AxiosError<{ message?: string | string[] }>;
                 const status = axiosError.response?.status;

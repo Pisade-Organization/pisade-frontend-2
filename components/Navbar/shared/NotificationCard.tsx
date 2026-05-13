@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { Clock } from "lucide-react"
 import Typography from "@/components/base/Typography"
 
@@ -34,7 +35,7 @@ export default function NotificationCard({
       {/* Column 1: Avatar */}
       <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full bg-neutral-100">
         {avatarUrl ? (
-          <img src={avatarUrl} alt={name} className="h-full w-full object-cover" />
+          <Image src={avatarUrl} alt={name} width={40} height={40} className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-neutral-700">
             {getInitials(name)}

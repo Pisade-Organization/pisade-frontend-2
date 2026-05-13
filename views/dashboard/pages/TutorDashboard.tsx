@@ -1,6 +1,7 @@
 "use client"
 import { Role } from "@/types/role.enum"
 import { useMemo } from "react"
+import { useRouter } from "next/navigation"
 import type { Transaction } from "../components/TransactionHistory/types"
 import { TransactionStatus } from "../components/TransactionHistory/badges/TransactionStatusBadge/types"
 import { PaymentMethod } from "../components/TransactionHistory/badges/PaymentMethodBadge/types"
@@ -25,6 +26,7 @@ function mapTutorPaymentMethod(reference: string | null): PaymentMethod {
 }
 
 export default function TutorDashboardPage() {
+  const router = useRouter()
   const { data: profile } = useMyProfile()
   const { data: tutorWalletSummary } = useTutorWalletSummary()
   const { data: tutorTransactions = [] } = useTutorTransactions()
@@ -63,11 +65,11 @@ export default function TutorDashboardPage() {
   const upcomingBooking = upcoming?.data?.[0]
 
   const handleViewAll = () => {
-    console.log("View all transactions")
+    router.push("/tutor/earnings-and-withdrawals")
   }
 
   const handleShowMore = () => {
-    console.log("Show more transactions")
+    router.push("/tutor/earnings-and-withdrawals")
   }
 
   return (

@@ -45,8 +45,7 @@ export default function BaseSelect({
   // current label
   const current = options.find((o) => o.value === value);
   return (
-    // TODO: Parent div is still using mb-1, remove mb-1 and fix the problem that this not aligns with @BaseInput
-    <div className={cn("mb-1 w-full flex flex-col gap-1", className)}> 
+    <div className={cn("w-full flex flex-col gap-1", className)}>
       {/* Label */}
       <div className="flex justify-start items-start gap-1">
         <Typography

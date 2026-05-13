@@ -75,7 +75,6 @@ export function useChat(): UseChatReturn {
       setIsLoadingConversations(true)
       try {
         const ack = await emitWithAck<ChatConversationsAck>("chat.conversations", { limit: 20 })
-        console.log("[useChat] chat.conversations ack:", ack)
         if (ack.ok && ack.data) {
           setConversations(ack.data)
         }

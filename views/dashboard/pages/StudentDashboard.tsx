@@ -1,6 +1,7 @@
 "use client"
 import { Role } from "@/types/role.enum"
 import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import type { Transaction } from "../components/TransactionHistory/types"
 import { TransactionStatus } from "../components/TransactionHistory/badges/TransactionStatusBadge/types"
 import { PaymentMethod } from "../components/TransactionHistory/badges/PaymentMethodBadge/types"
@@ -25,6 +26,7 @@ function mapPaymentMethod(method: string | null): PaymentMethod {
 }
 
 export default function StudentDashboardPage() {
+  const router = useRouter()
   const { data: session } = useSession()
   const { data: profile } = useMyProfile()
   const { data: summary } = useDashboardSummary()
@@ -43,11 +45,11 @@ export default function StudentDashboardPage() {
   }))
 
   const handleViewAll = () => {
-    console.log("View all transactions")
+    router.push("/settings/student/payment-history")
   }
 
   const handleShowMore = () => {
-    console.log("Show more transactions")
+    router.push("/settings/student/payment-history")
   }
 
   return (

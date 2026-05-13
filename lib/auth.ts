@@ -86,6 +86,7 @@ const EPOCH_THRESHOLD = 1e12; // Threshold to differentiate seconds vs milliseco
 
 // --------- Logging helper ----------
 function logAuth(level: "info" | "warn" | "error", message: string, data?: any) {
+  if (process.env.NODE_ENV !== "development") return;
   const prefix = "[NextAuth]";
   const timestamp = new Date().toISOString();
   const logMessage = `${prefix} [${timestamp}] ${message}`;

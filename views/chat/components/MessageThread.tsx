@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react"
+import Image from "next/image"
 import { BellOff, ChevronLeft, EyeOff, Flag, MoreHorizontal, UserX } from "lucide-react"
 import Typography from "@/components/base/Typography"
 import BaseButton from "@/components/base/BaseButton"
@@ -329,7 +330,7 @@ export default function MessageThread({
           <div className="flex items-center gap-2 pl-1">
             <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-neutral-100">
               {conversation.avatarUrl ? (
-                <img src={conversation.avatarUrl} alt={conversation.name} className="h-full w-full object-cover" />
+                <Image src={conversation.avatarUrl} alt={conversation.name} width={28} height={28} className="h-full w-full object-cover" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-xs font-semibold text-neutral-700">
                   {initialLabel}

@@ -77,56 +77,31 @@ export default function VideoUploadPlaceholder({
         }
       }
       
-      const handleLoadedMetadata = () => {
-        console.log('Video metadata loaded successfully:', videoUrl)
-      }
-      
-      const handleCanPlay = () => {
-        console.log('Video can play:', videoUrl)
-      }
-      
       video.addEventListener('error', handleError)
-      video.addEventListener('loadedmetadata', handleLoadedMetadata)
-      video.addEventListener('canplay', handleCanPlay)
-      
+
       return () => {
         video.removeEventListener('error', handleError)
-        video.removeEventListener('loadedmetadata', handleLoadedMetadata)
-        video.removeEventListener('canplay', handleCanPlay)
       }
     }
   }, [videoUrl])
 
   useEffect(() => {
-    console.log('VideoUploadPlaceholder - useEffect triggered:', {
-      selectedSource,
-      hasRecordedBlob: !!recordedVideoBlob,
-      existingVideoUrl,
-      videoLink
-    })
-    
     // Priority 1: Show new recorded blob if it exists
     if (selectedSource === "recorded" && recordedVideoBlob) {
       const url = URL.createObjectURL(recordedVideoBlob)
-      console.log('Setting videoUrl from recorded blob:', url)
       setVideoUrl(url)
       return () => URL.revokeObjectURL(url)
     }
     // Priority 2: Show existing video URL if no new blob is recorded
-    // Always show existingVideoUrl unless user explicitly selected "link"
     else if (existingVideoUrl && !recordedVideoBlob) {
-      // Only clear if user explicitly selected link, otherwise show the existing video
       if (selectedSource === "link") {
-        console.log('Clearing videoUrl because link is selected')
         setVideoUrl(null)
       } else {
-        console.log('Setting videoUrl from existingVideoUrl:', existingVideoUrl)
         setVideoUrl(existingVideoUrl)
       }
     }
     // Priority 3: Clear video URL if nothing exists
     else if (!existingVideoUrl && !recordedVideoBlob) {
-      console.log('Clearing videoUrl - no video available')
       setVideoUrl(null)
     }
   }, [selectedSource, recordedVideoBlob, videoLink, existingVideoUrl])

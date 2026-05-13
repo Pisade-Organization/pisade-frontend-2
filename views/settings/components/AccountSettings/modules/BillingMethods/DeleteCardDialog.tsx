@@ -29,10 +29,7 @@ export default function DeleteCardDialog({
   }
 
   const handleConfirm = () => {
-    // TODO: Handle card deletion
-    if (onConfirm) {
-      onConfirm()
-    }
+    onConfirm?.()
     handleClose()
   }
 
@@ -71,12 +68,13 @@ export default function DeleteCardDialog({
 
           {/* CTA */}
           <div className="w-full grid grid-cols-2 gap-4">
-            <BaseButton variant="secondary" typeStyle="borderless">
+            <BaseButton variant="secondary" typeStyle="borderless" onClick={handleClose}>
               Cancel
             </BaseButton>
 
-            <BaseButton typeStyle="outline" 
+            <BaseButton typeStyle="outline"
               className="bg-white text-red-normal border-red-normal hover:bg-white hover:text-red-normal hover:border-red-normal lg:hover:bg-red-normal lg:hover:text-white lg:hover:border-red-normal"
+              onClick={handleConfirm}
             >
               Delete
             </BaseButton>

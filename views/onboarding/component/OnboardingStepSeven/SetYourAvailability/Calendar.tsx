@@ -105,9 +105,6 @@ export default function Calendar({
     return selectedSlots[day]?.has(time) || false;
   };
 
-  // Log scheduleData whenever it changes (for debugging)
-  console.log("Schedule Data:", scheduleData);
-
   return (
     <div className=" w-full flex flex-col gap-6">
       {/* Top days header */}

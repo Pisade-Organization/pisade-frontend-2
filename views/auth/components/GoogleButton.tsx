@@ -74,12 +74,6 @@ export default function GoogleButton({ authType = AUTH_TYPES.SIGNIN }: GoogleBut
             throw new Error(response.error_description || response.error || "Google access token was not returned");
           }
 
-          console.log("[GoogleButton] Attempting Google sign-in", {
-            pathname,
-            isTutorSignup,
-            intent: isTutorSignup ? "TUTOR_SIGNUP" : undefined,
-          });
-
           const result = await signIn("google", {
             googleToken: response.access_token,
             intent: isTutorSignup ? "TUTOR_SIGNUP" : undefined,
@@ -97,10 +91,6 @@ export default function GoogleButton({ authType = AUTH_TYPES.SIGNIN }: GoogleBut
           }
 
           const session = await getSession();
-          console.log("[GoogleButton] Session after Google sign-in", {
-            role: session?.user?.role,
-            email: session?.user?.email,
-          });
 
           if (isTutorSignup && session?.user?.role === Role.STUDENT) {
             setErrorMessage(
