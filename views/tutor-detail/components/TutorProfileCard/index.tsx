@@ -84,6 +84,7 @@ export default function TutorProfileCard({ tutorData }: TutorProfileCardProps) {
                 <div className="w-full flex justify-start items-center gap-2">
                     <LikeBtn tutorAvatarUrl={tutorData.avatarUrl} />
                     <SendMessageBtn
+                        tutorId={tutorData.id}
                         tutorUserId={tutorData.userId}
                         tutorFullName={tutorData.fullName}
                         tutorAvatarUrl={tutorData.avatarUrl}

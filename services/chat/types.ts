@@ -18,9 +18,13 @@ export interface ChatConversationLastMessage {
 
 export interface ChatConversationDto {
   peerUser: ChatConversationPeerUser;
+  tutorId: string | null;
   lastMessage: ChatConversationLastMessage;
   unreadCount: number;
   lastActiveAt: string;
+  isMuted: boolean;
+  isBlocked: boolean;
+  isReported: boolean;
 }
 
 export interface ChatMessageDto {
@@ -69,6 +73,20 @@ export interface ChatHistoryAck {
 export interface ChatSendAck {
   ok: boolean;
   id?: string;
+  error?: string;
+}
+
+export type ChatConversationPreferenceAction = "HIDE" | "MUTE" | "BLOCK" | "REPORT";
+
+export interface ChatPreferenceAck {
+  ok: boolean;
+  data?: {
+    peerUserId: string;
+    isHidden: boolean;
+    isMuted: boolean;
+    isBlocked: boolean;
+    isReported: boolean;
+  };
   error?: string;
 }
 

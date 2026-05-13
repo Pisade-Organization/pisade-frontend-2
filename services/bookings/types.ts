@@ -119,7 +119,7 @@ export interface CreateBookingResponse {
 }
 
 export interface CheckoutBookingDto {
-  method: "PROMPTPAY" | "CARD";
+  method: "PROMPTPAY" | "CARD" | "WALLET";
   paymentMethodId?: string;
   savedPaymentMethodId?: string;
   savePaymentMethod?: boolean;

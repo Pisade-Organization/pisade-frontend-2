@@ -5,12 +5,14 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 
 interface SendMessageBtnProps {
+    tutorId?: string
     tutorUserId?: string
     tutorFullName?: string
     tutorAvatarUrl?: string
 }
 
 export default function SendMessageBtn({
+    tutorId,
     tutorUserId,
     tutorFullName,
     tutorAvatarUrl,
@@ -33,6 +35,7 @@ export default function SendMessageBtn({
 
         const query = new URLSearchParams({
             peerUserId: tutorUserId,
+            ...(tutorId ? { tutorId } : {}),
             ...(tutorFullName ? { peerName: tutorFullName } : {}),
             ...(tutorAvatarUrl ? { peerAvatarUrl: tutorAvatarUrl } : {}),
         })

@@ -1,4 +1,12 @@
 const ABSOLUTE_URL_PATTERN = /^[a-zA-Z][a-zA-Z\d+.-]*:/
+const FRONTEND_PUBLIC_ASSET_PREFIXES = [
+  "/font/",
+  "/icons/",
+  "/images/",
+  "/logos/",
+  "/mockup_data/",
+  "/signin-avatar.png",
+]
 
 function getBackendBaseUrl(): string {
   return (process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL || "").replace(/\/$/, "")
@@ -11,6 +19,7 @@ export function resolveMediaUrl(value?: string | null): string {
   if (raw.startsWith("blob:") || raw.startsWith("data:")) return raw
   if (raw.startsWith("//")) return `https:${raw}`
   if (ABSOLUTE_URL_PATTERN.test(raw)) return raw
+  if (FRONTEND_PUBLIC_ASSET_PREFIXES.some((prefix) => raw.startsWith(prefix))) return raw
 
   const baseUrl = getBackendBaseUrl()
   if (!baseUrl) return raw

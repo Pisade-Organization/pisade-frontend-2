@@ -1,5 +1,6 @@
 "use client"
 import { Role } from "@/types/role.enum"
+import { useSession } from "next-auth/react"
 import type { Transaction } from "../components/TransactionHistory/types"
 import { TransactionStatus } from "../components/TransactionHistory/badges/TransactionStatusBadge/types"
 import { PaymentMethod } from "../components/TransactionHistory/badges/PaymentMethodBadge/types"
@@ -24,11 +25,13 @@ function mapPaymentMethod(method: string | null): PaymentMethod {
 }
 
 export default function StudentDashboardPage() {
+  const { data: session } = useSession()
   const { data: profile } = useMyProfile()
   const { data: summary } = useDashboardSummary()
   const { data: todayLessons = [] } = useTodayLessons()
   const { data: nextLesson } = useNextLesson()
   const { data: transactionsRaw = [] } = useDashboardTransactions()
+  const fullName = session?.user?.fullName ?? profile?.profile?.fullName ?? "Student"
 
   const transactions: Transaction[] = transactionsRaw.map((transaction) => ({
     id: transaction.id,
@@ -61,7 +64,7 @@ export default function StudentDashboardPage() {
       onViewAll={handleViewAll}
       onShowMore={handleShowMore}
       heroProps={{
-        fullName: profile?.profile?.fullName ?? "Student",
+        fullName,
         todayLessonCounts: todayLessons.length,
         lessonTitle: "Upcoming lesson",
         tutorName: nextLesson?.tutor.user.profile?.fullName ?? "",

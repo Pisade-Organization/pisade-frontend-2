@@ -1,22 +1,7 @@
-module.exports = {
-    darkMode: ["class"],
-    content: [
-      "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-      "./components/**/*.{js,ts,jsx,tsx,mdx}",
-      "./app/**/*.{js,ts,jsx,tsx,mdx}",
-      "./views/**/*.{js,ts,jsx,tsx,mdx}",
-    ],
-		safelist: [
-			// typography variants
-			{
-				pattern: /text-(headline-[1-5]|title-[1-4]|label-[1-4]|body-[1-4])/,
-				variants: ['sm', 'md', 'lg', 'xl', '2xl'],
-			},
-			// if you use custom colors like "text-primary", "text-muted-foreground"
-			// BaseButton dynamic colors
-			{ pattern: /text-(red|yellow|orange|green|blue|violet)-(normal|light)/ },
-			{ pattern: /border-(red|yellow|orange|green|blue|violet)-(normal|light)/ },
-		],
+import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
+
+const config: Config = {
   theme: {
   	extend: {
   		fontFamily: {
@@ -313,27 +298,7 @@ module.exports = {
   		}
   	}
   },
-  plugins: [
-    require("tailwindcss-animate"),
-    function({ addComponents }: any) {
-      addComponents({
-        '.custom-pagination-bullet': {
-          width: '6px',
-          height: '6px',
-          borderRadius: '50%',
-          backgroundColor: '#d2b2f8',
-          opacity: '1',
-          margin: '0 !important',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-        },
-        '.custom-pagination-bullet-active': {
-          width: '24px',
-          height: '6px',
-          borderRadius: '3px',
-          backgroundColor: '#6d08e8',
-        },
-      })
-    },
-  ],
-}
+  plugins: [animate],
+};
+
+export default config;

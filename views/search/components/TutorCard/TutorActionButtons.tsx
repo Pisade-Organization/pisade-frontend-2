@@ -67,6 +67,7 @@ export default function TutorActionButtons({
 
         const query = new URLSearchParams({
             peerUserId: tutorUserId,
+            tutorId: tutorId,
             ...(tutorFullName ? { peerName: tutorFullName } : {}),
             ...(tutorAvatarUrl ? { peerAvatarUrl: tutorAvatarUrl } : {}),
         })

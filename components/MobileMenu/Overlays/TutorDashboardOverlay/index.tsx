@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useMyProfile } from "@/hooks/settings/queries";
+import { useMyProfile, useMyTutorProfile } from "@/hooks/settings/queries";
 import { normalizeTutorRanking } from "@/lib/tutorRanking";
 
 import AccountNavLinksContainer from "./AccountNavLinksContainer";
@@ -14,12 +14,7 @@ export default function TutorDashboardOverlay() {
   const pathname = usePathname();
   const { data } = useSession();
   const { data: profileData } = useMyProfile();
-  const tutorUser = data?.user as {
-    tutorRanking?: string;
-    rating?: number;
-    studentsCount?: number;
-    lessonsCount?: number;
-  } | undefined;
+  const { data: tutorProfileData } = useMyTutorProfile();
 
   const currentLocale = pathname?.split("/")?.[1] || "";
   const localePrefix = currentLocale ? `/${currentLocale}` : "";
@@ -46,10 +41,10 @@ export default function TutorDashboardOverlay() {
         email={data?.user?.email}
         avatarUrl={data?.user?.avatarUrl}
         timezone={profileData?.profile?.timezone ?? undefined}
-        tutorRanking={normalizeTutorRanking(tutorUser?.tutorRanking) ?? undefined}
-        rating={tutorUser?.rating}
-        studentsCount={tutorUser?.studentsCount}
-        lessonsCount={tutorUser?.lessonsCount}
+        tutorRanking={normalizeTutorRanking(tutorProfileData?.tutorRanking) ?? undefined}
+        rating={tutorProfileData?.avgRating}
+        studentsCount={tutorProfileData?.studentsCount}
+        lessonsCount={tutorProfileData?.lessonsCount}
       />
 
       <GeneralNavLinksContainer links={generalLinks} />

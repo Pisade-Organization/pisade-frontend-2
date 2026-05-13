@@ -7,6 +7,11 @@ export interface CalendarEventItem {
   title: string
   participantName: string
   avatarUrl: string | null
+  studentName: string
+  studentAvatarUrl: string | null
+  tutorName: string
+  tutorAvatarUrl: string | null
+  timezone: string
   start: Date
   end: Date
   status: string
@@ -245,7 +250,8 @@ export function getHalfHourRows(range: TimeGridRange) {
 
 export function formatHourLabel(hour: number) {
   return new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
+    hour: "2-digit",
+    hour12: false,
   }).format(new Date(2026, 0, 1, hour))
 }
 
@@ -258,8 +264,9 @@ export function formatMinutesLabel(minutes: number) {
 
 export function formatTimeRange(start: Date, end: Date) {
   const formatter = new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
+    hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
   })
 
   return `${formatter.format(start)} - ${formatter.format(end)}`
@@ -293,7 +300,11 @@ export function getTutorAvailabilityRange(availabilities: TutorAvailabilitySlot[
   }
 }
 
-export function mapBookingsToEvents(bookings: BookingListItem[], role: "student" | "tutor") {
+export function mapBookingsToEvents(
+  bookings: BookingListItem[],
+  role: "student" | "tutor",
+  timezone: string,
+) {
   return bookings
     .filter((booking) => {
       if (role === "student") {
@@ -311,6 +322,11 @@ export function mapBookingsToEvents(bookings: BookingListItem[], role: "student"
         title: `Class with ${participantName}`,
         participantName,
         avatarUrl: participant?.avatarUrl ?? null,
+        studentName: booking.student?.name ?? "Student",
+        studentAvatarUrl: booking.student?.avatarUrl ?? null,
+        tutorName: booking.tutor?.name ?? "Tutor",
+        tutorAvatarUrl: booking.tutor?.avatarUrl ?? null,
+        timezone,
         start: new Date(booking.schedule.startTime),
         end: new Date(booking.schedule.endTime),
         status: booking.status,

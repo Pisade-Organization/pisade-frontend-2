@@ -1,5 +1,5 @@
-import { notFound } from "next/navigation"
+import ClassManagementPage from "@/views/class-management/pages/ClassManagementPage"
 
 export default function TutorClassManagement() {
-  notFound()
+  return <ClassManagementPage role="tutor" />
 }

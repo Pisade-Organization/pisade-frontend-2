@@ -150,7 +150,7 @@ export default function BaseButton({
 }: BaseButtonProps) {
     const normalizedVariant: ResponsiveVariant = typeof variant === "string" ? variant : variant
     const typeStyleClass = buildTypeStyleClasses(typeStyle, normalizedVariant)
-    const baseClasses = "group inline-flex justify-center items-center gap-2 transition-all duration-200 ease-in-out rounded-[8px] text-label-3 lg:text-label-2 px-3 py-2 lg:px-4 lg:py-3 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+    const baseClasses = "group inline-flex cursor-pointer justify-center items-center gap-2 transition-all duration-200 ease-in-out rounded-[8px] text-label-3 px-3 py-2 lg:px-4 lg:py-3 active:scale-[0.98] disabled:opacity-50"
     
     return (    
         <button 

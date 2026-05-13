@@ -9,3 +9,4 @@ export * from "./useCreateTopup";
 export * from "./useCreateTutorPayoutAccountOnboardingLink";
 export * from "./useCreateTutorPayoutAccountDashboardLink";
 export * from "./useRequestTutorWithdrawal";
+export * from "./useMarkNotificationsRead";

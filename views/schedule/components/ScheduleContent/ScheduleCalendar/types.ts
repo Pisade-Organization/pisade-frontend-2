@@ -9,6 +9,7 @@ export interface ScheduleCalendarProps {
   isLoading: boolean
   isError: boolean
   role: ScheduleRole
+  timezone: string
   selectedDate: Date
   view: CalendarView
   onSelectDate: (date: Date) => void

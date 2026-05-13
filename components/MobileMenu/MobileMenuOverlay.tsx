@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import MobileMenuHeader from "./MobileMenuHeader";
 import SearchOverlay from "./Overlays/SearchOverlay";
 import TutorDashboardOverlay from "./Overlays/TutorDashboardOverlay";
@@ -11,9 +12,18 @@ export default function MobileMenuOverlay({
     setOpen: (open: boolean) => void, 
     variant: "search" | "tutor_detail" | "student_dashboard" | "tutor_dashboard"
   }) {
+  useEffect(() => {
+    const originalBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalBodyOverflow;
+    };
+  }, []);
+
   return (
     <motion.div
-      className="fixed inset-0 z-50 bg-white flex flex-col gap-y-1 px-4 py-3"
+      className="fixed inset-0 z-50 h-dvh overflow-y-auto overscroll-contain bg-white flex flex-col gap-y-1 px-4 py-3"
       initial={{ opacity: 0, y: -40 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -40 }}
@@ -26,4 +36,3 @@ export default function MobileMenuOverlay({
     </motion.div>
   );
 }
-

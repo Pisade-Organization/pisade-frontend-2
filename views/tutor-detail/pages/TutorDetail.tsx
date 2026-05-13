@@ -60,6 +60,7 @@ export default function TutorDetailPage({
 
         const query = new URLSearchParams({
             peerUserId: tutorData.userId,
+            tutorId: tutorData.id,
             ...(tutorData.fullName ? { peerName: tutorData.fullName } : {}),
             ...(tutorData.avatarUrl ? { peerAvatarUrl: tutorData.avatarUrl } : {}),
         })

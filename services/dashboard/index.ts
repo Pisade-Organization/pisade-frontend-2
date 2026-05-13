@@ -1,8 +1,10 @@
 import apiInstanceClient from "@/services/apiInstanceClient";
+import { resolveMediaUrl } from "@/lib/media";
 import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiResponse";
 import { servicePath } from "@/services/servicePath";
 import type {
   FavoriteTutor,
+  DashboardTutorCardItem,
   PaginatedTutorCards,
   StudentDashboardSummary,
   StudentLesson,
@@ -13,6 +15,53 @@ import type {
 interface GetTutorCardsParams {
   page?: number;
   limit?: number;
+}
+
+function mapProfileMedia<T extends { avatarUrl: string | null } | null>(profile: T): T {
+  if (!profile) return profile;
+
+  return {
+    ...profile,
+    avatarUrl: resolveMediaUrl(profile.avatarUrl) || null,
+  };
+}
+
+function mapStudentLessonMedia(lesson: StudentLesson): StudentLesson {
+  return {
+    ...lesson,
+    tutor: {
+      ...lesson.tutor,
+      user: {
+        ...lesson.tutor.user,
+        profile: mapProfileMedia(lesson.tutor.user.profile),
+      },
+    },
+  };
+}
+
+function mapFavoriteTutorMedia(tutor: FavoriteTutor): FavoriteTutor {
+  return {
+    ...tutor,
+    user: {
+      ...tutor.user,
+      profile: mapProfileMedia(tutor.user.profile),
+    },
+  };
+}
+
+function mapTutorCardMedia(tutor: DashboardTutorCardItem): DashboardTutorCardItem {
+  return {
+    ...tutor,
+    avatarUrl: resolveMediaUrl(tutor.avatarUrl) || null,
+    videoThumbnailUrl: resolveMediaUrl(tutor.videoThumbnailUrl) || null,
+  };
+}
+
+function mapPaginatedTutorCardsMedia(result: PaginatedTutorCards): PaginatedTutorCards {
+  return {
+    ...result,
+    data: result.data.map(mapTutorCardMedia),
+  };
 }
 
 export const DashboardService = {
@@ -29,7 +78,9 @@ export const DashboardService = {
       ApiSuccessResponse<StudentLesson | null> | StudentLesson | null
     >(servicePath.dashboard.getNextLesson);
 
-    return unwrapApiResponse(response.data);
+    const lesson = unwrapApiResponse(response.data);
+
+    return lesson ? mapStudentLessonMedia(lesson) : null;
   },
 
   async getTodayLessons(): Promise<StudentLesson[]> {
@@ -37,7 +88,7 @@ export const DashboardService = {
       ApiSuccessResponse<StudentLesson[]> | StudentLesson[]
     >(servicePath.dashboard.getTodayLessons);
 
-    return unwrapApiResponse(response.data);
+    return unwrapApiResponse(response.data).map(mapStudentLessonMedia);
   },
 
   async getWeeklyPlan(start: string): Promise<WeeklyPlanDay[]> {
@@ -47,7 +98,10 @@ export const DashboardService = {
       params: { start },
     });
 
-    return unwrapApiResponse(response.data);
+    return unwrapApiResponse(response.data).map((day) => ({
+      ...day,
+      lessons: day.lessons.map(mapStudentLessonMedia),
+    }));
   },
 
   async getFavoriteTutors(): Promise<FavoriteTutor[]> {
@@ -55,7 +109,7 @@ export const DashboardService = {
       ApiSuccessResponse<FavoriteTutor[]> | FavoriteTutor[]
     >(servicePath.dashboard.getFavoriteTutors);
 
-    return unwrapApiResponse(response.data);
+    return unwrapApiResponse(response.data).map(mapFavoriteTutorMedia);
   },
 
   async getFavoriteTutorsPaginated(
@@ -67,7 +121,7 @@ export const DashboardService = {
       params,
     });
 
-    return unwrapApiResponse(response.data);
+    return mapPaginatedTutorCardsMedia(unwrapApiResponse(response.data));
   },
 
   async getCurrentTutors(
@@ -79,7 +133,7 @@ export const DashboardService = {
       params,
     });
 
-    return unwrapApiResponse(response.data);
+    return mapPaginatedTutorCardsMedia(unwrapApiResponse(response.data));
   },
 
   async getStudentTransactions(): Promise<StudentTransaction[]> {

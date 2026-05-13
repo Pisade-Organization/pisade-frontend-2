@@ -10,13 +10,14 @@ export default function ScheduleCalendar({
   isLoading,
   isError,
   role,
+  timezone,
   selectedDate,
   view,
   onSelectDate,
   onViewChange,
   tutorAvailabilities = [],
 }: ScheduleCalendarProps) {
-  const events = mapBookingsToEvents(bookings, role)
+  const events = mapBookingsToEvents(bookings, role, timezone)
   const isTimeGridView = view === "day" || view === "week"
   const tutorAvailabilityRange = role === "tutor" && isTimeGridView
     ? getTutorAvailabilityRange(tutorAvailabilities)

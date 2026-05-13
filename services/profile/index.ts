@@ -99,6 +99,13 @@ export const ProfileService = {
     return unwrapApiResponse(response.data);
   },
 
+  async updateNotificationStatus(id: string, read: boolean): Promise<void> {
+    await apiInstanceClient.patch(
+      servicePath.profile.updateNotificationStatus.replace(':id', id),
+      { read },
+    )
+  },
+
   async getMyProviders(): Promise<LinkedProvider[]> {
     const response = await apiInstanceClient.get<
       ApiSuccessResponse<LinkedProvider[]> | LinkedProvider[]

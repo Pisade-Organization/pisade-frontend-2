@@ -1,8 +1,11 @@
 "use client"
 
 import { useMemo, useRef, useState } from "react"
-import { Paperclip, SendHorizonal, X } from "lucide-react"
+import { Image, Paperclip, SendHorizonal, Smile, X } from "lucide-react"
+import EmojiPicker from "emoji-picker-react"
 import Typography from "@/components/base/Typography"
+import BaseButton from "@/components/base/BaseButton"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { getPresignedUrl, uploadFileToPresignedUrl } from "@/services/upload"
 import type { ChatSendAttachmentInput } from "@/services/chat/types"
 import type { ChatMessage } from "../mock"
@@ -46,6 +49,7 @@ interface MessageComposerProps {
   disabled?: boolean
   replyTarget?: ChatMessage | null
   onCancelReply?: () => void
+  onTyping?: (isTyping: boolean) => void
   currentUserId?: string
 }
 
@@ -54,12 +58,15 @@ export default function MessageComposer({
   disabled = false,
   replyTarget,
   onCancelReply,
+  onTyping,
   currentUserId,
 }: MessageComposerProps) {
   const [value, setValue] = useState("")
   const [attachments, setAttachments] = useState<ComposerAttachmentItem[]>([])
   const [errorMessage, setErrorMessage] = useState("")
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const imageInputRef = useRef<HTMLInputElement | null>(null)
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const hasPendingUpload = attachments.some((attachment) => attachment.status === "uploading")
   const hasFailedUpload = attachments.some((attachment) => attachment.status === "failed")
@@ -212,6 +219,15 @@ export default function MessageComposer({
     }
   }
 
+  const handleInputChange = (next: string) => {
+    setValue(next)
+    if (onTyping) {
+      onTyping(true)
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+      typingTimeoutRef.current = setTimeout(() => onTyping(false), 2000)
+    }
+  }
+
   const handleSend = async () => {
     if (!canSend) return
 
@@ -226,6 +242,8 @@ export default function MessageComposer({
       setAttachments([])
       setErrorMessage("")
       onCancelReply?.()
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+      onTyping?.(false)
     }
   }
 
@@ -239,8 +257,8 @@ export default function MessageComposer({
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
   }
 
-  return (
-    <div className="border-t border-neutral-50 p-3 lg:p-4">
+  const replyAndAttachments = (
+    <>
       {replyTarget ? (
         <div className="mb-2 flex items-start justify-between rounded-[10px] border border-neutral-100 bg-white px-3 py-2">
           <div className="min-w-0">
@@ -255,7 +273,7 @@ export default function MessageComposer({
             type="button"
             onClick={onCancelReply}
             aria-label="Cancel reply"
-            className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-25"
+            className="ml-2 inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-25"
           >
             <X size={14} />
           </button>
@@ -281,7 +299,7 @@ export default function MessageComposer({
                 type="button"
                 onClick={() => removeAttachment(attachment.localId)}
                 aria-label={`Remove ${attachment.file.name}`}
-                className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-25"
+                className="ml-2 inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-25"
               >
                 <X size={14} />
               </button>
@@ -295,46 +313,128 @@ export default function MessageComposer({
           {errorMessage}
         </Typography>
       ) : null}
+    </>
+  )
 
-      <div className="flex items-center gap-2 rounded-xl border border-neutral-100 bg-white px-3 py-2">
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          className="hidden"
-          onChange={(event) => handleSelectFiles(event.target.files)}
-        />
-        <button
-          type="button"
-          aria-label="Attach files"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-25"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={disabled || attachments.length >= MAX_FILES_PER_MESSAGE}
-        >
-          <Paperclip size={16} />
-        </button>
-        <input
-          value={value}
-          onChange={(event) => setValue(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault()
-              void handleSend()
-            }
-          }}
-          placeholder="Type a message..."
-          disabled={disabled}
-          className="h-10 w-full bg-transparent text-body-2 text-neutral-900 outline-none placeholder:text-neutral-400"
-        />
-        <button
-          type="button"
-          aria-label="Send message"
-          onClick={() => void handleSend()}
-          disabled={!canSend}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-electric-violet-500 text-white"
-        >
-          <SendHorizonal size={16} />
-        </button>
+  return (
+    <div className="border-t border-neutral-50">
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        className="hidden"
+        onChange={(event) => handleSelectFiles(event.target.files)}
+      />
+      <input
+        ref={imageInputRef}
+        type="file"
+        multiple
+        accept="image/*"
+        className="hidden"
+        onChange={(event) => handleSelectFiles(event.target.files)}
+      />
+
+      {/* Mobile */}
+      <div className="lg:hidden">
+        {replyAndAttachments}
+        <div className="flex items-center gap-2 rounded-xl bg-white px-3 py-2">
+          <button
+            type="button"
+            aria-label="Attach files"
+            className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-neutral-400 hover:bg-neutral-25"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={disabled || attachments.length >= MAX_FILES_PER_MESSAGE}
+          >
+            <Paperclip size={16} />
+          </button>
+          <input
+            value={value}
+            onChange={(event) => handleInputChange(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault()
+                void handleSend()
+              }
+            }}
+            placeholder="Type a message..."
+            disabled={disabled}
+            className="h-10 w-full bg-transparent text-body-2 text-neutral-900 outline-none placeholder:text-neutral-400"
+          />
+          <button
+            type="button"
+            aria-label="Send message"
+            onClick={() => void handleSend()}
+            disabled={!canSend}
+            className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-electric-violet-500 text-white"
+          >
+            <SendHorizonal size={16} />
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden lg:block">
+        {replyAndAttachments}
+        <div className="flex flex-col gap-2 rounded-xl bg-white px-5 py-4">
+          <input
+            value={value}
+            onChange={(event) => handleInputChange(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault()
+                void handleSend()
+              }
+            }}
+            placeholder="Type something..."
+            disabled={disabled}
+            className="w-full bg-transparent text-body-2 text-neutral-900 outline-none placeholder:text-neutral-200"
+          />
+          <div className="flex items-center justify-end gap-5">
+            <button
+              type="button"
+              aria-label="Attach files"
+              className="inline-flex cursor-pointer items-center justify-center text-neutral-400 hover:text-neutral-600"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={disabled || attachments.length >= MAX_FILES_PER_MESSAGE}
+            >
+              <Paperclip size={20} />
+            </button>
+            <button
+              type="button"
+              aria-label="Attach images"
+              className="inline-flex cursor-pointer items-center justify-center text-neutral-400 hover:text-neutral-600"
+              onClick={() => imageInputRef.current?.click()}
+              disabled={disabled || attachments.length >= MAX_FILES_PER_MESSAGE}
+            >
+              <Image size={20} />
+            </button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Add emoji"
+                  className="inline-flex cursor-pointer items-center justify-center text-neutral-400 hover:text-neutral-600"
+                >
+                  <Smile size={20} />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-auto border-0 p-0 shadow-lg">
+                <EmojiPicker
+                  onEmojiClick={(emojiData) => setValue((prev) => prev + emojiData.emoji)}
+                  lazyLoadEmojis
+                />
+              </PopoverContent>
+            </Popover>
+            <BaseButton
+              typeStyle="outline"
+              variant="primary"
+              onClick={() => void handleSend()}
+              disabled={!canSend}
+            >
+              Send
+            </BaseButton>
+          </div>
+        </div>
       </div>
     </div>
   )

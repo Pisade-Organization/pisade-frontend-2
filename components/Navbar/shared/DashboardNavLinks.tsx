@@ -12,7 +12,7 @@ export default function DashboardNavLinks({ items, pathname, onNavigate }: Dashb
       {items.map((item) => (
         <button
           key={item.path}
-          className={item.isActive(pathname) ? "text-electric-violet-600" : "text-neutral-900"}
+          className={`cursor-pointer ${item.isActive(pathname) ? "text-electric-violet-600" : "text-neutral-900"}`}
           onClick={() => onNavigate(item.path)}
         >
           {item.label}

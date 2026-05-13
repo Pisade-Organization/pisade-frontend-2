@@ -6,12 +6,12 @@ import LanguageDropdown from "@/components/shared/LanguageDropdown"
 export default function Navbar() {
   const router = useRouter()
   return (
-    <nav className="flex min-h-[64px] items-center justify-between gap-3 border border-neutral-50 bg-white px-3 py-4 sm:px-4 md:px-8 lg:px-20">
+    <nav className="flex min-h-16 items-center justify-between gap-3 border border-neutral-50 bg-white px-3 py-4 sm:px-4 md:px-8 lg:px-20">
       <PisadeDarkLogo
         width={88}
         height={29}
         onClick={() => router.push('/')}
-        className="cursor-pointer shrink-0 sm:w-[109px] sm:h-[36px]"
+        className="cursor-pointer shrink-0 sm:w-27.25 sm:h-9"
       />
 
       <div className="shrink-0">

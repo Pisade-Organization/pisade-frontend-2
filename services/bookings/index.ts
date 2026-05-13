@@ -1,8 +1,11 @@
 import apiInstanceClient from "@/services/apiInstanceClient";
+import { resolveMediaUrl } from "@/lib/media";
 import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiResponse";
 import { servicePath } from "@/services/servicePath";
 import type {
   BookingDetail,
+  BookingListItem,
+  BookingCounterparty,
   CancelBookingDto,
   CheckoutBookingDto,
   CheckoutBookingResponse,
@@ -12,6 +15,35 @@ import type {
   GetBookingsResponse,
   RescheduleBookingDto,
 } from "./types";
+
+function mapCounterpartyMedia(
+  counterparty: BookingCounterparty | undefined,
+): BookingCounterparty | undefined {
+  if (!counterparty) return counterparty;
+
+  return {
+    ...counterparty,
+    avatarUrl: resolveMediaUrl(counterparty.avatarUrl) || null,
+  };
+}
+
+function mapBookingListItemMedia(booking: BookingListItem): BookingListItem {
+  return {
+    ...booking,
+    tutor: mapCounterpartyMedia(booking.tutor),
+    student: mapCounterpartyMedia(booking.student),
+  };
+}
+
+function mapBookingDetailMedia(booking: BookingDetail): BookingDetail {
+  return {
+    ...booking,
+    tutor: {
+      ...booking.tutor,
+      avatarUrl: resolveMediaUrl(booking.tutor.avatarUrl) || null,
+    },
+  };
+}
 
 export const BookingsService = {
   async create(payload: CreateBookingDto): Promise<CreateBookingResponse> {
@@ -27,7 +59,12 @@ export const BookingsService = {
       ApiSuccessResponse<GetBookingsResponse> | GetBookingsResponse
     >(servicePath.bookings.getAll, { params });
 
-    return unwrapApiResponse(response.data);
+    const result = unwrapApiResponse(response.data);
+
+    return {
+      ...result,
+      data: result.data.map(mapBookingListItemMedia),
+    };
   },
 
   async getById(bookingId: string): Promise<BookingDetail> {
@@ -36,7 +73,7 @@ export const BookingsService = {
       path,
     );
 
-    return unwrapApiResponse(response.data);
+    return mapBookingDetailMedia(unwrapApiResponse(response.data));
   },
 
   async checkout(

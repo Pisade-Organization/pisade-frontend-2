@@ -8,6 +8,7 @@ import ScheduleContent from "../components/ScheduleContent"
 import { useBookings } from "@/hooks/bookings/queries"
 import { useMyProfile, useMyWalletSummary, useTutorWalletSummary } from "@/hooks/settings/queries"
 import { useMyTutorProfile } from "@/hooks/settings/queries/useMyTutorProfile"
+import { resolveMediaUrl } from "@/lib/media"
 import {
   filterBookingsForVisibleRange,
   getFetchRange,
@@ -22,7 +23,6 @@ type SchedulePageProps = {
   role?: ScheduleRole
 }
 
-const ENABLE_SCHEDULE_MOCK_CARD = false
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("en-US", {
@@ -58,20 +58,9 @@ export default function SchedulePage({
     () => filterBookingsForVisibleRange(bookingsData?.data ?? [], selectedDate, activeView),
     [activeView, bookingsData?.data, selectedDate],
   )
-  const bookingsWithMock = useMemo(() => {
-    const hasRenderableBooking = bookings.some((booking) => (
-      role === "student" ? booking.status !== "EXPIRED" : true
-    ))
-
-    if (!ENABLE_SCHEDULE_MOCK_CARD || hasRenderableBooking) {
-      return bookings
-    }
-
-    return bookings
-  }, [bookings, selectedDate])
 
   const fullName = profile?.profile?.fullName ?? (role === "student" ? "Student" : "Tutor")
-  const avatarUrl = session?.user?.avatarUrl ?? profile?.profile?.avatarUrl
+  const avatarUrl = resolveMediaUrl(session?.user?.avatarUrl) || profile?.profile?.avatarUrl
   const timezone = profile?.profile?.timezone ?? "Asia/Bangkok"
   const tutorRanking = role === "tutor" ? (tutorProfile?.tutorRanking ?? null) : null
   const avgRating = role === "tutor" ? (tutorProfile?.avgRating ?? 0) : undefined
@@ -135,10 +124,11 @@ export default function SchedulePage({
             onPreviousDay={handlePreviousDay}
             onNextDay={handleNextDay}
             onToday={handleToday}
-            bookings={bookingsWithMock}
+            bookings={bookings}
             isLoading={isLoading}
             isError={isError}
             role={role}
+            timezone={timezone}
             view={activeView}
             onViewChange={setActiveView}
             onSelectDate={handleSelectDate}
@@ -168,10 +158,11 @@ export default function SchedulePage({
             onPreviousDay={handlePreviousDay}
             onNextDay={handleNextDay}
             onToday={handleToday}
-            bookings={bookingsWithMock}
+            bookings={bookings}
             isLoading={isLoading}
             isError={isError}
             role={role}
+            timezone={timezone}
             view={activeView}
             onViewChange={setActiveView}
             onSelectDate={handleSelectDate}

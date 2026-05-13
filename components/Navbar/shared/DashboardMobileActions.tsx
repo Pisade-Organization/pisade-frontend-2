@@ -1,7 +1,8 @@
-import { Bell, MessageCircle } from "lucide-react"
+import { MessageCircle } from "lucide-react"
 
 import MobileMenu from "../../MobileMenu/MobileMenu"
 import type { DashboardNavbarVariant } from "../types"
+import NotificationsPopover from "./NotificationsPopover"
 
 interface DashboardMobileActionsProps {
   variant: DashboardNavbarVariant
@@ -12,16 +13,14 @@ export default function DashboardMobileActions({ variant, onMessagesClick }: Das
   return (
     <div className="lg:hidden flex items-center gap-2">
       <button
-        className="w-11 h-11 flex items-center justify-center"
+        className="flex h-11 w-11 cursor-pointer items-center justify-center"
         aria-label="Messages"
         onClick={onMessagesClick}
       >
         <MessageCircle size={20} className="text-neutral-700" />
       </button>
 
-      <button className="w-11 h-11 flex items-center justify-center" aria-label="Notifications">
-        <Bell size={20} className="text-neutral-700" />
-      </button>
+      <NotificationsPopover iconButtonClass="flex h-11 w-11 cursor-pointer items-center justify-center" />
 
       <MobileMenu variant={variant} />
     </div>

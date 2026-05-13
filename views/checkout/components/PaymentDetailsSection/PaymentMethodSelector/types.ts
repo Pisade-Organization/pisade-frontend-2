@@ -1,3 +1,3 @@
 export interface PaymentMethodSelectorI {
-  method: "PROMPTPAY" | "CARD";
+  method: "PROMPTPAY" | "CARD" | "WALLET";
 }

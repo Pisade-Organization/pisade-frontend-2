@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import type { AxiosError } from "axios";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, useStripe } from "@stripe/react-stripe-js";
 import Navbar from "@/components/Navbar";
 import BaseButton from "@/components/base/BaseButton";
 import Typography from "@/components/base/Typography";
@@ -33,8 +35,13 @@ import PaymentConfirmationNotice from "../components/PaymentConfirmationNotice";
 import PaymentMethodSelector, {
   PAYMENT_METHODS,
 } from "../components/PaymentDetailsSection/PaymentMethodSelector";
+import CardForm from "../components/PaymentDetailsSection/PaymentForms/CardForm";
+import type { CardFormHandle } from "../components/PaymentDetailsSection/PaymentForms/CardForm";
+import SaveThisMethodSelect from "../components/SaveThisMethodSelect";
 
-type PaymentMethod = "PROMPTPAY" | "CARD";
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "");
+
+type PaymentMethod = "PROMPTPAY" | "CARD" | "WALLET";
 
 type CheckoutUiState =
   | { kind: "idle" }
@@ -91,6 +98,15 @@ function getErrorMessage(error: unknown, fallback: string) {
 }
 
 export default function Checkout() {
+  return (
+    <Elements stripe={stripePromise}>
+      <CheckoutContent />
+    </Elements>
+  );
+}
+
+function CheckoutContent() {
+  const stripe = useStripe();
   const router = useRouter();
   const params = useParams();
   const { data: session } = useSession();
@@ -103,6 +119,9 @@ export default function Checkout() {
   const [selectedSavedMethodId, setSelectedSavedMethodId] = useState<string | null>(null);
   const [uiState, setUiState] = useState<CheckoutUiState>({ kind: "idle" });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [saveCard, setSaveCard] = useState(false);
+  const [is3dsProcessing, setIs3dsProcessing] = useState(false);
+  const cardFormRef = useRef<CardFormHandle>(null);
 
   useEffect(() => {
     const defaultMethod =
@@ -182,11 +201,10 @@ export default function Checkout() {
   }, [uiState]);
 
   const total = booking?.pricing.amount ?? 0;
-  const canUseSavedCard = savedMethods.length > 0;
   const canSubmit =
     !checkoutMutation.isPending &&
-    booking?.allowedActions.pay !== false &&
-    (selectedMethod === "PROMPTPAY" || Boolean(selectedSavedMethodId));
+    !is3dsProcessing &&
+    booking?.allowedActions.pay !== false;
 
   const handleBack = () => {
     router.back();
@@ -203,18 +221,26 @@ export default function Checkout() {
 
     setErrorMessage(null);
 
-    if (selectedMethod === "CARD" && !selectedSavedMethodId) {
-      setErrorMessage(
-        "Saved card checkout is available, but entering a new card is not wired on this page yet. Use PromptPay or select a saved card.",
-      );
-      return;
-    }
-
     try {
+      let paymentMethodId: string | undefined;
+
+      if (selectedMethod === "CARD" && !selectedSavedMethodId) {
+        if (!cardFormRef.current) {
+          setErrorMessage("Card form is not ready. Please try again.");
+          return;
+        }
+        paymentMethodId = await cardFormRef.current.createPaymentMethod();
+      }
+
       const response = await checkoutMutation.mutateAsync({
         method: selectedMethod,
         savedPaymentMethodId:
-          selectedMethod === "CARD" ? (selectedSavedMethodId ?? undefined) : undefined,
+          selectedMethod === "CARD" && selectedSavedMethodId
+            ? selectedSavedMethodId
+            : undefined,
+        paymentMethodId,
+        savePaymentMethod:
+          selectedMethod === "CARD" && !selectedSavedMethodId && saveCard ? true : undefined,
       });
 
       if (response.status === "CONFIRMED") {
@@ -223,6 +249,24 @@ export default function Checkout() {
           paymentTransactionId: response.paymentTransactionId,
         });
         return;
+      }
+
+      // 3DS authentication required for card payments
+      if (
+        response.payment.method === "CARD" &&
+        response.payment.nextAction &&
+        response.payment.clientSecret &&
+        stripe
+      ) {
+        setIs3dsProcessing(true);
+        try {
+          const { error } = await stripe.handleCardAction(response.payment.clientSecret);
+          if (error) {
+            throw new Error(error.message ?? "Card authentication failed. Please try again.");
+          }
+        } finally {
+          setIs3dsProcessing(false);
+        }
       }
 
       setUiState({
@@ -235,6 +279,7 @@ export default function Checkout() {
       });
     } catch (error) {
       setUiState({ kind: "idle" });
+      setIs3dsProcessing(false);
       setErrorMessage(
         getErrorMessage(error, "Unable to process checkout right now. Please try again."),
       );
@@ -286,6 +331,8 @@ export default function Checkout() {
       );
     }
 
+    const showNewCardForm = selectedMethod === "CARD" && !selectedSavedMethodId;
+
     return (
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
@@ -309,19 +356,25 @@ export default function Checkout() {
           />
 
           {selectedMethod === "CARD" ? (
-            canUseSavedCard ? (
-              <SavedPaymentMethods
-                methods={savedMethods}
-                selectedMethodId={selectedSavedMethodId}
-                onSelectMethod={setSelectedSavedMethodId}
-              />
-            ) : (
-              <div className="rounded-2xl border border-dashed border-neutral-200 bg-neutral-25 p-4">
-                <Typography variant="body-3" color="neutral-500">
-                  No saved cards are available on this account yet. Use PromptPay for now.
-                </Typography>
-              </div>
-            )
+            <div className="flex flex-col gap-3">
+              {savedMethods.length > 0 ? (
+                <SavedPaymentMethods
+                  methods={savedMethods}
+                  selectedMethodId={selectedSavedMethodId}
+                  onSelectMethod={setSelectedSavedMethodId}
+                />
+              ) : null}
+              {showNewCardForm ? (
+                <div className="flex flex-col gap-2">
+                  <CardForm ref={cardFormRef} />
+                  <SaveThisMethodSelect
+                    checked={saveCard}
+                    onCheckedChange={setSaveCard}
+                    disabled={isLoadingPaymentMethods}
+                  />
+                </div>
+              ) : null}
+            </div>
           ) : null}
 
           {uiState.kind === "pending" && uiState.method === "PROMPTPAY" ? (
@@ -355,7 +408,15 @@ export default function Checkout() {
             </div>
           ) : null}
 
-          {uiState.kind === "pending" && uiState.method === "CARD" ? (
+          {is3dsProcessing ? (
+            <div className="rounded-2xl border border-neutral-100 bg-neutral-25 p-4">
+              <Typography variant="body-3" color="neutral-500">
+                Complete the authentication step in the popup to confirm your card payment.
+              </Typography>
+            </div>
+          ) : null}
+
+          {!is3dsProcessing && uiState.kind === "pending" && uiState.method === "CARD" ? (
             <div className="rounded-2xl border border-neutral-100 bg-neutral-25 p-4">
               <Typography variant="body-3" color="neutral-500">
                 Card payment is being processed. This page will update automatically once it
@@ -367,16 +428,10 @@ export default function Checkout() {
           <PaymentConfirmationNotice totalAmount={total} />
 
           <BaseButton onClick={handlePay} disabled={!canSubmit}>
-            {checkoutMutation.isPending
+            {checkoutMutation.isPending || is3dsProcessing
               ? "Processing payment..."
               : `Pay with ${PAYMENT_METHODS[selectedMethod]}`}
           </BaseButton>
-
-          {!canSubmit && selectedMethod === "CARD" && !isLoadingPaymentMethods ? (
-            <Typography variant="body-4" color="neutral-400">
-              Select a saved card or switch to PromptPay.
-            </Typography>
-          ) : null}
         </div>
       </div>
     );

@@ -34,7 +34,11 @@ export interface ChatConversation {
   subtitle: string;
   lastMessage: string;
   lastMessageAt: string;
+  lastMessageCreatedAt: string;
   unreadCount: number;
   isOnline: boolean;
+  isMuted: boolean;
+  isBlocked: boolean;
+  isReported: boolean;
   messages: ChatMessage[];
 }

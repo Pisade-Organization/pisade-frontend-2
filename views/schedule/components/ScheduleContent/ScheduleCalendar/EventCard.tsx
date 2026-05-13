@@ -1,11 +1,13 @@
 "use client"
 
+import type { MouseEvent, PointerEvent } from "react"
 import { formatTimeRange, getStatusTone } from "../calendar.utils"
 import type { EventCardProps } from "./types"
 import { Ellipsis, EllipsisVertical } from "lucide-react"
 import Typography from "@/components/base/Typography"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useRouter, useParams } from "next/navigation"
+import EventCardClickPopover from "./EventCardClickPopover"
 
 export default function EventCard({ event, compact = false, view }: EventCardProps) {
   const router = useRouter()
@@ -13,16 +15,28 @@ export default function EventCard({ event, compact = false, view }: EventCardPro
   const locale = typeof params?.locale === "string" ? params.locale : "en"
   const tone = getStatusTone(event.status)
   const isUpcoming = tone.label === "Upcoming" || event.status === "UPCOMING"
-  const normalizedStatusLabel = (isUpcoming ? "Upcoming" : tone.label).toLowerCase()
   const statusColorClassMap: Record<string, string> = {
     UPCOMING: "text-electric-violet-400",
     CONFIRMED: "text-blue-normal",
+    IN_PROGRESS: "text-green-normal",
+    PROCESSING: "text-orange-normal",
     PENDING_PAYMENT: "text-orange-normal",
     COMPLETED: "text-neutral-800",
     CANCELLED: "text-red-normal",
   }
   const statusColorClass = statusColorClassMap[event.status] ?? "text-neutral-500"
-  const statusLabel = isUpcoming ? "Upcoming" : tone.label
+  const statusLabel = isUpcoming
+    ? "Upcoming"
+    : event.status === "CONFIRMED"
+      ? "Booked"
+      : event.status === "CANCELLED"
+        ? "Cancel"
+      : event.status === "IN_PROGRESS"
+        ? "In-progress"
+      : event.status === "PROCESSING"
+        ? "Processing"
+        : tone.label
+  const normalizedStatusLabel = statusLabel.toLowerCase()
   const popoverActionsByStatus: Record<string, string[]> = {
     upcoming: ["Join Class", "Reschedule", "Cancel"],
     booked: ["Reschedule", "Cancel"],
@@ -80,6 +94,9 @@ export default function EventCard({ event, compact = false, view }: EventCardPro
     .toUpperCase()
   const isMobileWeekView = view === "week"
   const isWeekView = view === "week"
+  const preventCardClickPopoverOpen = (event: PointerEvent | MouseEvent) => {
+    event.stopPropagation()
+  }
 
   const statusNode = isUpcoming ? (
     <div className="flex items-center gap-1">
@@ -97,6 +114,25 @@ export default function EventCard({ event, compact = false, view }: EventCardPro
       </li>
     </ul>
   )
+  const popoverDate = new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: event.timezone,
+  }).format(event.start)
+  const popoverTime = formatTimeRange(event.start, event.end)
+  const popoverData = {
+    lessonTitle: event.title,
+    date: popoverDate,
+    time: popoverTime,
+    status: statusLabel,
+    timezone: event.timezone,
+    studentProfilePicture: event.studentAvatarUrl,
+    studentName: event.studentName,
+    tutorProfilePicture: event.tutorAvatarUrl,
+    tutorName: event.tutorName,
+  }
 
   return (
     <div className="flex h-full w-full">
@@ -104,7 +140,24 @@ export default function EventCard({ event, compact = false, view }: EventCardPro
       <div className={`h-full w-[3px] shrink-0 ${isUpcoming ? "bg-electric-violet-100" : "bg-[#FFF1F2]"}`}></div>
 
       {/* CONTENT */}
-      <div className={`flex h-full flex-1 items-center gap-3 ${isMobileWeekView ? "p-0 md:p-4" : "p-4"} ${isUpcoming ? "bg-electric-violet-25" : "bg-white"}`}>
+      <EventCardClickPopover
+        data={popoverData}
+        canJoinClass={actionEnabled["Join Class"]}
+        canReschedule={actionEnabled.Reschedule}
+        canCancel={actionEnabled.Cancel}
+        canRequestRefund={actionEnabled["Request Refund"]}
+        canComplete={false}
+        onJoinClass={() => handleActionClick("Join Class")}
+        onReschedule={() => handleActionClick("Reschedule")}
+        onCancel={() => handleActionClick("Cancel")}
+        onRequestRefund={() => handleActionClick("Request Refund")}
+      >
+        <div
+          className={`flex h-full flex-1 cursor-pointer items-center gap-3 transition-colors duration-150 hover:bg-neutral-25 hover:shadow-sm ${isMobileWeekView ? "p-0 md:p-4" : "p-4"} ${isUpcoming ? "bg-electric-violet-25" : "bg-white"}`}
+          role="button"
+          tabIndex={0}
+          aria-label={`Open event details for ${event.title}`}
+        >
         {isMobileWeekView ? (
           <div className="flex w-full flex-col gap-1 pl-0 pr-[6px] py-2 md:hidden">
             <Typography
@@ -144,7 +197,13 @@ export default function EventCard({ event, compact = false, view }: EventCardPro
             </div>
             <Popover>
               <PopoverTrigger asChild>
-                <button type="button" aria-label="More options">
+                <button
+                  type="button"
+                  aria-label="More options"
+                  className="cursor-pointer"
+                  onPointerDown={preventCardClickPopoverOpen}
+                  onClick={preventCardClickPopoverOpen}
+                >
                   <EllipsisVertical className="h-4 w-4 text-neutral-100" />
                 </button>
               </PopoverTrigger>
@@ -258,7 +317,13 @@ export default function EventCard({ event, compact = false, view }: EventCardPro
               </Typography>
               <Popover>
                 <PopoverTrigger asChild>
-                  <button type="button" aria-label="More options" className="inline-flex shrink-0">
+                  <button
+                    type="button"
+                    aria-label="More options"
+                    className="inline-flex shrink-0 cursor-pointer"
+                    onPointerDown={preventCardClickPopoverOpen}
+                    onClick={preventCardClickPopoverOpen}
+                  >
                     <Ellipsis className="h-4 w-4 text-neutral-100" />
                   </button>
                 </PopoverTrigger>
@@ -316,7 +381,13 @@ export default function EventCard({ event, compact = false, view }: EventCardPro
         ) : (
           <Popover>
             <PopoverTrigger asChild>
-              <button type="button" aria-label="More options" className="hidden md:inline-flex">
+              <button
+                type="button"
+                aria-label="More options"
+                className="hidden cursor-pointer md:inline-flex"
+                onPointerDown={preventCardClickPopoverOpen}
+                onClick={preventCardClickPopoverOpen}
+              >
                 <Ellipsis className="w-4 h-4 text-neutral-100" />
               </button>
             </PopoverTrigger>
@@ -344,7 +415,8 @@ export default function EventCard({ event, compact = false, view }: EventCardPro
             ) : null}
           </Popover>
         )}
-      </div>
+        </div>
+      </EventCardClickPopover>
     </div>
   )
 }

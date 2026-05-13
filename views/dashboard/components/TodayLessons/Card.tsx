@@ -19,15 +19,16 @@ export default function Card({
     tutorName: string
 }) {
     return (
-        <div className="flex flex-col justify-center items-center rounded-xl border border-neutral-50 ">
+        <div className="flex flex-col rounded-xl border border-neutral-50">
 
-            <Image 
-                src={avatarUrl}
-                alt={`Profile picture of ${tutorName}`}
-                width={331}
-                height={175}
-                className="w-[220px] h-[124px] lg:w-[331px] lg:h-[175px] rounded-t-xl"
-            />
+            <div className="relative h-[124px] w-full lg:h-[175px]">
+                <Image
+                    src={avatarUrl}
+                    alt={`Profile picture of ${tutorName}`}
+                    fill
+                    className="rounded-t-xl object-cover"
+                />
+            </div>
 
             <div className="w-full flex flex-col items-start py-2 px-3 lg:py-3 lg:px-4 gap-3 bg-white rounded-b-xl">
 

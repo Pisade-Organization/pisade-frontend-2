@@ -16,6 +16,7 @@ interface ScheduleContentProps {
   isLoading: boolean
   isError: boolean
   role: ScheduleRole
+  timezone: string
   view: CalendarView
   onViewChange: (view: CalendarView) => void
   onSelectDate: (date: Date) => void
@@ -31,6 +32,7 @@ export default function ScheduleContent({
   isLoading,
   isError,
   role,
+  timezone,
   view,
   onViewChange,
   onSelectDate,
@@ -70,6 +72,7 @@ export default function ScheduleContent({
           isLoading={isLoading}
           isError={isError}
           role={role}
+          timezone={timezone}
           selectedDate={selectedDate}
           view={view}
           onSelectDate={onSelectDate}

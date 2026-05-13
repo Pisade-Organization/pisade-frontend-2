@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react"
+import { FileDown } from "lucide-react"
 import Typography from "@/components/base/Typography"
+import LinkPreviewCard from "./LinkPreviewCard"
 import type { ChatMessage } from "../mock"
+
+const URL_REGEX = /https?:\/\/[^\s<>"']+/g
+
+function extractFirstUrl(text: string): string | null {
+  const matches = text.match(URL_REGEX)
+  return matches?.[0] ?? null
+}
 
 interface MessageBubbleProps {
   message: ChatMessage
@@ -123,7 +132,7 @@ export default function MessageBubble({
           </Typography>
         ) : null}
         {message.replyTo ? (
-          <div className={`rounded-[10px] p-3 ${isMine ? "bg-white/20" : "bg-neutral-25"}`}>
+          <div className={`rounded-[10px] p-3 ${isMine ? "bg-electric-violet-700" : "bg-neutral-25"}`}>
             <Typography variant="body-4" color={isMine ? "white" : "neutral-400"} className="mb-1">
               {message.replyTo.sender === "me" ? "You" : peerName}
             </Typography>
@@ -158,22 +167,33 @@ export default function MessageBubble({
                 )
               }
 
+              const ext = attachment.originalName.split(".").pop()?.toUpperCase() ?? ""
+
               return (
                 <button
                   key={attachment.id}
                   type="button"
                   onClick={() => window.open(attachment.url, "_blank", "noopener,noreferrer")}
-                  className={`flex items-center justify-between rounded-[10px] p-3 text-left ${
-                    isMine ? "bg-white/20" : "bg-neutral-25"
-                  }`}
+                  className="flex cursor-pointer gap-4 rounded-[10px] bg-white pr-4 text-left"
                 >
-                  <div className="min-w-0">
-                    <Typography variant="body-3" color={isMine ? "white" : "neutral-800"} className="truncate">
+                  <div className="rounded-[4px] border-4 border-white bg-electric-violet-25 p-6">
+                    <FileDown size={36} className="text-electric-violet-400" />
+                  </div>
+                  <div className="flex flex-col justify-center">
+                    <Typography variant="label-3" color="neutral-800" className="truncate">
                       {attachment.originalName}
                     </Typography>
-                    <Typography variant="body-4" color={isMine ? "white" : "neutral-400"}>
-                      {formatAttachmentSize(attachment.sizeBytes)}
-                    </Typography>
+                    <div className="flex items-center gap-1">
+                      <Typography variant="body-3" color="neutral-500">
+                        {ext}
+                      </Typography>
+                      <div className="flex h-4 w-4 items-center justify-center">
+                        <span className="h-[4px] w-[4px] rounded-full bg-neutral-100" />
+                      </div>
+                      <Typography variant="body-3" color="neutral-500">
+                        {formatAttachmentSize(attachment.sizeBytes)}
+                      </Typography>
+                    </div>
                   </div>
                 </button>
               )
@@ -181,15 +201,21 @@ export default function MessageBubble({
           </div>
         ) : null}
         {message.text ? (
-          <div
-            className={`rounded-[10px] p-3 ${
-              isMine ? "bg-electric-violet-600 text-white" : "bg-white text-neutral-800"
-            }`}
-          >
-            <Typography variant="body-3" color={isMine ? "white" : "neutral-800"} className="leading-relaxed">
-              {message.text}
-            </Typography>
-          </div>
+          <>
+            <div
+              className={`rounded-[10px] p-3 ${
+                isMine ? "bg-electric-violet-600 text-white" : "bg-white text-neutral-800"
+              }`}
+            >
+              <Typography variant="body-3" color={isMine ? "white" : "neutral-800"} className="leading-relaxed">
+                {message.text}
+              </Typography>
+            </div>
+            {(() => {
+              const url = extractFirstUrl(message.text)
+              return url ? <LinkPreviewCard url={url} /> : null
+            })()}
+          </>
         ) : null}
       </div>
 

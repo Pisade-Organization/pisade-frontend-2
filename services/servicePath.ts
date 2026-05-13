@@ -13,6 +13,7 @@ export const servicePath = {
       updateMyProfile: "/v1/me", // PATCH
       updateMyPhoneNumber: "/v1/me/phone-number", // PATCH
       getMyNotifications: "/v1/me/notifications", // GET
+      updateNotificationStatus: "/v1/me/notifications/:id", // PATCH
       getMyNotificationPreferences: "/v1/me/notification-preferences", // GET
       updateMyNotificationPreferences: "/v1/me/notification-preferences", // PATCH
       getMyProviders: "/v1/me/providers", // GET

@@ -2,7 +2,7 @@
 
 import PaymentMethodOption from "./PaymentMethodOption"
 import type { PaymentMethodSelectorI } from "./types"
-import { ScanQrCode, CreditCard } from "lucide-react"
+import { ScanQrCode, CreditCard, Wallet } from "lucide-react"
 import PaymentFormsHeader from "../PaymentForms/PaymentFormsHeader"
 import CardForm from "../PaymentForms/CardForm"
 
@@ -33,6 +33,11 @@ export default function PaymentMethodSelector({
       method: "CARD",
       label: "Credit/Debit Card",
       icon: <CreditCard className="w-6 h-6 text-neutral-500" />
+    },
+    {
+      method: "WALLET",
+      label: "Pay by wallet",
+      icon: <Wallet className="w-6 h-6 text-neutral-500" />
     }
   ]
 
@@ -64,4 +69,5 @@ export default function PaymentMethodSelector({
 export const PAYMENT_METHODS: Record<PaymentMethod, string> = {
   PROMPTPAY: "PromptPay",
   CARD: "Credit/Debit Card",
+  WALLET: "Wallet",
 }

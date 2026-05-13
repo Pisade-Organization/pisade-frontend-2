@@ -89,7 +89,7 @@ export default function StudentProfileDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button type="button" className="rounded-full">
+        <button type="button" className="rounded-full cursor-pointer">
           <UserAvatar avatarUrl={avatarUrl ?? undefined} fullName={fullName} size={44} />
         </button>
       </DropdownMenuTrigger>
