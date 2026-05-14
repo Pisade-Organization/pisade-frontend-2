@@ -75,6 +75,7 @@ export interface OnboardingStepTwoPostResponse {
   key?: string;
   id: string;
   avatarUrl: string;
+  currentStep: number;
 }
 
 export interface CertificationDto {

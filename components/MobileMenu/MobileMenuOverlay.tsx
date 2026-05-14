@@ -30,7 +30,7 @@ export default function MobileMenuOverlay({
       transition={{ type: "spring", stiffness: 260, damping: 25 }}
     >
       <MobileMenuHeader setOpen={setOpen} />
-      { variant === "search" && <SearchOverlay />}
+      { (variant === "search" || variant === "student_dashboard") && <SearchOverlay />}
       { variant === "tutor_dashboard" && <TutorDashboardOverlay />}
        
     </motion.div>

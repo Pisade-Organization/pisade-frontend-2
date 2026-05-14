@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useMyProfile, useMyTutorProfile } from "@/hooks/settings/queries";
+import { resolveUserAvatarUrl } from "@/lib/avatar";
 import { normalizeTutorRanking } from "@/lib/tutorRanking";
 
 import AccountNavLinksContainer from "./AccountNavLinksContainer";
@@ -15,6 +16,7 @@ export default function TutorDashboardOverlay() {
   const { data } = useSession();
   const { data: profileData } = useMyProfile();
   const { data: tutorProfileData } = useMyTutorProfile();
+  const avatarUrl = resolveUserAvatarUrl(profileData?.profile?.avatarUrl, data?.user?.avatarUrl);
 
   const currentLocale = pathname?.split("/")?.[1] || "";
   const localePrefix = currentLocale ? `/${currentLocale}` : "";
@@ -39,7 +41,7 @@ export default function TutorDashboardOverlay() {
       <TutorProfileContainer
         fullName={data?.user?.fullName}
         email={data?.user?.email}
-        avatarUrl={data?.user?.avatarUrl}
+        avatarUrl={avatarUrl}
         timezone={profileData?.profile?.timezone ?? undefined}
         tutorRanking={normalizeTutorRanking(tutorProfileData?.tutorRanking) ?? undefined}
         rating={tutorProfileData?.avgRating}

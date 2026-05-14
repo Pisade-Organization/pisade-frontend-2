@@ -16,8 +16,6 @@ function SessionErrorWatcher({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const signOutInProgress = useRef(false);
   const lastRetriedFatalError = useRef<string | null>(null);
-  const lastSessionUpdateAt = useRef(0);
-  const MIN_SESSION_UPDATE_INTERVAL = 30_000;
   const authError = (session as any)?.error as string | undefined;
   const [showRefreshWarning, setShowRefreshWarning] = useState(false);
 
@@ -50,35 +48,6 @@ function SessionErrorWatcher({ children }: { children: ReactNode }) {
     signOutInProgress.current = true;
     void signOut({ callbackUrl: "/signin" });
   }, [status, authError, pathname, update]);
-
-  // Refresh session on visibility/focus with throttling to avoid refresh races.
-  useEffect(() => {
-    const maybeUpdateSession = () => {
-      if (status !== "authenticated") return;
-      const now = Date.now();
-      if (now - lastSessionUpdateAt.current < MIN_SESSION_UPDATE_INTERVAL) return;
-      lastSessionUpdateAt.current = now;
-      void update();
-    };
-
-    const handleVisibility = () => {
-      if (document.visibilityState === "visible") {
-        maybeUpdateSession();
-      }
-    };
-
-    const handleFocus = () => {
-      maybeUpdateSession();
-    };
-
-    document.addEventListener("visibilitychange", handleVisibility);
-    window.addEventListener("focus", handleFocus);
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibility);
-      window.removeEventListener("focus", handleFocus);
-    };
-  }, [status, update]);
 
   return (
     <>

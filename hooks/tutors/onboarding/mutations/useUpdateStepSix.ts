@@ -8,7 +8,10 @@ export function useSaveStepSix() {
 
   return useMutation<OnboardingStepSixPostResponse, AxiosError, OnboardingStepSixDto>({
     mutationFn: (payload) => TutorOnboardingService.saveOnboardingStepSix(payload),
-    onSuccess: () => {
+    onSuccess: (response) => {
+      queryClient.setQueryData(["tutor-onboarding", "current-step"], {
+        currentStep: Math.min(response.currentStep + 1, 9),
+      })
       queryClient.invalidateQueries({ queryKey: ["tutor-onboarding", "step-six"]})
     }
   })

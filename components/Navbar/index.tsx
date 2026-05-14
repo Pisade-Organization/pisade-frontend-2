@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useMyProfile, useMyWalletSummary } from "@/hooks/settings/queries"
 import { Role } from "@/types/role.enum"
-import { resolveMediaUrl } from "@/lib/media"
+import { resolveUserAvatarUrl } from "@/lib/avatar"
 
 import type { NavbarVariant } from "./types"
 import SearchNavbar from "./variants/SearchNavbar"
@@ -40,7 +40,10 @@ export default function Navbar({ variant = "search" }: NavbarProps) {
   const sessionData = status === "loading" ? stableSession : data
   const sessionStatus = status === "loading" ? stableStatus : status
   const userRole = sessionData?.user?.role as Role | undefined
-  const sessionAvatarUrl = myProfile?.profile?.avatarUrl || resolveMediaUrl(sessionData?.user?.avatarUrl) || undefined
+  const sessionAvatarUrl = resolveUserAvatarUrl(
+    myProfile?.profile?.avatarUrl,
+    sessionData?.user?.avatarUrl,
+  )
 
   const onLogoClick = () => router.push(localePrefix || "/")
   const onSigninClick = () => router.push(`${localePrefix}/signin`)

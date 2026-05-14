@@ -443,7 +443,7 @@ export const authOptions: NextAuthOptions = {
   ],
 
   callbacks: {
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user, trigger, session }) {
       logAuth("info", "JWT callback invoked", {
         trigger,
         hasUser: !!user,
@@ -492,6 +492,17 @@ export const authOptions: NextAuthOptions = {
       }
 
       if (trigger === "update") {
+        const requestedOnboardingStatus =
+          (session as any)?.user?.onboardingStatus ?? (session as any)?.onboardingStatus;
+
+        if (typeof requestedOnboardingStatus === "string" && requestedOnboardingStatus.trim()) {
+          token.onboardingStatus = requestedOnboardingStatus;
+          token.error = undefined;
+          logAuth("info", "JWT update applied onboarding status override", {
+            onboardingStatus: token.onboardingStatus,
+          });
+        }
+
         logAuth("info", "JWT update trigger received, forcing user revalidation");
         token = await revalidateUser(token);
       }

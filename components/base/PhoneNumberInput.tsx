@@ -59,7 +59,7 @@ export default function PhoneNumberInput({
           <DropdownMenuContent align="start">
             {countryOptions.map((mappedCountry) => (
               <DropdownMenuItem
-                key={country.code}
+                key={mappedCountry.code}
                 onClick={() => setCountry(mappedCountry)}
                 className="flex items-center gap-3 px-3 py-2 cursor-pointer"
               >
@@ -132,7 +132,7 @@ export default function PhoneNumberInput({
                   <button
                     key={mappedCountry.code}
                     onClick={() => {
-                      setCountry(country);
+                      setCountry(mappedCountry);
                       setIsMobileMenuOpen(false);
                     }}
                     className={cn(

@@ -249,7 +249,11 @@ export default function OnboardingStepNine() {
 
       try {
         await TutorService.submitOnboarding()
-        await update()
+        await update({
+          user: {
+            onboardingStatus: "REVIEWING",
+          },
+        } as any)
         router.replace(`/${safeLocale}/tutor/onboarding/success`)
       } catch (error) {
         const message = getSubmitErrorMessage(error)

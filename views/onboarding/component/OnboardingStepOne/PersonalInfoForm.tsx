@@ -3,12 +3,22 @@ import { Controller, useFormContext } from "react-hook-form"
 import Typography from "@/components/base/Typography"
 import BaseInput from "@/components/base/BaseInput"
 import BaseSelect from "@/components/base/BaseSelect"
+import { BaseCheckbox } from "@/components/base/Checkbox"
 import PhoneNumberInput from "@/components/base/PhoneNumberInput"
 import { CountryOption, countryOptions } from "@/data/countryOptions"
 import { useSession } from "next-auth/react"
+
+const DEFAULT_COUNTRY =
+  countryOptions.find((country) => country.code === "TH") ?? countryOptions[0]
+
 export default function PersonalInfoForm() {
-  const { control } = useFormContext()
+  const { control, setValue, watch } = useFormContext()
   const { data } = useSession()
+  const selectedCountryCode = watch("countryCode")
+  const selectedCountry =
+    countryOptions.find((country) => country.dialCode === selectedCountryCode) ??
+    DEFAULT_COUNTRY
+
   return (
     <div className="w-full flex flex-col justify-center items-start gap-[18px] py-4 lg:py-6 px-5 lg:px-8 rounded-t-[20px] bg-white">
         <Typography variant={{ base: "title-2", lg: "title-1" }} color="neutral-800">
@@ -90,8 +100,10 @@ export default function PersonalInfoForm() {
                 <PhoneNumberInput 
                   phoneNumber={field.value}
                   setPhoneNumber={field.onChange}
-                  country={countryOptions.find((c) => c.code === "TH") as CountryOption}
-                  setCountry={() => {}}
+                  country={selectedCountry as CountryOption}
+                  setCountry={(country) =>
+                    setValue("countryCode", country.dialCode, { shouldDirty: true })
+                  }
                 />
               )}
             />
@@ -108,7 +120,21 @@ export default function PersonalInfoForm() {
 
           </div>
 
-          
+          <Controller
+            name="isOver18"
+            control={control}
+            render={({ field }) => (
+              <div className="w-full flex items-center gap-3">
+                <BaseCheckbox
+                  checked={Boolean(field.value)}
+                  onChange={field.onChange}
+                />
+                <Typography variant={{ base: "body-3", lg: "body-2" }} color="neutral-800">
+                  I confirm that I am over 18 years old
+                </Typography>
+              </div>
+            )}
+          />
 
         </div>
     </div>

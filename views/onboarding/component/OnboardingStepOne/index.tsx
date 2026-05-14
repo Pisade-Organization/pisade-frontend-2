@@ -20,7 +20,9 @@ export default function OnboardingStepOne() {
       lastName: "",
       countryOfBirth: "",
       nationality: "",
+      countryCode: "+66",
       phoneNumber: "",
+      isOver18: false,
       subject: "",
       languages: [] as { language: string; level: string }[],
     }
@@ -43,6 +45,12 @@ export default function OnboardingStepOne() {
       Object.entries(data).map(([key, value]) => {
         if (key === "languages") {
           return [key, value ?? []]
+        }
+        if (key === "countryCode") {
+          return [key, value ?? "+66"]
+        }
+        if (key === "isOver18") {
+          return [key, value ?? false]
         }
         return [key, value ?? ""]
       })

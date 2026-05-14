@@ -8,9 +8,11 @@ export function useSaveStepFive() {
 
   return useMutation<OnboardingStepFivePostResponse, AxiosError, OnboardingStepFiveDto>({
     mutationFn: (payload) => TutorOnboardingService.saveOnboardingStepFive(payload),
-    onSuccess: () => {
+    onSuccess: (response) => {
+      queryClient.setQueryData(["tutor-onboarding", "current-step"], {
+        currentStep: Math.min(response.currentStep + 1, 9),
+      })
       queryClient.invalidateQueries({ queryKey: ["tutor-onboarding", "step-five"]})
     }
   })
 }
-
