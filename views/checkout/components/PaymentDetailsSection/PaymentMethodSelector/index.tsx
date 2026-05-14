@@ -32,7 +32,7 @@ export default function PaymentMethodSelector({
     {
       method: "CARD",
       label: "Credit/Debit Card",
-      icon: <CreditCard className="w-6 h-6 text-neutral-500" />
+      icon: <CreditCard className="w-7 h-7 text-neutral-500" />
     },
     {
       method: "WALLET",

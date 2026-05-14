@@ -112,7 +112,12 @@ function CheckoutContent() {
   const { data: session } = useSession();
   const bookingId = params?.bookingId as string | undefined;
   const locale = (params?.locale as string | undefined) ?? "en";
-  const { data: booking, isLoading, isError } = useBookingDetail(bookingId);
+  const {
+    data: booking,
+    isLoading,
+    isError,
+    refetch: refetchBooking,
+  } = useBookingDetail(bookingId);
   const checkoutMutation = useCheckoutBooking(bookingId);
   const { data: savedMethods = [], isLoading: isLoadingPaymentMethods } = usePaymentMethods();
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("PROMPTPAY");
@@ -171,6 +176,60 @@ function CheckoutContent() {
     };
   }, [bookingId, session?.access_token, uiState.kind]);
 
+  useEffect(() => {
+    if (!booking) {
+      return;
+    }
+
+    if (booking.status === "CONFIRMED") {
+      setUiState((current) =>
+        current.kind === "confirmed"
+          ? current
+          : {
+              kind: "confirmed",
+            },
+      );
+      setErrorMessage(null);
+      return;
+    }
+
+    if (
+      uiState.kind === "pending" &&
+      (booking.status === "EXPIRED" || booking.status === "CANCELLED")
+    ) {
+      setUiState({ kind: "idle" });
+      setErrorMessage("Payment was not completed in time. Please try the checkout again.");
+    }
+  }, [booking, uiState.kind]);
+
+  useEffect(() => {
+    if (uiState.kind !== "pending") {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      void refetchBooking();
+    }, 3000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [refetchBooking, uiState.kind]);
+
+  useEffect(() => {
+    if (uiState.kind !== "confirmed") {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      router.push(`/${locale}/student/schedule`);
+    }, 1500);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [locale, router, uiState.kind]);
+
   const lessonDate = booking ? new Date(booking.schedule.startTime) : new Date();
   const lessonEnd = booking ? new Date(booking.schedule.endTime) : new Date();
   const cancellationDeadline = new Date(lessonDate);
@@ -201,10 +260,11 @@ function CheckoutContent() {
   }, [uiState]);
 
   const total = booking?.pricing.amount ?? 0;
+  const bookingIsPayable = booking?.status === "PENDING_PAYMENT";
   const canSubmit =
     !checkoutMutation.isPending &&
     !is3dsProcessing &&
-    booking?.allowedActions.pay !== false;
+    bookingIsPayable;
 
   const handleBack = () => {
     router.back();
@@ -315,7 +375,7 @@ function CheckoutContent() {
       );
     }
 
-    if (uiState.kind === "confirmed") {
+    if (uiState.kind === "confirmed" || booking.status === "CONFIRMED") {
       return (
         <div className="flex flex-col gap-5 rounded-2xl border border-neutral-50 bg-white p-5">
           <Typography variant="headline-5" color="neutral-900">
@@ -326,6 +386,38 @@ function CheckoutContent() {
           </Typography>
           <BaseButton onClick={() => router.push(`/${locale}/student/schedule`)}>
             Go to schedule
+          </BaseButton>
+        </div>
+      );
+    }
+
+    if (booking.status === "EXPIRED") {
+      return (
+        <div className="flex flex-col gap-5 rounded-2xl border border-neutral-50 bg-white p-5">
+          <Typography variant="headline-5" color="neutral-900">
+            Checkout expired
+          </Typography>
+          <Typography variant="body-3" color="neutral-500">
+            This payment window has expired, so this booking can no longer be paid from this page.
+          </Typography>
+          <BaseButton onClick={() => router.push(`/${locale}/student/schedule`)}>
+            Back to schedule
+          </BaseButton>
+        </div>
+      );
+    }
+
+    if (booking.status === "CANCELLED") {
+      return (
+        <div className="flex flex-col gap-5 rounded-2xl border border-neutral-50 bg-white p-5">
+          <Typography variant="headline-5" color="neutral-900">
+            Booking cancelled
+          </Typography>
+          <Typography variant="body-3" color="neutral-500">
+            This booking is no longer active, so payment is unavailable.
+          </Typography>
+          <BaseButton onClick={() => router.push(`/${locale}/student/schedule`)}>
+            Back to schedule
           </BaseButton>
         </div>
       );
@@ -425,6 +517,14 @@ function CheckoutContent() {
             </div>
           ) : null}
 
+          {!bookingIsPayable ? (
+            <div className="rounded-2xl border border-neutral-100 bg-neutral-25 p-4">
+              <Typography variant="body-3" color="neutral-500">
+                This booking is no longer waiting for payment.
+              </Typography>
+            </div>
+          ) : null}
+
           <PaymentConfirmationNotice totalAmount={total} />
 
           <BaseButton onClick={handlePay} disabled={!canSubmit}>
@@ -465,7 +565,7 @@ function CheckoutContent() {
 
       <PageContainer className="flex-1">
         <TwoColumnLayout>
-          <PrimaryPanel className="px-0 lg:px-[120px] lg:py-6 lg:border-none">
+          <PrimaryPanel className="px-0 lg:px-0 lg:py-6 lg:border-none">
             {renderPrimaryContent()}
           </PrimaryPanel>
 

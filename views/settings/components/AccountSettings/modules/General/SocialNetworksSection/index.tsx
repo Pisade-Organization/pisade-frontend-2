@@ -12,6 +12,7 @@ import {
 } from "@/hooks/settings/mutations"
 import { useMyProfile, useMyProviders } from "@/hooks/settings/queries"
 import Typography from "@/components/base/Typography"
+import { useGoogleIdentityScriptReady } from "@/hooks/useGoogleIdentityScriptReady"
 
 declare global {
   interface Window {
@@ -37,8 +38,8 @@ declare global {
 }
 
 export default function SocialNetworkSection() {
-  const [isScriptReady, setIsScriptReady] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
+  const { isScriptReady, syncScriptReady, setScriptLoadFailed } = useGoogleIdentityScriptReady()
 
   const { data: session, update: updateSession } = useSession()
   const { data: providers = [] } = useMyProviders()
@@ -131,9 +132,10 @@ export default function SocialNetworkSection() {
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
-        onLoad={() => setIsScriptReady(true)}
+        onLoad={syncScriptReady}
+        onReady={syncScriptReady}
         onError={() => {
-          setIsScriptReady(false)
+          setScriptLoadFailed()
           setErrorMessage("Failed to load Google Identity Services script.")
         }}
       />

@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import Script from "next/script";
 import { getSession, signIn, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -7,6 +7,7 @@ import { GoogleIcon } from "@/components/icons";
 import BaseButton from "@/components/base/BaseButton";
 import Typography from "@/components/base/Typography";
 import { getPostAuthPath } from "@/lib/getPostAuthPath";
+import { useGoogleIdentityScriptReady } from "@/hooks/useGoogleIdentityScriptReady";
 import { Role } from "@/types/role.enum";
 import { AUTH_TYPES } from "../types/auth.enum";
 
@@ -38,16 +39,12 @@ interface GoogleButtonProps {
 }
 
 export default function GoogleButton({ authType = AUTH_TYPES.SIGNIN }: GoogleButtonProps) {
-  const [isScriptReady, setIsScriptReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   const pathname = usePathname();
   const isTutorSignup = authType === AUTH_TYPES.TUTOR_SIGNUP;
-
-  const isDisabled = useMemo(() => {
-    return isLoading || !isScriptReady || !clientId;
-  }, [isLoading, isScriptReady, clientId]);
+  const { isScriptReady, syncScriptReady, setScriptLoadFailed } = useGoogleIdentityScriptReady();
 
   const handleGooglePopup = useCallback(() => {
     setErrorMessage(null);
@@ -140,15 +137,17 @@ export default function GoogleButton({ authType = AUTH_TYPES.SIGNIN }: GoogleBut
       <Script
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
-        onLoad={() => setIsScriptReady(true)}
+        onLoad={syncScriptReady}
+        onReady={syncScriptReady}
         onError={() => {
           console.error("Failed to load Google Identity Services script");
-          setIsScriptReady(false);
+          setScriptLoadFailed();
+          setErrorMessage("Failed to load Google login. Please refresh and try again.");
         }}
       />
 
       <BaseButton
-        disabled={isDisabled}
+        disabled={isLoading || !isScriptReady || !clientId}
         variant="secondary"
         typeStyle="outline"
         type="button"

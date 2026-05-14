@@ -107,7 +107,11 @@ export default function TutorListCard({
     const hasVideo = Boolean(videoUrl)
     const canPlayDirectVideo = isDirectVideoUrl(videoUrl)
 
-    const onCardClick = () => {
+    const onCardClick = (event: MouseEvent<HTMLDivElement>) => {
+        if (!event.currentTarget.contains(event.target as Node)) {
+            return
+        }
+
         router.push(tutorProfilePath)
     }
 
