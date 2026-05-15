@@ -57,6 +57,10 @@ export interface TutorPayoutAccountLinkResponse {
   expiresAt?: string | null;
 }
 
+export interface CreateTutorPayoutAccountLinkDto {
+  locale?: string;
+}
+
 export interface RequestTutorWithdrawDto {
   amount: number;
   method?: 'BANK' | 'PAYPAL';

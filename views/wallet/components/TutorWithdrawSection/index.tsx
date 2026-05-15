@@ -7,6 +7,7 @@ import SecurePaymentIcon from "@/components/icons/common/SecurePaymentIcon"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { useQueryClient } from "@tanstack/react-query"
 import { ChevronRight, LogOut } from "lucide-react"
+import { usePathname } from "next/navigation"
 import {
   useCreateTutorPayoutAccountOnboardingLink,
   useRequestTutorWithdrawal,
@@ -23,6 +24,7 @@ export default function TutorWithdrawSection({ open, onOpenChange }: TutorWithdr
   const [amount, setAmount] = useState("")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const pathname = usePathname()
   const quickAmounts = [50, 100, 200, 500, 1000, 2000]
   const queryClient = useQueryClient()
 
@@ -33,6 +35,7 @@ export default function TutorWithdrawSection({ open, onOpenChange }: TutorWithdr
   const payoutAccount = payoutAccountQuery.data
   const canWithdraw = payoutAccount?.payoutsEnabled ?? false
   const amountNumber = Number(amount || 0)
+  const locale = pathname?.split("/")[1]
 
   useEffect(() => {
     if (!open) {
@@ -72,7 +75,7 @@ export default function TutorWithdrawSection({ open, onOpenChange }: TutorWithdr
     setErrorMessage(null)
 
     try {
-      const result = await onboardingLinkMutation.mutateAsync()
+      const result = await onboardingLinkMutation.mutateAsync({ locale })
       window.location.assign(result.url)
     } catch {
       setErrorMessage("Unable to open Stripe onboarding right now.")

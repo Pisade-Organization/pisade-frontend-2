@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import BaseButton from "@/components/base/BaseButton"
 import Typography from "@/components/base/Typography"
 import BillingMethodsHeader from "./BillingMethodsHeader"
@@ -20,6 +21,7 @@ function formatRequirement(requirement: string) {
 
 export default function BillingMethods() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const pathname = usePathname()
   const payoutAccountQuery = useTutorPayoutAccount()
   const onboardingLinkMutation = useCreateTutorPayoutAccountOnboardingLink()
   const dashboardLinkMutation = useCreateTutorPayoutAccountDashboardLink()
@@ -27,12 +29,13 @@ export default function BillingMethods() {
   const payoutAccount = payoutAccountQuery.data
   const isConnected = payoutAccount?.isConnected ?? false
   const isReadyForWithdrawals = payoutAccount?.payoutsEnabled ?? false
+  const locale = pathname?.split("/")[1]
 
   const handleConnect = async () => {
     setErrorMessage(null)
 
     try {
-      const result = await onboardingLinkMutation.mutateAsync()
+      const result = await onboardingLinkMutation.mutateAsync({ locale })
       window.location.assign(result.url)
     } catch {
       setErrorMessage("Unable to open Stripe onboarding right now.")

@@ -2,6 +2,7 @@ import apiInstanceClient from "@/services/apiInstanceClient";
 import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiResponse";
 import { servicePath } from "@/services/servicePath";
 import type {
+  CreateTutorPayoutAccountLinkDto,
   GetTutorWithdrawalsParams,
   TutorPayoutAccount,
   TutorPayoutAccountLinkResponse,
@@ -48,11 +49,13 @@ export const TutorWalletService = {
     return unwrapApiResponse(response.data);
   },
 
-  async createPayoutAccountOnboardingLink(): Promise<TutorPayoutAccountLinkResponse> {
+  async createPayoutAccountOnboardingLink(
+    payload: CreateTutorPayoutAccountLinkDto = {},
+  ): Promise<TutorPayoutAccountLinkResponse> {
     const response = await apiInstanceClient.post<
       | ApiSuccessResponse<TutorPayoutAccountLinkResponse>
       | TutorPayoutAccountLinkResponse
-    >(servicePath.tutorWallet.createPayoutAccountOnboardingLink);
+    >(servicePath.tutorWallet.createPayoutAccountOnboardingLink, payload);
 
     return unwrapApiResponse(response.data);
   },
