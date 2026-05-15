@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useParams, useRouter } from "next/navigation"
 import BaseButton from "@/components/base/BaseButton"
 
 interface CTAProps {
@@ -24,6 +25,9 @@ export default function CTA({
   joinLabel,
   showSecondaryActions,
 }: CTAProps) {
+  const params = useParams()
+  const router = useRouter()
+  const locale = typeof params?.locale === "string" ? params.locale : "en"
   const isJoinDisabled = !meetingUrl || !canJoin
   const joinText = joinLabel ?? "Join class"
   const disabledLabel = joinAvailableAt
@@ -46,10 +50,26 @@ export default function CTA({
 
       {showSecondaryActions ? (
         <>
-          <BaseButton className="w-full" typeStyle="outline" disabled={!canReschedule}>
+          <BaseButton
+            className="w-full"
+            typeStyle="outline"
+            disabled={!canReschedule}
+            onClick={() => {
+              if (!canReschedule) return
+              router.push(`/${locale}/bookings/reschedule/${bookingId}`)
+            }}
+          >
             Reschedule
           </BaseButton>
-          <BaseButton className="w-full" typeStyle="borderless" disabled={!canCancel}>
+          <BaseButton
+            className="w-full"
+            typeStyle="borderless"
+            disabled={!canCancel}
+            onClick={() => {
+              if (!canCancel) return
+              router.push(`/${locale}/bookings/cancel/${bookingId}`)
+            }}
+          >
             Cancel booking
           </BaseButton>
         </>

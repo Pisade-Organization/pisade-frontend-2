@@ -109,7 +109,7 @@ export default function ClassManagementPage({ role }: ClassManagementPageProps) 
               ) : null}
 
               {!isLoading && !isError && bookings.length === 0 ? (
-                <EmptyState />
+                <EmptyState role={role} />
               ) : null}
 
               {!isLoading && !isError && bookings.length > 0 ? (

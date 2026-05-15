@@ -1,5 +1,4 @@
 import Image from "next/image"
-import BaseButton from "@/components/base/BaseButton"
 import Typography from "@/components/base/Typography"
 import { LessonStatusType } from "../ClassManagementCard/LessonStatus/types"
 
@@ -78,11 +77,6 @@ export default function TutorStudentCard({
         <Typography variant={{ base: "body-3", lg: "body-2" }} color="neutral-500">
           {description}
         </Typography>
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-2">
-        <BaseButton typeStyle="default">Message</BaseButton>
-        <BaseButton typeStyle="outline">View profile</BaseButton>
       </div>
     </article>
   )
