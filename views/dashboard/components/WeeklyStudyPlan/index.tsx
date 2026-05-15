@@ -89,12 +89,13 @@ export default function WeeklyStudyPlan() {
         end.setMinutes(end.getMinutes() + lesson.duration)
         const startTime = start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
         const endTime = end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
+        const subjectName = lesson.tutor.subjects[0]?.subject.name ?? "Lesson"
 
         return {
           isPast: false,
           isUpcoming: false,
           fullName: lesson.tutor.user.profile?.fullName ?? "Tutor",
-          subjectName: "Lesson",
+          subjectName,
           startTime,
           endTime,
           avatarUrl: lesson.tutor.user.profile?.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",

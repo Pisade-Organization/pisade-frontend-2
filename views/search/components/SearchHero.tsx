@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import Navbar from "@/components/Navbar"
 import SearchInput from "./SearchInput"
 import Image from "next/image"
@@ -8,9 +9,10 @@ import { PeopleIcon, ChartGrowthIcon, EclipseIcon, Eclipse2Icon, FolderIcon, Boo
 
 
 export default function SearchHero() {
+    const t = useTranslations("search.hero")
 
-    const firstText = "Find the perfect";
-    const secondText = "online tutor in seconds";
+    const firstText = t("firstText");
+    const secondText = t("secondText");
 
     const container = (delay = 0) => ({
     hidden: { opacity: 0 },

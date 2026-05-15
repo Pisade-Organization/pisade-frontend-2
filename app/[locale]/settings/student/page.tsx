@@ -1,5 +1,11 @@
 import { redirect } from "next/navigation"
 
-export default function StudentSettings() {
-  redirect("/settings/student/general")
+export default async function StudentSettings({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+
+  redirect(`/${locale}/settings/student/general`)
 }

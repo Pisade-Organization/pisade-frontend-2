@@ -1,7 +1,9 @@
+"use client"
+
 import type { TutorProfileSummary } from "./types";
 import Image from "next/image";
-import { Pencil } from "lucide-react";
-import { Star } from "lucide-react";
+import { Pencil, Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Typography from "@/components/base/Typography";
 import { getTutorRankingBadgeSrc, getTutorRankingLabel } from "@/lib/tutorRanking";
 
@@ -17,6 +19,7 @@ export default function TutorProfileContainer({
   studentsCount,
   lessonsCount,
 }: TutorProfileContainerProps) {
+  const t = useTranslations("tutorProfile");
   const rankingBadgeSrc = getTutorRankingBadgeSrc(tutorRanking);
   const rankingLabel = getTutorRankingLabel(tutorRanking);
 
@@ -61,7 +64,7 @@ export default function TutorProfileContainer({
 
           <div className="flex flex-col">
             <Typography variant="title-2" color="neutral-900">{rankingLabel}</Typography>
-            <Typography variant="body-3" color="neutral-600">Ranking level</Typography>
+            <Typography variant="body-3" color="neutral-600">{t("rankingLevel")}</Typography>
           </div>
         </div>
 
@@ -76,7 +79,7 @@ export default function TutorProfileContainer({
                 <Typography variant="title-2" color="neutral-900">{rating}/5</Typography>
                 <Star className="w-5 h-5 fill-yellow-normal text-yellow-normal" />
               </div>
-              <Typography variant="body-3" color="neutral-600">Rating</Typography>
+              <Typography variant="body-3" color="neutral-600">{t("rating")}</Typography>
             </div>
 
             {/* DIVIDER */}
@@ -85,7 +88,7 @@ export default function TutorProfileContainer({
             {/* STUDENS COUNT */}
             <div className="flex flex-col">
               <Typography variant="title-2" color="neutral-900">{studentsCount}</Typography>
-              <Typography variant="body-3" color="neutral-600">Students</Typography>
+              <Typography variant="body-3" color="neutral-600">{t("students")}</Typography>
             </div>
 
             {/* DIVIDER */}
@@ -94,7 +97,7 @@ export default function TutorProfileContainer({
             {/* LESSONS COUNT */}
             <div className="flex flex-col">
               <Typography variant="title-2" color="neutral-900">{lessonsCount}</Typography>
-              <Typography variant="body-3" color="neutral-600">Lessons</Typography>
+              <Typography variant="body-3" color="neutral-600">{t("lessons")}</Typography>
             </div>
 
         </div>

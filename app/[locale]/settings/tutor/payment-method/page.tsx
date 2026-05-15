@@ -1,6 +1,11 @@
-import TutorSettingsPage from "@/views/settings/pages/TutorSettings"
+import { redirect } from "next/navigation"
 
-export default function TutorPaymentMethodSettings() {
-  return <TutorSettingsPage />
+export default async function TutorPaymentMethodSettings({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+
+  redirect(`/${locale}/settings/tutor/billing-methods`)
 }
-

@@ -1,10 +1,15 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { SessionProvider, useSession, signOut } from "next-auth/react";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { AuthHydrationGate } from "./AuthHydrationGate";
 import TopToast from "@/components/shared/TopToast";
+import {
+  getLocalizedSignInPath,
+  isAuthPage,
+  requiresAuthenticatedSession,
+} from "@/lib/authRedirect";
 
 const FATAL_AUTH_ERRORS = new Set([
   "ProfileNotFound",
@@ -14,10 +19,12 @@ const FATAL_AUTH_ERRORS = new Set([
 function SessionErrorWatcher({ children }: { children: ReactNode }) {
   const { data: session, status, update } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
   const signOutInProgress = useRef(false);
   const lastRetriedFatalError = useRef<string | null>(null);
   const authError = (session as any)?.error as string | undefined;
   const [showRefreshWarning, setShowRefreshWarning] = useState(false);
+  const signInPath = getLocalizedSignInPath(pathname);
 
   useEffect(() => {
     if (!authError) {
@@ -31,12 +38,19 @@ function SessionErrorWatcher({ children }: { children: ReactNode }) {
     }
   }, [authError]);
 
+  useEffect(() => {
+    if (status !== "unauthenticated" || signOutInProgress.current) return;
+    if (!requiresAuthenticatedSession(pathname) || isAuthPage(pathname)) return;
+
+    router.replace(signInPath);
+  }, [pathname, router, signInPath, status]);
+
   // For fatal auth states, retry session update once before forcing sign out.
   useEffect(() => {
     if (status !== "authenticated" || !authError || signOutInProgress.current) return;
     if (!FATAL_AUTH_ERRORS.has(authError)) return;
 
-    const onAuthPage = pathname?.includes("/signin") || pathname?.includes("/signout");
+    const onAuthPage = isAuthPage(pathname);
     if (onAuthPage) return;
 
     if (lastRetriedFatalError.current !== authError) {
@@ -46,8 +60,8 @@ function SessionErrorWatcher({ children }: { children: ReactNode }) {
     }
 
     signOutInProgress.current = true;
-    void signOut({ callbackUrl: "/signin" });
-  }, [status, authError, pathname, update]);
+    void signOut({ callbackUrl: signInPath });
+  }, [authError, pathname, signInPath, status, update]);
 
   return (
     <>

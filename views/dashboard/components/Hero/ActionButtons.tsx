@@ -53,17 +53,18 @@ export default function ActionButtons({
             <BaseButton className="w-full" onClick={handleJoin} disabled={joinDisabled}>
                 {joinDisabled ? getJoinLabel(actionLabel, joinAvailableAt) : actionLabel}
             </BaseButton>
-            <BaseButton
-                variant="secondary"
-                typeStyle="outline"
-                borderColor="white"
-                textColor="white"
-                className="w-full"
-                onClick={handleSecondaryAction}
-                disabled={!secondaryActionHref}
-            >
-                Reschedule
-            </BaseButton>
+            {secondaryActionHref ? (
+                <BaseButton
+                    variant="secondary"
+                    typeStyle="outline"
+                    borderColor="white"
+                    textColor="white"
+                    className="w-full"
+                    onClick={handleSecondaryAction}
+                >
+                    Reschedule
+                </BaseButton>
+            ) : null}
         </div>
 
     )

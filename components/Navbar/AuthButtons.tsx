@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslations } from "next-intl"
 import BaseButton from "../base/BaseButton"
 
 interface AuthButtonsProps {
@@ -6,6 +9,7 @@ interface AuthButtonsProps {
 }
 
 export default function AuthButtons({ onSigninClick, onBecomeTutorClick }: AuthButtonsProps) {
+  const t = useTranslations("nav")
   return (
     <>
       <BaseButton
@@ -14,9 +18,9 @@ export default function AuthButtons({ onSigninClick, onBecomeTutorClick }: AuthB
         className="text-white border-white/50 hover:bg-transparent"
         onClick={onBecomeTutorClick}
       >
-        Become a tutor
+        {t("becomeTutor")}
       </BaseButton>
-      <BaseButton onClick={onSigninClick}>Sign In</BaseButton>
+      <BaseButton onClick={onSigninClick}>{t("signIn")}</BaseButton>
     </>
   )
 }

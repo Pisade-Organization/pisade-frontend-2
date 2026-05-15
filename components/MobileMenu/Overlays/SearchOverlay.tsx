@@ -1,6 +1,7 @@
 "use client"
 
 import { signOut, useSession } from "next-auth/react"
+import { useTranslations } from "next-intl"
 import Typography from "@/components/base/Typography"
 import BaseButton from "@/components/base/BaseButton"
 import {
@@ -36,6 +37,7 @@ type SearchOverlayNavItem = {
 }
 
 export default function SearchOverlay() {
+  const t = useTranslations()
   const router = useRouter()
   const pathname = usePathname()
   const locale = pathname?.split("/")[1] || "en"
@@ -51,34 +53,34 @@ export default function SearchOverlay() {
   const generalItems: SearchOverlayNavItem[] = status === "authenticated"
     ? isTutor
       ? [
-          { label: "Home", icon: House, href: `${localePrefix}/tutor/dashboard` },
-          { label: "Students", icon: UsersRound, href: `${localePrefix}/tutor/students/active` },
-          { label: "Schedule", icon: CalendarPlus2, href: `${localePrefix}/tutor/schedule` },
-          { label: "Earnings & Withdrawals", icon: Wallet, href: `${localePrefix}/tutor/earnings-and-withdrawals` },
+          { label: t("nav.tutor.home"), icon: House, href: `${localePrefix}/tutor/dashboard` },
+          { label: t("nav.tutor.students"), icon: UsersRound, href: `${localePrefix}/tutor/students/active` },
+          { label: t("nav.tutor.schedule"), icon: CalendarPlus2, href: `${localePrefix}/tutor/schedule` },
+          { label: t("nav.tutor.earnings"), icon: Wallet, href: `${localePrefix}/tutor/earnings-and-withdrawals` },
         ]
       : [
-          { label: "Home", icon: House, href: `${localePrefix}/student/dashboard` },
-          { label: "Tutors", icon: UsersRound, href: `${localePrefix}/student/tutors/current` },
-          { label: "Class", icon: Glasses, href: `${localePrefix}/class-management` },
-          { label: "Schedule", icon: CalendarPlus2, href: `${localePrefix}/student/schedule` },
+          { label: t("nav.student.home"), icon: House, href: `${localePrefix}/student/dashboard` },
+          { label: t("nav.student.tutors"), icon: UsersRound, href: `${localePrefix}/student/tutors/current` },
+          { label: t("nav.student.class"), icon: Glasses, href: `${localePrefix}/class-management` },
+          { label: t("nav.student.schedule"), icon: CalendarPlus2, href: `${localePrefix}/student/schedule` },
         ]
-    : [{ label: "Find tutors", icon: Search, href: localePrefix }]
+    : [{ label: t("mobile.findTutors"), icon: Search, href: localePrefix }]
 
   const accountItems: SearchOverlayNavItem[] = status === "authenticated"
     ? isTutor
       ? [
-          { label: "My Wallet", icon: Wallet, href: `${localePrefix}/tutor/earnings-and-withdrawals` },
-          { label: "My Profile", icon: Pencil, href: `${localePrefix}/settings/tutor/general` },
-          { label: "Account Settings", icon: Settings, href: `${localePrefix}/settings/tutor` },
-          { label: "Transactions", icon: WalletMinimal, href: `${localePrefix}/settings/tutor/payment-history` },
+          { label: t("profile.tutor.earnings"), icon: Wallet, href: `${localePrefix}/tutor/earnings-and-withdrawals` },
+          { label: t("profile.tutor.myProfile"), icon: Pencil, href: `${localePrefix}/settings/tutor/general` },
+          { label: t("profile.tutor.accountSettings"), icon: Settings, href: `${localePrefix}/settings/tutor` },
+          { label: t("profile.student.transactions"), icon: WalletMinimal, href: `${localePrefix}/tutor/earnings-and-withdrawals` },
           { label: "Safety & Trust", icon: ShieldCheck, href: `${localePrefix}/settings/tutor/general` },
           { label: "Helps", icon: CircleHelp, href: `${localePrefix}/settings/tutor/general` },
         ]
       : [
-          { label: "My Wallet", icon: Wallet, href: `${localePrefix}/student/wallet` },
-          { label: "Account Settings", icon: Settings, href: `${localePrefix}/settings/student` },
-          { label: "Saved Tutor", icon: Heart, href: `${localePrefix}/student/tutors/favorites` },
-          { label: "Transactions", icon: WalletMinimal, href: `${localePrefix}/settings/student/payment-history` },
+          { label: t("profile.student.myWallet"), icon: Wallet, href: `${localePrefix}/student/wallet` },
+          { label: t("profile.student.accountSettings"), icon: Settings, href: `${localePrefix}/settings/student` },
+          { label: t("profile.student.savedTutor"), icon: Heart, href: `${localePrefix}/student/tutors/favorites` },
+          { label: t("profile.student.transactions"), icon: WalletMinimal, href: `${localePrefix}/settings/student/payment-history` },
           { label: "Safety & Trust", icon: ShieldCheck, href: `${localePrefix}/settings/student/general` },
           { label: "Helps", icon: CircleHelp, href: `${localePrefix}/settings/student/general` },
         ]
@@ -91,21 +93,21 @@ export default function SearchOverlay() {
         <div className="rounded-xl border border-neutral-50 p-4 flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <Typography variant="title-1" color="neutral-900">
-              Personalized learning, made simple.
+              {t("mobile.personalizedLearning")}
             </Typography>
 
             <Typography variant="body-3" color="neutral-500">
-              Join us and start your inspiring journey today.
+              {t("mobile.joinUs")}
             </Typography>
           </div>
 
           <div className="flex gap-2">
             <BaseButton typeStyle="outline" className="w-full" onClick={() => router.push(`/${locale}/tutor/signup`)}>
-              Become a tutor
+              {t("mobile.becomeTutor")}
             </BaseButton>
 
             <BaseButton className="w-full" onClick={() => router.push(`/${locale}/signin`)}>
-              Sign in
+              {t("mobile.signIn")}
             </BaseButton>
           </div>
         </div>
@@ -148,11 +150,13 @@ export default function SearchOverlay() {
 
             <div className="p-3 flex flex-col gap-3 border-[1.5px] border-neutral-50 rounded-xl">
               <div className="flex justify-between items-center">
-                <Typography variant="body-3" color="neutral-500">Total balance</Typography>
+                <Typography variant="body-3" color="neutral-500">{t("profile.student.totalBalance")}</Typography>
                 <Typography variant="title-1" color="deep-royal-indigo-500">{displayBalance}</Typography>
               </div>
 
-              <BaseButton>Top Up Wallet</BaseButton>
+              <BaseButton onClick={() => router.push(`${localePrefix}/student/wallet`)}>
+                {t("profile.student.topUpWallet")}
+              </BaseButton>
             </div>
           </div>
         )
@@ -161,7 +165,7 @@ export default function SearchOverlay() {
       {/* GENERAL SECTION */}
       <div className="flex flex-col gap-4">
         <Typography variant="title-2" color="neutral-900">
-          General
+          {t("common.general")}
         </Typography>
 
         <div className="flex flex-col gap-3">
@@ -189,7 +193,7 @@ export default function SearchOverlay() {
       {status === "authenticated" && (
         <div className="flex flex-col gap-4">
           <Typography variant="title-2" color="neutral-900">
-            Account
+            {t("common.account")}
           </Typography>
 
           <div className="flex flex-col gap-3">
@@ -216,11 +220,11 @@ export default function SearchOverlay() {
             type="button"
             className="flex justify-center items-center gap-2 py-1"
             onClick={() => {
-              void signOut({ redirect: false })
+              void signOut({ callbackUrl: `${localePrefix}/signin` })
             }}
           >
             <LogOut className="w-5 h-5 text-red-normal" />
-            <Typography variant="body-3" color="red-normal">Log out</Typography>
+            <Typography variant="body-3" color="red-normal">{t("mobile.logOut")}</Typography>
           </button>
         </div>
       )}
@@ -228,7 +232,7 @@ export default function SearchOverlay() {
       {status !== "authenticated" && (
         <div className="flex flex-col gap-4">
           <Typography variant="title-2" color="neutral-900">
-            Other
+            {t("mobile.other.title")}
           </Typography>
 
           <div className="flex flex-col gap-3">
@@ -237,7 +241,7 @@ export default function SearchOverlay() {
             <div className="flex justify-between">
               <div className="flex gap-2">
                 <Search size={20} className="text-neutral-200" />
-                <Typography variant="body-3" color="neutral-900">Terms of Use</Typography>
+                <Typography variant="body-3" color="neutral-900">{t("mobile.other.termsOfUse")}</Typography>
               </div>
               <ChevronRight size={20} className="text-neutral-200" />
             </div>
@@ -249,7 +253,7 @@ export default function SearchOverlay() {
             <div className="flex justify-between">
               <div className="flex gap-2">
                 <Calendar size={20} className="text-neutral-200" />
-                <Typography variant="body-3" color="neutral-900">Privacy Policy</Typography>
+                <Typography variant="body-3" color="neutral-900">{t("mobile.other.privacyPolicy")}</Typography>
               </div>
               <ChevronRight size={20} className="text-neutral-200" />
             </div>

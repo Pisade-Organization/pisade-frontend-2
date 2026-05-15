@@ -2,6 +2,7 @@
 import { MailCheck } from "lucide-react"
 import { ArrowLeft } from "lucide-react"
 import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { AuthService } from "@/services/auth"
 import { AUTH_TYPES } from "../types/auth.enum"
 import type { AxiosError } from "axios"
@@ -13,10 +14,11 @@ interface AuthVerifyEmailProps {
 }
 
 export default function AuthVerifyEmail({ emailTo, onBack, type = AUTH_TYPES.SIGNIN }: AuthVerifyEmailProps) {
+    const t = useTranslations("auth.verifyEmail");
     const [countdown, setCountdown] = useState(30);
     const [isResendActive, setIsResendActive] = useState(false);
     const [error, setError] = useState("");
-    const backLabel = type === AUTH_TYPES.TUTOR_SIGNUP ? "Back to Tutor Sign Up" : "Back to Sign In";
+    const backLabel = type === AUTH_TYPES.TUTOR_SIGNUP ? t("backToTutorSignUp") : t("backToSignIn");
 
     useEffect(() => {
         if (countdown > 0) {
@@ -46,11 +48,11 @@ export default function AuthVerifyEmail({ emailTo, onBack, type = AUTH_TYPES.SIG
                 const axiosError = err as AxiosError<{ message?: string | string[] }>;
                 const status = axiosError.response?.status;
                 if (status === 429) {
-                    setError("Too many attempts, please wait before trying again.");
+                    setError(t("errors.tooManyAttempts"));
                 } else if (status === 400) {
-                    setError("Invalid email.");
+                    setError(t("errors.invalidEmail"));
                 } else {
-                    setError("Something went wrong, please try again.");
+                    setError(t("errors.somethingWentWrong"));
                 }
                 console.error("Failed to resend magic link:", err);
                 // Re-enable the button on error
@@ -68,30 +70,31 @@ export default function AuthVerifyEmail({ emailTo, onBack, type = AUTH_TYPES.SIG
 
                 <div className="max-w-[504px] w-full flex flex-col justify-center items-center gap-y-3 ">
                     <div className="text-headline-4 lg:text-headline-2 text-deep-royal-indigo-900">
-                        Verify your email
+                        {t("title")}
                     </div>
 
                     <div className="text-body-3 lg:text-body-2 text-neutral-500 text-center">
-                        We have sent you an email to <span className="text-neutral-900">{emailTo}</span> that
-                        contains a link to continue.
+                        {t.rich("description", {
+                            email: () => <span className="text-neutral-900">{emailTo}</span>,
+                        })}
                     </div>
                 </div>
             </div>
 
             <div className="max-w-[503px] w-full text-center">
                 <span className="text-body-3 lg:text-body-2 text-neutral-500">
-                    Don't receive the email? Please check your spam or{' '}
+                    {t("dontReceive")}{' '}
                 </span>
-                <button 
+                <button
                     onClick={handleResend}
                     disabled={!isResendActive}
                     className={`text-label-3 lg:text-label-2 transition-all inline ${
-                        isResendActive 
-                            ? 'text-neutral-900 underline hover:opacity-80 cursor-pointer' 
+                        isResendActive
+                            ? 'text-neutral-900 underline hover:opacity-80 cursor-pointer'
                             : 'text-neutral-500 opacity-50 cursor-not-allowed'
                     }`}
                 >
-                    Resend link {isResendActive ? '' : `(${countdown}s)`}
+                    {t("resendLink")} {isResendActive ? '' : `(${countdown}s)`}
                 </button>
                 {error ? (
                     <p className="mt-3 text-body-3 text-red-600">{error}</p>

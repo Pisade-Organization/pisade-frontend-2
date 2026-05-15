@@ -1,6 +1,11 @@
-import TutorSettingsPage from "@/views/settings/pages/TutorSettings"
+import { redirect } from "next/navigation"
 
-export default function TutorPaymentHistorySettings() {
-  return <TutorSettingsPage />
+export default async function TutorPaymentHistorySettings({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+
+  redirect(`/${locale}/tutor/earnings-and-withdrawals`)
 }
-

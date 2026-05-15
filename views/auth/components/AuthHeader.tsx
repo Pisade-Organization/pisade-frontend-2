@@ -1,4 +1,5 @@
 "use client"
+import { useTranslations } from "next-intl"
 import { AUTH_TYPES } from "../types/auth.enum"
 import { usePathname, useRouter } from "next/navigation"
 
@@ -7,6 +8,7 @@ export default function AuthHeader({
 }: {
     type?: AUTH_TYPES
 }) {
+    const t = useTranslations("auth.signIn")
     const router = useRouter()
     const pathname = usePathname()
     const locale = pathname?.split("/")[1] || "en"
@@ -15,10 +17,10 @@ export default function AuthHeader({
     const tutorSignupPath = `/${locale}/tutor/signup`
 
     return (
-        <div className="w-full flex flex-col justify-center items-center gap-y-2">       
+        <div className="w-full flex flex-col justify-center items-center gap-y-2">
             <div className="text-headline-2 text-deep-royal-indigo-900">
-                { type === AUTH_TYPES.SIGNIN && "Log In" }
-                { type === AUTH_TYPES.TUTOR_SIGNUP && "Sign up as a tutor"}
+                { type === AUTH_TYPES.SIGNIN && t("title") }
+                { type === AUTH_TYPES.TUTOR_SIGNUP && t("tutorSignupTitle")}
             </div>
 
 
@@ -26,10 +28,10 @@ export default function AuthHeader({
                 { type === AUTH_TYPES.SIGNIN && (
                     <>
                         <span className="">
-                            Want to teach on Pisade?
+                            {t("wantToTeach")}
                         </span>
                         <span className="underline cursor-pointer" onClick={() => router.push(tutorSignupPath)}>
-                            Sign up as a tutor
+                            {t("signUpAsTutor")}
                         </span>
                     </>
                 )}
@@ -37,10 +39,10 @@ export default function AuthHeader({
                 { type === AUTH_TYPES.TUTOR_SIGNUP && (
                     <>
                         <span>
-                            Already have an account?
+                            {t("alreadyHaveAccount")}
                         </span>
                         <span className="underline cursor-pointer" onClick={() => router.push(signinPath)}>
-                            Log in
+                            {t("logIn")}
                         </span>
                     </>
                 )}

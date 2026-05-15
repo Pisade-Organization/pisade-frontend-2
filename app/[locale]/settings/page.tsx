@@ -4,21 +4,26 @@ import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
 import { Role } from "@/types/role.enum"
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
   const session = await getServerSession(authOptions)
 
   if (!session) {
-    redirect("/signin")
+    redirect(`/${locale}/signin`)
   }
 
   const role = session.user.role
 
   switch (role) {
     case Role.STUDENT:
-      redirect("/settings/student")
+      redirect(`/${locale}/settings/student`)
     case Role.TUTOR:
-      redirect("/settings/tutor")
+      redirect(`/${locale}/settings/tutor`)
     default:
-      redirect("/")
+      redirect(`/${locale}`)
   }
 }

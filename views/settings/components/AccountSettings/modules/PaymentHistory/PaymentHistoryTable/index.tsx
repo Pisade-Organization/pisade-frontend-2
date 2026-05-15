@@ -26,7 +26,7 @@ export default function PaymentHistoryTable({ data }: PaymentHistoryTableProps) 
       </div>
 
       {/* DESKTOP */}
-      <div className="hidden lg:block overflow-x-auto">
+      <div className="hidden w-full overflow-x-auto lg:block">
         <table className="w-full table-auto border-collapse">
           <PaymentHistoryTableHeader />
           <tbody>

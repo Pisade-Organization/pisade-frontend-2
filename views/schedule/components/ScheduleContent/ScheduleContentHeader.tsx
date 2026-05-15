@@ -35,7 +35,7 @@ export default function ScheduleContentHeader({
               type="button"
               onClick={onPreviousDay}
               aria-label="Previous period"
-              className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-700 transition hover:bg-neutral-100"
+              className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-neutral-700 transition hover:bg-neutral-100"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -43,7 +43,7 @@ export default function ScheduleContentHeader({
             <button
               type="button"
               onClick={() => onSelectDate(new Date())}
-              className="rounded-full px-3 py-2 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-100"
+              className="cursor-pointer rounded-full px-3 py-2 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-100"
             >
               Today
             </button>
@@ -52,7 +52,7 @@ export default function ScheduleContentHeader({
               type="button"
               onClick={onNextDay}
               aria-label="Next period"
-              className="flex h-9 w-9 items-center justify-center rounded-full text-neutral-700 transition hover:bg-neutral-100"
+              className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full text-neutral-700 transition hover:bg-neutral-100"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -71,7 +71,7 @@ export default function ScheduleContentHeader({
               type="button"
               onClick={() => onViewChange(item)}
               className={cn(
-                "flex-1 rounded-full px-4 py-2 text-sm font-semibold capitalize transition lg:flex-none",
+                "flex-1 cursor-pointer rounded-full px-4 py-2 text-sm font-semibold capitalize transition lg:flex-none",
                 item === view
                   ? "bg-[#F0ECFF] text-[#5F43EA] shadow-sm"
                   : "text-neutral-500 hover:text-neutral-800"

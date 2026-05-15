@@ -3,6 +3,7 @@
 import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import ResponsiveDropdown from "./ResponsiveDropdown";
 
@@ -12,16 +13,19 @@ interface SubjectDropdownProps {
   onChange: (value: string) => void;
 }
 
+const SHOW_ALL = "Show All"
+
 export function SubjectDropdown({ options, value, onChange }: SubjectDropdownProps) {
+  const t = useTranslations("search.filters");
   const [open, setOpen] = useState(false);
 
-  const isShowAll = value === "Show All";
+  const isShowAll = value === SHOW_ALL;
   const dropdownHeight = 260;
-  const subjectOptions = ["Show All", ...options];
+  const subjectOptions = [SHOW_ALL, ...options];
 
   return (
     <ResponsiveDropdown
-      title="Subject"
+      title={t("subject")}
       open={open}
       onOpenChange={setOpen}
       dropdownHeight={dropdownHeight}
@@ -48,7 +52,7 @@ export function SubjectDropdown({ options, value, onChange }: SubjectDropdownPro
                   transition={{ duration: 0.2 }}
                   className="text-[15px] text-neutral-800 font-normal truncate"
                 >
-                  {isShowAll ? "Subject" : value}
+                  {isShowAll ? t("subject") : value}
                 </motion.span>
               ) : isShowAll ? (
                 <motion.span
@@ -59,7 +63,7 @@ export function SubjectDropdown({ options, value, onChange }: SubjectDropdownPro
                   transition={{ duration: 0.2 }}
                   className="text-[15px] text-neutral-800 font-normal"
                 >
-                  Subject
+                  {t("subject")}
                 </motion.span>
               ) : (
                 <motion.div
@@ -76,7 +80,7 @@ export function SubjectDropdown({ options, value, onChange }: SubjectDropdownPro
                     transition={{ duration: 0.2, delay: 0.1 }}
                     className="text-[13px] text-[#7A5AF8] font-medium"
                   >
-                    Subject
+                    {t("subject")}
                   </motion.span>
                   <motion.span
                     initial={{ opacity: 0, y: 12 }}
@@ -108,7 +112,7 @@ export function SubjectDropdown({ options, value, onChange }: SubjectDropdownPro
               : "text-neutral-700 hover:bg-neutral-50"
           )}
         >
-          {subject}
+          {subject === SHOW_ALL ? t("showAll") : subject}
         </button>
       ))}
     </ResponsiveDropdown>

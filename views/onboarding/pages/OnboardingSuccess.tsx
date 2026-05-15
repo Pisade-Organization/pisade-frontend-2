@@ -4,12 +4,16 @@ import { usePathname, useRouter } from "next/navigation"
 import { SuccessOnboardingBoxIcon } from "@/components/icons"
 import Typography from "@/components/base/Typography"
 import Navbar from "../component/Navbar"
+import { useTutorStatusPush } from "@/hooks/tutors/useTutorStatusPush"
 
 export default function OnboardingSuccessPage() {
   const router = useRouter()
   const pathname = usePathname()
   const locale = pathname?.split("/")?.[1]
   const safeLocale = locale === "en" || locale === "th" ? locale : "en"
+
+  // Real-time: admin approval redirects tutor to dashboard instantly
+  useTutorStatusPush()
 
   return (
     <div className="min-h-screen bg-[#F9F7FB] flex flex-col">

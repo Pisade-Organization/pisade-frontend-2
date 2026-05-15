@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 import { AuthService } from "@/services/auth";
 import type { AxiosError } from "axios";
 import AuthTermsNotice from "./AuthTermsNotice";
@@ -15,6 +16,8 @@ interface AuthFormProps {
 }
 
 export default function AuthForm({ setEmailTo, setIsEmailSent, type = AUTH_TYPES.SIGNIN }: AuthFormProps) {
+    const t = useTranslations("auth.form");
+    const tCommon = useTranslations("common");
     const [isLoginActive, setisLoginActive] = useState<boolean>(false);
     const [email, setEmail] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
@@ -27,15 +30,15 @@ export default function AuthForm({ setEmailTo, setIsEmailSent, type = AUTH_TYPES
         const status = axiosError.response?.status;
 
         if (status === 429) {
-            return "Too many attempts, please try again shortly.";
+            return t("errors.tooManyAttempts");
         }
 
         if (status === 400) {
-            return "Invalid email.";
+            return t("errors.invalidEmail");
         }
 
         if (!status || status >= 500) {
-            return "Something went wrong, please try again.";
+            return t("errors.somethingWentWrong");
         }
 
         const message = axiosError.response?.data?.message;
@@ -46,7 +49,7 @@ export default function AuthForm({ setEmailTo, setIsEmailSent, type = AUTH_TYPES
             return message[0];
         }
 
-        return "Failed to send magic link.";
+        return t("errors.failedToSendMagicLink");
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -79,8 +82,8 @@ export default function AuthForm({ setEmailTo, setIsEmailSent, type = AUTH_TYPES
                 id="email"
                 type="text"
                 name="email"
-                title="Email"
-                placeholder="Enter your email"
+                title={tCommon("email")}
+                placeholder={t("emailPlaceholder")}
                 required
                 autoComplete="email"
                 value={email}
@@ -92,20 +95,20 @@ export default function AuthForm({ setEmailTo, setIsEmailSent, type = AUTH_TYPES
                 }}
                 errorMessage={error}
             />
-            
+
             {/* BUTTONS + TERMS */}
             <div className="w-full flex flex-col items-center justify-center gap-y-4">
-                <BaseButton 
+                <BaseButton
                     type="submit"
                     disabled={!isLoginActive || loading}
                     className="w-full"
                     variant="secondary"
                 >
-                    {loading ? 'Sending...' : isTutorSignup ? 'Sign up as a tutor' : 'Log In'}
+                    {loading ? t("sendingButton") : isTutorSignup ? t("signUpButton") : t("loginButton")}
                 </BaseButton>
 
                 <div className="text-neutral-700 text-body-2" >
-                    or
+                    {tCommon("or")}
                 </div>
 
                 <GoogleButton authType={type} />

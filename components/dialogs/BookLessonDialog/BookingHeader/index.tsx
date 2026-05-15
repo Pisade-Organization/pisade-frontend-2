@@ -1,4 +1,7 @@
+"use client"
+
 import type { BookingHeaderProps } from "./BookingHeader.types";
+import { useTranslations } from "next-intl";
 import Typography from "@/components/base/Typography";
 import Image from "next/image";
 import { Star } from "lucide-react";
@@ -6,6 +9,7 @@ import { Star } from "lucide-react";
 export default function BookingHeader({
   tutor
 }: BookingHeaderProps) {
+  const t = useTranslations("booking.stats");
   const { id, fullName, avatarUrl, rating, studentsCount, lessonsCount } = tutor;
 
   return (
@@ -36,7 +40,7 @@ export default function BookingHeader({
             </Typography>
 
             <Typography variant="body-2" color="neutral-600">
-              Rating
+              {t("rating")}
             </Typography>
           </div>
         </div>
@@ -51,7 +55,7 @@ export default function BookingHeader({
           </Typography>
 
           <Typography variant="body-2" color="neutral-600">
-            Students
+            {t("students")}
           </Typography>
         </div>
 
@@ -65,7 +69,7 @@ export default function BookingHeader({
           </Typography>
           
           <Typography variant="body-2" color="neutral-600">
-            Lessons
+            {t("lessons")}
           </Typography>
         </div>
 

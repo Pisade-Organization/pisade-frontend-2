@@ -1,6 +1,8 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 import {
   Heart,
   LogOut,
@@ -46,39 +48,41 @@ export default function StudentProfileDropdown({
   timezone,
   totalBalance,
 }: StudentProfileDropdownProps) {
+  const t = useTranslations("profile.student")
+  const router = useRouter()
   const displayBalance = `฿${totalBalance.toLocaleString("en-US")}`
   const menuItems: StudentMenuItem[] = [
     {
       id: "my-wallet",
-      label: "My Wallet",
+      label: t("myWallet"),
       icon: Wallet,
       href: `${localePrefix}/student/wallet`,
     },
     {
       id: "saved-tutor",
-      label: "Saved Tutor",
+      label: t("savedTutor"),
       icon: Heart,
       href: `${localePrefix}/student/tutors/favorites`,
     },
     {
       id: "transactions",
-      label: "Transactions",
+      label: t("transactions"),
       icon: WalletMinimal,
       href: `${localePrefix}/settings/student/payment-history`,
     },
     {
       id: "account-settings",
-      label: "Account Settings",
+      label: t("accountSettings"),
       icon: Settings,
       href: `${localePrefix}/settings/student`,
     },
     {
       id: "log-out",
-      label: "Log Out",
+      label: t("logOut"),
       icon: LogOut,
       danger: true,
       onSelect: () => {
-        void signOut({ callbackUrl: "/signin" })
+        void signOut({ callbackUrl: `${localePrefix}/signin` })
       },
     },
   ]
@@ -113,11 +117,11 @@ export default function StudentProfileDropdown({
         {/* TOTAL BALANCE */}
         <div className="rounded-xl border-[1.5px] border-neutral-50 p-3 flex flex-col gap-3">
           <div className="flex justify-between items-center">
-            <Typography variant="body-3" color="neutral-500">Total balance</Typography>
+            <Typography variant="body-3" color="neutral-500">{t("totalBalance")}</Typography>
             <Typography variant="title-1" color="deep-royal-indigo-500">{displayBalance}</Typography>
           </div>
-          <BaseButton>
-            Top Up Wallet
+          <BaseButton onClick={() => router.push(`${localePrefix}/student/wallet`)}>
+            {t("topUpWallet")}
           </BaseButton>
         </div>
 

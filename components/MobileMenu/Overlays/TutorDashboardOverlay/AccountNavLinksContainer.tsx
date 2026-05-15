@@ -1,5 +1,9 @@
+"use client";
+
 import Typography from "@/components/base/Typography";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { signOut } from "next-auth/react";
 import {
   CircleHelp,
@@ -10,6 +14,7 @@ import {
   Wallet,
   type LucideIcon,
 } from "lucide-react";
+import { getLocalizedSignInPath } from "@/lib/authRedirect";
 import type { TutorMenuLink } from "./types";
 
 interface AccountNavLinksContainerProps {
@@ -29,12 +34,17 @@ function getIconForAccountLink(label: string): LucideIcon {
 
 export default function AccountNavLinksContainer({
   links = [],
-  title = "Account",
+  title,
 }: AccountNavLinksContainerProps) {
+  const t = useTranslations("common");
+  const pathname = usePathname();
+  const signInPath = getLocalizedSignInPath(pathname);
+  const sectionTitle = title ?? t("account");
+
   return (
     <section className="flex flex-col gap-4">
       <Typography variant="title-2" color="neutral-900">
-        {title}
+        {sectionTitle}
       </Typography>
 
       <div className="flex flex-col gap-3">
@@ -64,12 +74,12 @@ export default function AccountNavLinksContainer({
         type="button"
         className="flex justify-center items-center gap-2 py-1"
         onClick={() => {
-          void signOut({ redirect: false });
+          void signOut({ callbackUrl: signInPath });
         }}
       >
         <LogOut className="w-5 h-5 text-red-normal" />
         <Typography variant="body-3" color="red-normal">
-          Log out
+          {t("logOut")}
         </Typography>
       </button>
     </section>

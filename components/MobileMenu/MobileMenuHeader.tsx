@@ -1,8 +1,8 @@
 "use client"
 import Image from "next/image"
 import { X } from "lucide-react"
-import { ChevronDown } from "lucide-react"
 import React from "react"
+import LanguageSwitcher from "../Navbar/LanguageSwitcher"
 
 export default function MobileMenuHeader({
     setOpen
@@ -20,13 +20,7 @@ export default function MobileMenuHeader({
             />
 
             <div className="flex justify-center items-center gap-x-4">
-                <button className="py-3 px-4 flex justify-center items-center gap-x-[10px] rounded-lg border border-neutral-50 ">
-                    <div className="text-label-3 text-neutral-500">
-                        EN
-                    </div>
-
-                    <ChevronDown size={20} className="text-neutral-500" />
-                </button>
+                <LanguageSwitcher studentStyle />
 
                 <X onClick={() => setOpen(false)} size={20} className="text-neutral-500"/>
             </div>

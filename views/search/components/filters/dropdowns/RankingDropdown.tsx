@@ -4,37 +4,26 @@ import { ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import ResponsiveDropdown from "./ResponsiveDropdown";
 
-const RANKINGS = [
-  {
-    id: "show_all",
-    name: "Show all in this ranking",
-    description: "",
-    icon: "",
-  },
-  {
-    id: "starter",
-    name: "Starter",
-    description: "Building hours and getting initial ratings.",
-    icon: "images/search/tutor-ranking/starter",
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    description:
-      "High ratings, reliable. Lower commission and better visibility.",
-    icon: "images/search/tutor-ranking/pro",
-  },
-  {
-    id: "master",
-    name: "Master",
-    description:
-      "Top ratings, high volume. Lowest commission and maximum search boost.",
-    icon: "images/search/tutor-ranking/master",
-  },
-];
+const RANKING_IDS = ["show_all", "starter", "pro", "master"] as const;
+type RankingId = typeof RANKING_IDS[number];
+
+const RANKING_VALUE: Record<RankingId, string> = {
+  show_all: "Show all in this ranking",
+  starter: "Starter",
+  pro: "Pro",
+  master: "Master",
+};
+
+const RANKING_ICONS: Record<RankingId, string> = {
+  show_all: "",
+  starter: "images/search/tutor-ranking/starter",
+  pro: "images/search/tutor-ranking/pro",
+  master: "images/search/tutor-ranking/master",
+};
 
 interface RankingDropdownProps {
   value: string;
@@ -42,14 +31,25 @@ interface RankingDropdownProps {
 }
 
 export function RankingDropdown({ value, onChange }: RankingDropdownProps) {
+  const t = useTranslations("search.filters");
   const [open, setOpen] = useState(false);
 
-  const isShowAll = value === "Show all in this ranking";
+  const isShowAll = value === RANKING_VALUE.show_all;
   const dropdownHeight = 400;
+
+  const getDisplayName = (id: RankingId): string => {
+    if (id === "show_all") return t("showAllRankings");
+    return t(`${id}.name`);
+  };
+
+  const getDescription = (id: RankingId): string => {
+    if (id === "show_all") return "";
+    return t(`${id}.description`);
+  };
 
   return (
     <ResponsiveDropdown
-      title="Tutor Ranking"
+      title={t("tutorRanking")}
       titleClassName="font-semibold text-base"
       open={open}
       onOpenChange={setOpen}
@@ -77,7 +77,7 @@ export function RankingDropdown({ value, onChange }: RankingDropdownProps) {
                   transition={{ duration: 0.2 }}
                   className="text-[15px] text-neutral-800 font-normal truncate"
                 >
-                  {isShowAll ? "Tutor Ranking" : value}
+                  {isShowAll ? t("tutorRanking") : value}
                 </motion.span>
               ) : isShowAll ? (
                 <motion.span
@@ -88,7 +88,7 @@ export function RankingDropdown({ value, onChange }: RankingDropdownProps) {
                   transition={{ duration: 0.2 }}
                   className="text-[15px] text-neutral-800 font-normal"
                 >
-                  Tutor Ranking
+                  {t("tutorRanking")}
                 </motion.span>
               ) : (
                 <motion.div
@@ -105,7 +105,7 @@ export function RankingDropdown({ value, onChange }: RankingDropdownProps) {
                     transition={{ duration: 0.2, delay: 0.1 }}
                     className="text-[13px] text-[#7A5AF8] font-medium"
                   >
-                    Tutor Ranking
+                    {t("tutorRanking")}
                   </motion.span>
                   <motion.span
                     initial={{ opacity: 0, y: 12 }}
@@ -123,51 +123,57 @@ export function RankingDropdown({ value, onChange }: RankingDropdownProps) {
         </button>
       )}
     >
-      {RANKINGS.map((ranking) => (
-        <button
-          key={ranking.id}
-          onClick={() => {
-            onChange(ranking.name)
-            setOpen(false)
-          }}
-          className={cn(
-            "flex items-start w-full border-b px-4 py-3 text-left transition",
-            value === ranking.name
-              ? "bg-electric-violet-50 text-electric-violet-600"
-              : "text-neutral-700 hover:bg-neutral-50"
-          )}
-        >
-          <div className="flex items-start gap-3 w-full">
-            {ranking.icon && (
-              <div className="flex-shrink-0 mt-1">
-                <Image
-                  src={`/${ranking.icon}.svg`}
-                  alt={`${ranking.name} ranking icon`}
-                  width={40}
-                  height={40}
-                />
-              </div>
+      {RANKING_IDS.map((id) => {
+        const rankValue = RANKING_VALUE[id];
+        const icon = RANKING_ICONS[id];
+        const displayName = getDisplayName(id);
+        const description = getDescription(id);
+        return (
+          <button
+            key={id}
+            onClick={() => {
+              onChange(rankValue)
+              setOpen(false)
+            }}
+            className={cn(
+              "flex items-start w-full border-b px-4 py-3 text-left transition",
+              value === rankValue
+                ? "bg-electric-violet-50 text-electric-violet-600"
+                : "text-neutral-700 hover:bg-neutral-50"
             )}
-            <div className="flex flex-col text-left">
-              <span
-                className={cn(
-                  "font-semibold text-sm",
-                  value === ranking.name
-                    ? "text-electric-violet-600"
-                    : "text-neutral-900"
-                )}
-              >
-                {ranking.name}
-              </span>
-              {ranking.description && (
-                <span className="text-xs text-neutral-500 mt-1 leading-relaxed">
-                  {ranking.description}
-                </span>
+          >
+            <div className="flex items-start gap-3 w-full">
+              {icon && (
+                <div className="flex-shrink-0 mt-1">
+                  <Image
+                    src={`/${icon}.svg`}
+                    alt={`${displayName} ranking icon`}
+                    width={40}
+                    height={40}
+                  />
+                </div>
               )}
+              <div className="flex flex-col text-left">
+                <span
+                  className={cn(
+                    "font-semibold text-sm",
+                    value === rankValue
+                      ? "text-electric-violet-600"
+                      : "text-neutral-900"
+                  )}
+                >
+                  {displayName}
+                </span>
+                {description && (
+                  <span className="text-xs text-neutral-500 mt-1 leading-relaxed">
+                    {description}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-        </button>
-      ))}
+          </button>
+        );
+      })}
     </ResponsiveDropdown>
   )
 }

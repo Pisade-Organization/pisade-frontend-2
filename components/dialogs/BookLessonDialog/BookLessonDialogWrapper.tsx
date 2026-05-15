@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import BookingDialog from "./index";
@@ -11,6 +12,7 @@ import { BookingDialogI } from "./types";
 import { buildBookingAvailabilityFromTutor } from "@/lib/bookingAvailability";
 
 export default function BookLessonDialogWrapper() {
+  const t = useTranslations("booking");
   const pathname = usePathname();
   const router = useRouter();
   const [tutorId, setTutorId] = useState<string | null>(null);
@@ -135,7 +137,7 @@ export default function BookLessonDialogWrapper() {
           >
             {/* Header */}
             <div className="flex justify-between items-center px-4 py-3 border-b border-neutral-50">
-              <h2 className="text-neutral-900 text-title-1">Book Lesson</h2>
+              <h2 className="text-neutral-900 text-title-1">{t("bookLesson")}</h2>
               <button
                 onClick={handleClose}
                 className="p-2 hover:bg-neutral-50 rounded-lg transition-colors"
@@ -148,13 +150,13 @@ export default function BookLessonDialogWrapper() {
             <div className="flex-1 overflow-y-auto">
               {loading ? (
                 <div className="flex justify-center items-center h-full">
-                  <p className="text-neutral-600">Loading...</p>
+                  <p className="text-neutral-600">{t("loading")}</p>
                 </div>
               ) : bookingProps ? (
                 <BookingDialog {...bookingProps} />
               ) : (
                 <div className="flex justify-center items-center h-full">
-                  <p className="text-neutral-600">Tutor not found</p>
+                  <p className="text-neutral-600">{t("tutorNotFound")}</p>
                 </div>
               )}
             </div>

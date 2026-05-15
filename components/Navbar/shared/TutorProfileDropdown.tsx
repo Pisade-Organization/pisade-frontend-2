@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useTranslations } from "next-intl"
 import { LogOut, Settings, UserRoundPen, Wallet } from "lucide-react"
 import { signOut } from "next-auth/react"
 import UserAvatar from "../UserAvatar"
@@ -23,6 +24,7 @@ export default function TutorProfileDropdown({
   avatarUrl,
   fullName,
 }: TutorProfileDropdownProps) {
+  const t = useTranslations("profile.tutor")
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -40,21 +42,21 @@ export default function TutorProfileDropdown({
         <DropdownMenuItem asChild className="cursor-pointer rounded-[8px] px-3 py-2">
           <Link href={`${localePrefix}/tutor/earnings-and-withdrawals`} className="flex items-center gap-2 text-neutral-800">
             <Wallet className="h-4 w-4 text-neutral-300" />
-            Earnings & Withdrawals
+            {t("earnings")}
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild className="cursor-pointer rounded-[8px] px-3 py-2">
           <Link href={`${localePrefix}/settings/tutor/general`} className="flex items-center gap-2 text-neutral-800">
             <UserRoundPen className="h-4 w-4 text-neutral-300" />
-            My Profile
+            {t("myProfile")}
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild className="cursor-pointer rounded-[8px] px-3 py-2">
           <Link href={`${localePrefix}/settings/tutor`} className="flex items-center gap-2 text-neutral-800">
             <Settings className="h-4 w-4 text-neutral-300" />
-            Account Settings
+            {t("accountSettings")}
           </Link>
         </DropdownMenuItem>
 
@@ -63,12 +65,12 @@ export default function TutorProfileDropdown({
         <DropdownMenuItem
           className="cursor-pointer rounded-[8px] px-3 py-2 text-red-normal focus:text-red-normal data-[highlighted]:text-red-normal"
           onSelect={() => {
-            void signOut({ callbackUrl: "/signin" })
+            void signOut({ callbackUrl: `${localePrefix}/signin` })
           }}
         >
           <div className="flex items-center gap-2">
             <LogOut className="h-4 w-4" />
-            Log out
+            {t("logOut")}
           </div>
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -3,6 +3,7 @@
 import { ChevronDown, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import ResponsiveDropdown from "./ResponsiveDropdown";
 
@@ -12,24 +13,27 @@ interface LanguageDropdownProps {
   onChange: (value: string[]) => void;
 }
 
+const SHOW_ALL_LANGUAGES = "Show all languages"
+
 export function LanguageDropdown({ options, value, onChange }: LanguageDropdownProps) {
+  const t = useTranslations("search.filters");
   const [open, setOpen] = useState(false);
   const selected = value;
-  const languageOptions = ["Show all languages", ...options];
+  const languageOptions = [SHOW_ALL_LANGUAGES, ...options];
 
   const dropdownHeight = 260;
 
   const toggleSelection = (item: string) => {
-    if (item === "Show all languages") {
-      onChange(["Show all languages"]);
+    if (item === SHOW_ALL_LANGUAGES) {
+      onChange([SHOW_ALL_LANGUAGES]);
       return;
     }
 
     onChange(((prev) => {
-      const filtered = prev.filter((s) => s !== "Show all languages");
+      const filtered = prev.filter((s) => s !== SHOW_ALL_LANGUAGES);
       if (filtered.includes(item)) {
         const next = filtered.filter((s) => s !== item);
-        return next.length === 0 ? ["Show all languages"] : next;
+        return next.length === 0 ? [SHOW_ALL_LANGUAGES] : next;
       } else {
         return [...filtered, item];
       }
@@ -37,11 +41,11 @@ export function LanguageDropdown({ options, value, onChange }: LanguageDropdownP
   };
 
   const isShowAll =
-    selected.length === 1 && selected[0] === "Show all languages";
+    selected.length === 1 && selected[0] === SHOW_ALL_LANGUAGES;
 
   return (
     <ResponsiveDropdown
-      title="Language"
+      title={t("language")}
       open={open}
       onOpenChange={setOpen}
       dropdownHeight={dropdownHeight}
@@ -68,7 +72,7 @@ export function LanguageDropdown({ options, value, onChange }: LanguageDropdownP
                   transition={{ duration: 0.2 }}
                   className="text-[15px] text-neutral-800 font-normal truncate"
                 >
-                  {isShowAll ? "Language" : selected.join(", ")}
+                  {isShowAll ? t("language") : selected.join(", ")}
                 </motion.span>
               ) : isShowAll ? (
                 <motion.span
@@ -79,7 +83,7 @@ export function LanguageDropdown({ options, value, onChange }: LanguageDropdownP
                   transition={{ duration: 0.2 }}
                   className="text-[15px] text-neutral-800 font-normal"
                 >
-                  Language
+                  {t("language")}
                 </motion.span>
               ) : (
                 <motion.div
@@ -96,7 +100,7 @@ export function LanguageDropdown({ options, value, onChange }: LanguageDropdownP
                     transition={{ duration: 0.2, delay: 0.1 }}
                     className="text-[13px] text-[#7A5AF8] font-medium"
                   >
-                    Language
+                    {t("language")}
                   </motion.span>
                   <motion.span
                     initial={{ opacity: 0, y: 12 }}
@@ -125,7 +129,7 @@ export function LanguageDropdown({ options, value, onChange }: LanguageDropdownP
               : "text-neutral-700"
           )}
         >
-          {lang}
+          {lang === SHOW_ALL_LANGUAGES ? t("showAllLanguages") : lang}
           <span
             className={cn(
               "w-4 h-4 rounded-[4px] border flex items-center justify-center transition",

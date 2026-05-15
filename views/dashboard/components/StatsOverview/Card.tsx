@@ -1,5 +1,4 @@
 "use client"
-import { cn } from "@/lib/utils"
 import Image from "next/image"
 import Typography from "@/components/base/Typography"
 
@@ -7,7 +6,7 @@ export default function Card({
     label,
     value
 }: {
-    label: "Completed Lessons" | "Scheduled Lessons" | "Skipped Lessons" | "Goal",
+    label: "Completed Lessons" | "Scheduled Lessons" | "Skipped Lessons" | "Saved Tutors" | "Goal",
     value: number
 }) {
 
@@ -46,6 +45,17 @@ export default function Card({
             },
         },
         "Goal": {
+            path: "/icons/student-dashboard/goal.svg",
+            mobileSize: {
+                width: 30.75,
+                height: 33.82
+            },
+            desktopSize: {
+                width: 56,
+                height: 56,
+            },
+        },
+        "Saved Tutors": {
             path: "/icons/student-dashboard/goal.svg",
             mobileSize: {
                 width: 30.75,

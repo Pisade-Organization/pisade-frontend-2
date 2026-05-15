@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
 import { ChevronDown } from "lucide-react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import BaseButton from "../base/BaseButton"
 import {
   DropdownMenu,
@@ -16,7 +16,24 @@ interface LanguageSwitcherProps {
 }
 
 export default function LanguageSwitcher({ dark, studentStyle }: LanguageSwitcherProps) {
-  const [language, setLanguage] = useState<"EN" | "TH">("EN")
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const currentLocale = pathname?.split("/")[1] === "th" ? "th" : "en"
+  const language = currentLocale.toUpperCase() as "EN" | "TH"
+
+  const switchLanguage = (nextLocale: "en" | "th") => {
+    if (nextLocale === currentLocale) {
+      return
+    }
+
+    const segments = pathname?.split("/").filter(Boolean) ?? []
+    const [, ...restSegments] = segments
+    const nextPath = `/${nextLocale}${restSegments.length > 0 ? `/${restSegments.join("/")}` : ""}`
+    const nextQuery = searchParams.toString()
+
+    router.push(nextQuery ? `${nextPath}?${nextQuery}` : nextPath)
+  }
 
   if (dark) {
     return (
@@ -38,6 +55,7 @@ export default function LanguageSwitcher({ dark, studentStyle }: LanguageSwitche
 
         <DropdownMenuContent
           align="end"
+          side="bottom"
           className="rounded-lg border-0 p-[1px] bg-transparent"
           style={{
             background:
@@ -46,13 +64,13 @@ export default function LanguageSwitcher({ dark, studentStyle }: LanguageSwitche
         >
           <div className="min-w-[92px] rounded-lg bg-black bg-gradient-to-r from-white/5 to-white/25 p-1">
             <DropdownMenuItem
-              onClick={() => setLanguage("EN")}
+              onClick={() => switchLanguage("en")}
               className="cursor-pointer rounded-md px-3 py-2 text-label-3 text-white focus:bg-white/20 focus:text-white data-[highlighted]:bg-white/20 data-[highlighted]:text-white"
             >
               EN
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => setLanguage("TH")}
+              onClick={() => switchLanguage("th")}
               className="cursor-pointer rounded-md px-3 py-2 text-label-3 text-white focus:bg-white/20 focus:text-white data-[highlighted]:bg-white/20 data-[highlighted]:text-white"
             >
               TH
@@ -76,15 +94,15 @@ export default function LanguageSwitcher({ dark, studentStyle }: LanguageSwitche
           </button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" className="w-[88px] rounded-[12px] border border-neutral-50 p-1">
+        <DropdownMenuContent align="end" side="bottom" className="w-[88px] rounded-[12px] border border-neutral-50 p-1">
           <DropdownMenuItem
-            onClick={() => setLanguage("EN")}
+            onClick={() => switchLanguage("en")}
             className="cursor-pointer rounded-[8px] px-3 py-2 text-label-3 text-neutral-700 focus:bg-neutral-25 focus:text-neutral-700 data-[highlighted]:bg-neutral-25 data-[highlighted]:text-neutral-700"
           >
             EN
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => setLanguage("TH")}
+            onClick={() => switchLanguage("th")}
             className="cursor-pointer rounded-[8px] px-3 py-2 text-label-3 text-neutral-700 focus:bg-neutral-25 focus:text-neutral-700 data-[highlighted]:bg-neutral-25 data-[highlighted]:text-neutral-700"
           >
             TH
@@ -95,8 +113,27 @@ export default function LanguageSwitcher({ dark, studentStyle }: LanguageSwitche
   }
 
   return (
-    <BaseButton variant="secondary" typeStyle="outline">
-      EN <ChevronDown size={20} className="inline ml-1" />
-    </BaseButton>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <BaseButton variant="secondary" typeStyle="outline">
+          {language} <ChevronDown size={20} className="inline ml-1" />
+        </BaseButton>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" side="bottom" className="w-[88px] rounded-[12px] border border-neutral-50 p-1">
+        <DropdownMenuItem
+          onClick={() => switchLanguage("en")}
+          className="cursor-pointer rounded-[8px] px-3 py-2 text-label-3 text-neutral-700 focus:bg-neutral-25 focus:text-neutral-700 data-[highlighted]:bg-neutral-25 data-[highlighted]:text-neutral-700"
+        >
+          EN
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => switchLanguage("th")}
+          className="cursor-pointer rounded-[8px] px-3 py-2 text-label-3 text-neutral-700 focus:bg-neutral-25 focus:text-neutral-700 data-[highlighted]:bg-neutral-25 data-[highlighted]:text-neutral-700"
+        >
+          TH
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }

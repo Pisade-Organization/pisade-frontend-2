@@ -29,7 +29,7 @@ export default function BookingDialog({
   };
 
   return (
-    <div className="w-full flex flex-col py-2 px-4 gap-5 lg:p-6 lg:gap-6 lg:rounded-2xl">
+    <div className="w-full flex flex-col px-4 pt-2 pb-20 gap-5 lg:p-6 lg:gap-6 lg:rounded-2xl">
       
       
       <div className="w-full hidden lg:flex">

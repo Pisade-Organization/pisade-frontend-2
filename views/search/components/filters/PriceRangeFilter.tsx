@@ -3,6 +3,7 @@
 import { useState, useLayoutEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import PriceRangeSlider from "./PriceRangeSlider";
 import ShowResultsBtn from "./dropdowns/ShowResultsBtn";
@@ -19,6 +20,7 @@ export default function PriceRangeFilter({
   maxPrice: number;
   setMaxPrice: (maxPrice: number) => void;
 }) {
+  const t = useTranslations("search.filters")
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const isMobile = !isDesktop
   const [open, setOpen] = useState(false);
@@ -48,7 +50,7 @@ export default function PriceRangeFilter({
     >
       <span className="text-[15px] text-neutral-800 font-normal truncate">
         {minPrice === ABS_MIN && maxPrice === ABS_MAX
-          ? "Price range"
+          ? t("priceRange")
           : `$${minPrice} – $${maxPrice}`}
       </span>
       <ChevronDown className="w-4 h-4 text-neutral-400 ml-2 flex-shrink-0" />
@@ -82,7 +84,7 @@ export default function PriceRangeFilter({
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
                 <div className="flex justify-between items-center px-4 py-3 border-b">
-                  <h2 className="text-neutral-900 text-title-1">Price range</h2>
+                  <h2 className="text-neutral-900 text-title-1">{t("priceRange")}</h2>
                   <button onClick={() => setOpen(false)}>
                     <X className="w-5 h-5 text-gray-500" />
                   </button>
@@ -108,7 +110,7 @@ export default function PriceRangeFilter({
   // 💻 DESKTOP → inline filter
   return (
     <div className="col-span-2 w-full flex items-center border border-[#F1F1F1] py-2 px-5 gap-x-4 rounded-[12px] h-[44px] lg:h-[60px]">
-      <div className="text-neutral-700 text-body-2">Price range</div>
+      <div className="text-neutral-700 text-body-2">{t("priceRange")}</div>
 
       <div className="flex-1 min-w-0">
         <PriceRangeSlider

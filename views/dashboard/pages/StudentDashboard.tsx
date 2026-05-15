@@ -1,7 +1,7 @@
 "use client"
 import { Role } from "@/types/role.enum"
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import type { Transaction } from "../components/TransactionHistory/types"
 import { TransactionStatus } from "../components/TransactionHistory/badges/TransactionStatusBadge/types"
 import { PaymentMethod } from "../components/TransactionHistory/badges/PaymentMethodBadge/types"
@@ -9,6 +9,7 @@ import DashboardPage from "./DashboardPage"
 import {
   useDashboardSummary,
   useDashboardTransactions,
+  useFavoriteTutorCards,
   useNextLesson,
   useTodayLessons,
 } from "@/hooks/dashboard/queries"
@@ -27,13 +28,18 @@ function mapPaymentMethod(method: string | null): PaymentMethod {
 
 export default function StudentDashboardPage() {
   const router = useRouter()
+  const pathname = usePathname()
   const { data: session } = useSession()
   const { data: profile } = useMyProfile()
   const { data: summary } = useDashboardSummary()
   const { data: todayLessons = [] } = useTodayLessons()
   const { data: nextLesson } = useNextLesson()
   const { data: transactionsRaw = [] } = useDashboardTransactions()
+  const { data: favoriteTutorPages } = useFavoriteTutorCards(12)
   const fullName = session?.user?.fullName ?? profile?.profile?.fullName ?? "Student"
+  const locale = pathname?.split("/")[1]
+  const localePrefix = locale === "en" || locale === "th" ? `/${locale}` : "/en"
+  const savedTutorsCount = favoriteTutorPages?.pages?.[0]?.total ?? 0
 
   const transactions: Transaction[] = transactionsRaw.map((transaction) => ({
     id: transaction.id,
@@ -45,11 +51,11 @@ export default function StudentDashboardPage() {
   }))
 
   const handleViewAll = () => {
-    router.push("/settings/student/payment-history")
+    router.push(`${localePrefix}/settings/student/payment-history`)
   }
 
   const handleShowMore = () => {
-    router.push("/settings/student/payment-history")
+    router.push(`${localePrefix}/settings/student/payment-history`)
   }
 
   return (
@@ -61,7 +67,10 @@ export default function StudentDashboardPage() {
         completedLessons: summary?.completedLessons ?? 0,
         scheduledLessons: summary?.scheduledLessons ?? 0,
         skippedLessons: summary?.skippedLessons ?? 0,
-        goal: 0,
+        extra: {
+          label: "Saved Tutors",
+          value: savedTutorsCount,
+        },
       }}
       onViewAll={handleViewAll}
       onShowMore={handleShowMore}
@@ -77,6 +86,7 @@ export default function StudentDashboardPage() {
         joinAvailableAt: nextLesson?.joinAvailableAt
           ? new Date(nextLesson.joinAvailableAt)
           : null,
+        secondaryActionHref: `${localePrefix}/student/schedule`,
         actionLabel: "Join class",
         headerText: "Next lesson",
         showNextLessonCard: Boolean(nextLesson),

@@ -15,12 +15,13 @@ export default function TodayLessons() {
         const start = new Date(lesson.scheduledAt)
         const end = new Date(start)
         end.setMinutes(end.getMinutes() + lesson.duration)
+        const subject = lesson.tutor.subjects[0]?.subject.name ?? "Lesson"
 
         return {
             avatarUrl: lesson.tutor.user.profile?.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",
             fromTime: formatTime(start.toISOString()),
             toTime: formatTime(end.toISOString()),
-            subject: "Lesson",
+            subject,
             tutorName: lesson.tutor.user.profile?.fullName ?? "Tutor",
         }
     })

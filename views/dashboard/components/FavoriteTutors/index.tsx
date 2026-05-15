@@ -7,10 +7,10 @@ import ViewAllBtn from "./ViewAllBtn"
 import Card from "./Card"
 import Controls from "./Controls"
 import { TUTOR_RANKING } from "@/types/tutorRanking.enum"
-import { useFavoriteTutors } from "@/hooks/dashboard/queries"
+import { useFavoriteTutorCards } from "@/hooks/dashboard/queries"
 
 export default function FavoriteTutors() {
-  const { data: favoriteTutors = [] } = useFavoriteTutors()
+  const { data } = useFavoriteTutorCards(10)
   const [currentTutor, setCurrentTutor] = useState(0)
   const [direction, setDirection] = useState<1 | -1>(1)
   const swiperRef = useRef<any>(null)
@@ -29,12 +29,12 @@ export default function FavoriteTutors() {
     }
   }
 
-  const tutors = favoriteTutors.map((tutor) => ({
-    fullName: tutor.user.profile?.fullName ?? "Tutor",
-    subject: tutor.subjects.map((subject) => subject.subject.name).join(", ") || "Subject",
+  const tutors = (data?.pages ?? []).flatMap((page) => page.data).map((tutor) => ({
+    fullName: tutor.fullName ?? "Tutor",
+    subject: tutor.subjects.join(", ") || "Subject",
     flagUrl: "https://flagcdn.com/th.svg",
-    avatarUrl: tutor.user.profile?.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",
-    baseRate: 0,
+    avatarUrl: tutor.avatarUrl ?? "https://ui-avatars.com/api/?name=Tutor",
+    baseRate: tutor.baseRate,
     isAvailable: true,
     tutorRanking: TUTOR_RANKING.STARTER,
   }))

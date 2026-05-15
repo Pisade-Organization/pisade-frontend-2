@@ -1,5 +1,238 @@
 {
-    "HomePage": {
-      "title": "Hello world!"
+  "common": {
+    "email": "อีเมล",
+    "back": "ย้อนกลับ",
+    "or": "หรือ",
+    "loading": "กำลังโหลด...",
+    "logOut": "ออกจากระบบ",
+    "general": "ทั่วไป",
+    "account": "บัญชี",
+    "continue": "ดำเนินการต่อ",
+    "continuing": "กำลังดำเนินการ...",
+    "other": "อื่นๆ",
+    "termsOfUse": "ข้อกำหนดการใช้งาน",
+    "privacyPolicy": "นโยบายความเป็นส่วนตัว"
+  },
+  "auth": {
+    "signIn": {
+      "title": "เข้าสู่ระบบ",
+      "wantToTeach": "ต้องการสอนบน Pisade ใช่ไหม?",
+      "signUpAsTutor": "สมัครเป็นครูสอน",
+      "tutorSignupTitle": "สมัครเป็นครูสอน",
+      "alreadyHaveAccount": "มีบัญชีอยู่แล้ว?",
+      "logIn": "เข้าสู่ระบบ"
+    },
+    "form": {
+      "emailPlaceholder": "กรอกอีเมลของคุณ",
+      "sendingButton": "กำลังส่ง...",
+      "signUpButton": "สมัครเป็นครูสอน",
+      "loginButton": "เข้าสู่ระบบ",
+      "errors": {
+        "tooManyAttempts": "พยายามมากเกินไป กรุณาลองใหม่อีกครั้งในภายหลัง",
+        "invalidEmail": "อีเมลไม่ถูกต้อง",
+        "somethingWentWrong": "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+        "failedToSendMagicLink": "ไม่สามารถส่งลิงก์ได้"
+      }
+    },
+    "verifyEmail": {
+      "title": "ยืนยันอีเมลของคุณ",
+      "description": "เราได้ส่งอีเมลไปที่ <email/> พร้อมลิงก์สำหรับดำเนินการต่อ",
+      "dontReceive": "ไม่ได้รับอีเมล? กรุณาตรวจสอบโฟลเดอร์สแปมหรือ",
+      "resendLink": "ส่งลิงก์อีกครั้ง",
+      "backToTutorSignUp": "กลับไปสมัครครูสอน",
+      "backToSignIn": "กลับไปเข้าสู่ระบบ",
+      "errors": {
+        "tooManyAttempts": "พยายามมากเกินไป กรุณารอก่อนลองใหม่",
+        "invalidEmail": "อีเมลไม่ถูกต้อง",
+        "somethingWentWrong": "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+      }
+    },
+    "google": {
+      "continueWith": "ดำเนินการด้วย Google",
+      "connecting": "กำลังเชื่อมต่อ...",
+      "errors": {
+        "notConfigured": "ยังไม่ได้ตั้งค่าการเข้าสู่ระบบด้วย Google",
+        "notReady": "การเข้าสู่ระบบด้วย Google ยังไม่พร้อม กรุณาลองใหม่",
+        "roleMismatch": "การสมัครครูสอนล้มเหลวเนื่องจากบทบาทไม่ตรงกัน กรุณาลองใหม่หรือติดต่อฝ่ายสนับสนุน",
+        "roleConflict": "บัญชี Google นี้ถูกลงทะเบียนเป็นนักเรียนแล้ว กรุณาใช้บัญชี Google อื่นเพื่อสมัครเป็นครูสอน",
+        "unable": "ไม่สามารถดำเนินการด้วย Google ได้ กรุณาลองใหม่"
+      }
+    },
+    "terms": {
+      "notice": "การคลิก เข้าสู่ระบบ หรือ ดำเนินการด้วย หมายความว่าคุณยอมรับ",
+      "pisadeTerms": "ข้อกำหนดการใช้งาน Pisade",
+      "and": "และ",
+      "privacyPolicy": "นโยบายความเป็นส่วนตัว"
     }
+  },
+  "nav": {
+    "becomeTutor": "เป็นครูสอน",
+    "signIn": "เข้าสู่ระบบ",
+    "student": {
+      "home": "หน้าหลัก",
+      "tutors": "ครูสอน",
+      "class": "ชั้นเรียน",
+      "schedule": "ตารางเวลา"
+    },
+    "tutor": {
+      "home": "หน้าหลัก",
+      "students": "นักเรียน",
+      "schedule": "ตารางเวลา",
+      "earnings": "รายได้และการถอนเงิน"
+    }
+  },
+  "profile": {
+    "student": {
+      "totalBalance": "ยอดเงินรวม",
+      "topUpWallet": "เติมเงินกระเป๋า",
+      "myWallet": "กระเป๋าเงินของฉัน",
+      "savedTutor": "ครูสอนที่บันทึก",
+      "transactions": "ประวัติธุรกรรม",
+      "accountSettings": "ตั้งค่าบัญชี",
+      "logOut": "ออกจากระบบ"
+    },
+    "tutor": {
+      "earnings": "รายได้และการถอนเงิน",
+      "myProfile": "โปรไฟล์ของฉัน",
+      "accountSettings": "ตั้งค่าบัญชี",
+      "logOut": "ออกจากระบบ"
+    }
+  },
+  "notifications": {
+    "title": "การแจ้งเตือน",
+    "unreadMessages": "คุณมีข้อความที่ยังไม่ได้อ่าน {count} ข้อความ",
+    "all": "ทั้งหมด",
+    "unread": "ยังไม่ได้อ่าน",
+    "noNotifications": "ไม่มีการแจ้งเตือน",
+    "markAllRead": "ทำเครื่องหมายว่าอ่านทั้งหมด",
+    "types": {
+      "CLASS_REMINDER": { "title": "ชั้นเรียนเริ่มเร็วๆ นี้!", "status": "ชั้นเรียนที่กำลังจะมาถึง" },
+      "PAYMENT_CONFIRMATION": { "title": "ยืนยันการชำระเงินแล้ว", "status": "การชำระเงิน" },
+      "NEW_MESSAGE": { "title": "ได้รับข้อความใหม่", "status": "ข้อความ" },
+      "RESCHEDULE": { "title": "เลื่อนบทเรียนแล้ว", "status": "การเลื่อน" },
+      "CANCEL": { "title": "ยกเลิกบทเรียนแล้ว", "status": "ยกเลิก" }
+    },
+    "time": {
+      "justNow": "เพิ่งเมื่อกี้",
+      "minuteAgo": "{count} นาทีที่แล้ว",
+      "hourAgo": "{count} ชั่วโมงที่แล้ว",
+      "hoursAgo": "{count} ชั่วโมงที่แล้ว",
+      "yesterday": "เมื่อวาน",
+      "daysAgo": "{count} วันที่แล้ว"
+    },
+    "period": {
+      "today": "วันนี้",
+      "yesterday": "เมื่อวาน",
+      "daysAgo": "{count} วันที่แล้ว",
+      "lastWeek": "สัปดาห์ที่แล้ว"
+    }
+  },
+  "search": {
+    "hero": {
+      "firstText": "ค้นหาครูสอนที่ใช่",
+      "secondText": "ออนไลน์ในไม่กี่วินาที"
+    },
+    "availableTutors": "ครูสอนที่มีให้เลือก",
+    "loadingTutors": "กำลังโหลดครูสอน...",
+    "showingTutors": "แสดง {count} จาก {total} คน",
+    "loadError": "ไม่สามารถโหลดครูสอนได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง",
+    "loadingMore": "กำลังโหลดเพิ่มเติม...",
+    "loadMore": "โหลดเพิ่มเติม ({remaining} คนที่เหลือ)",
+    "filters": {
+      "title": "ตัวกรอง",
+      "subject": "วิชา",
+      "showAll": "แสดงทั้งหมด",
+      "tutorRanking": "ระดับครูสอน",
+      "showAllRankings": "แสดงทุกระดับ",
+      "starter": {
+        "name": "เริ่มต้น",
+        "description": "กำลังสะสมชั่วโมงสอนและคะแนนเริ่มต้น"
+      },
+      "pro": {
+        "name": "โปร",
+        "description": "คะแนนสูง น่าเชื่อถือ ค่าคอมมิชชั่นต่ำและมองเห็นได้มากขึ้น"
+      },
+      "master": {
+        "name": "มาสเตอร์",
+        "description": "คะแนนสูงสุด ปริมาณมาก ค่าคอมมิชชั่นต่ำที่สุดและการค้นหาโปรโมตสูงสุด"
+      },
+      "language": "ภาษา",
+      "showAllLanguages": "แสดงทุกภาษา",
+      "priceRange": "ช่วงราคา"
+    }
+  },
+  "footer": {
+    "contact": "ติดต่อ",
+    "address": "3890 Poplar Dr. Memphis, TN 23293 | Harrison County",
+    "newsletter": {
+      "title": "อย่าพลาด! รับข่าวสารล่าสุดจาก Pisade",
+      "description": "สมัครรับอีเมลและรับเคล็ดลับพิเศษ ข่าวสาร และข้อเสนอพิเศษส่งตรงถึงกล่องจดหมายของคุณ",
+      "emailLabel": "อีเมล",
+      "emailPlaceholder": "ที่อยู่อีเมล",
+      "button": "ติดต่อเรา"
+    }
+  },
+  "mobile": {
+    "personalizedLearning": "การเรียนรู้ที่ปรับตามตัวคุณ ง่ายและสะดวก",
+    "joinUs": "เข้าร่วมกับเราและเริ่มต้นการเดินทางที่สร้างแรงบันดาลใจของคุณวันนี้",
+    "becomeTutor": "เป็นครูสอน",
+    "signIn": "เข้าสู่ระบบ",
+    "findTutors": "ค้นหาครูสอน",
+    "logOut": "ออกจากระบบ",
+    "other": {
+      "title": "อื่นๆ",
+      "termsOfUse": "ข้อกำหนดการใช้งาน",
+      "privacyPolicy": "นโยบายความเป็นส่วนตัว"
+    }
+  },
+  "tutorProfile": {
+    "rankingLevel": "ระดับ",
+    "rating": "คะแนน",
+    "students": "นักเรียน",
+    "lessons": "บทเรียน"
+  },
+  "booking": {
+    "bookLesson": "จองบทเรียน",
+    "loading": "กำลังโหลด...",
+    "tutorNotFound": "ไม่พบครูสอน",
+    "continue": "ดำเนินการต่อ",
+    "continuing": "กำลังดำเนินการ...",
+    "stats": {
+      "rating": "คะแนน",
+      "students": "นักเรียน",
+      "lessons": "บทเรียน"
+    }
+  },
+  "tutorCollection": {
+    "savedTutors": "ครูสอนที่บันทึกไว้ {count} คน",
+    "currentTutors": "คุณมีครูสอน {count} คน",
+    "activeStudents": "นักเรียนที่ใช้งานอยู่ {count} คน",
+    "pastStudents": "นักเรียนในอดีต {count} คน",
+    "loading": "กำลังโหลดครูสอน...",
+    "loadError": "ไม่สามารถโหลดครูสอนได้ กรุณาลองใหม่",
+    "loadMore": "โหลดเพิ่มเติม",
+    "loadingMore": "กำลังโหลด...",
+    "findMyTutor": "ค้นหาครูสอน",
+    "empty": {
+      "favorite": {
+        "title": "ยังไม่มีครูสอนที่ชื่นชอบ?",
+        "description": "คู่ที่ใช่ของคุณกำลังรออยู่! เริ่มสำรวจครูสอนของเราและค้นหาผู้เชี่ยวชาญที่คุณชื่นชอบวันนี้"
+      },
+      "current": {
+        "title": "ถึงเวลาค้นหาผู้เชี่ยวชาญของคุณ",
+        "description": "คุณยังไม่มีครูสอน สำรวจครูสอนที่มีให้เลือกและเชื่อมต่อกับผู้ที่เหมาะสมกับคุณวันนี้!"
+      },
+      "active": {
+        "title": "ยังไม่มีนักเรียนที่ใช้งานอยู่",
+        "description": "เมื่อนักเรียนจองชั้นเรียนที่กำลังจะมาถึงกับคุณ พวกเขาจะปรากฏที่นี่"
+      },
+      "past": {
+        "title": "ยังไม่มีนักเรียนในอดีต",
+        "description": "นักเรียนที่มีเฉพาะชั้นเรียนในอดีตและไม่มีการจองที่กำลังจะมาถึงจะปรากฏที่นี่"
+      }
+    }
+  },
+  "signout": {
+    "logOut": "ออกจากระบบ"
   }
+}

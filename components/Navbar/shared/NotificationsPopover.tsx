@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { Bell, CheckCheck, Settings2, X } from "lucide-react"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import Typography from "@/components/base/Typography"
@@ -22,54 +23,51 @@ interface NotificationItem {
   status: string
 }
 
-const TYPE_META: Record<string, { title: string; status: string }> = {
-  CLASS_REMINDER: { title: "Class starts soon!", status: "Upcoming class" },
-  PAYMENT_CONFIRMATION: { title: "Payment confirmed", status: "Payment" },
-  NEW_MESSAGE: { title: "New message received", status: "Message" },
-  RESCHEDULE: { title: "Lesson rescheduled", status: "Reschedule" },
-  CANCEL: { title: "Lesson cancelled", status: "Cancelled" },
-}
+type TranslateFn = ReturnType<typeof useTranslations>
 
-function formatRelativeTime(createdAt: string): string {
+function formatRelativeTime(createdAt: string, t: TranslateFn): string {
   const diff = Date.now() - new Date(createdAt).getTime()
   const mins = Math.floor(diff / 60000)
-  if (mins < 1) return "Just now"
-  if (mins < 60) return `${mins} min ago`
+  if (mins < 1) return t("time.justNow")
+  if (mins < 60) return t("time.minuteAgo", { count: mins })
   const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`
+  if (hours < 24) return hours === 1 ? t("time.hourAgo", { count: hours }) : t("time.hoursAgo", { count: hours })
   const days = Math.floor(hours / 24)
-  if (days === 1) return "Yesterday"
-  return `${days} days ago`
+  if (days === 1) return t("time.yesterday")
+  return t("time.daysAgo", { count: days })
 }
 
-function adaptNotification(n: ApiNotificationItem): NotificationItem {
-  const meta = TYPE_META[n.type] ?? { title: "Notification", status: n.type }
+function adaptNotification(n: ApiNotificationItem, t: TranslateFn): NotificationItem {
+  const typeKey = n.type as keyof { CLASS_REMINDER: unknown; PAYMENT_CONFIRMATION: unknown; NEW_MESSAGE: unknown; RESCHEDULE: unknown; CANCEL: unknown }
+  const knownTypes = ["CLASS_REMINDER", "PAYMENT_CONFIRMATION", "NEW_MESSAGE", "RESCHEDULE", "CANCEL"]
+  const title = knownTypes.includes(n.type) ? t(`types.${typeKey}.title`) : "Notification"
+  const status = knownTypes.includes(n.type) ? t(`types.${typeKey}.status`) : n.type
   return {
     id: n.id,
     createdAt: n.createdAt,
     read: n.read,
-    title: meta.title,
+    title,
     description: n.content,
-    time: formatRelativeTime(n.createdAt),
-    status: meta.status,
+    time: formatRelativeTime(n.createdAt, t),
+    status,
   }
 }
 
-function getPeriodLabel(createdAt: string): string {
+function getPeriodLabel(createdAt: string, t: TranslateFn): string {
   const date = new Date(createdAt)
   const now = new Date()
   const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24))
-  if (diffDays === 0) return "Today"
-  if (diffDays === 1) return "Yesterday"
-  if (diffDays < 7) return `${diffDays} days ago`
-  if (diffDays < 14) return "Last week"
+  if (diffDays === 0) return t("period.today")
+  if (diffDays === 1) return t("period.yesterday")
+  if (diffDays < 7) return t("period.daysAgo", { count: diffDays })
+  if (diffDays < 14) return t("period.lastWeek")
   return date.toLocaleDateString([], { month: "short", day: "numeric" })
 }
 
-function groupByPeriod(items: NotificationItem[]): { label: string; items: NotificationItem[] }[] {
+function groupByPeriod(items: NotificationItem[], t: TranslateFn): { label: string; items: NotificationItem[] }[] {
   const groups: Map<string, NotificationItem[]> = new Map()
   for (const item of items) {
-    const label = getPeriodLabel(item.createdAt)
+    const label = getPeriodLabel(item.createdAt, t)
     if (!groups.has(label)) groups.set(label, [])
     groups.get(label)!.push(item)
   }
@@ -101,6 +99,12 @@ function NotificationsContent({
   onMarkRead: (id: string) => void
   onMarkAllRead: () => void
 }) {
+  const t = useTranslations("notifications")
+
+  const handleNotificationInteract = (item: NotificationItem) => {
+    if (!item.read) onMarkRead(item.id)
+  }
+
   return (
     <>
       {/* Header */}
@@ -109,11 +113,11 @@ function NotificationsContent({
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <Typography variant={isMobile ? "headline-5" : "label-1"} color="neutral-900">
-              Notifications
+              {t("title")}
             </Typography>
             {isMobile ? (
               <Typography variant="body-3" color="neutral-700">
-                You have {unreadCount} unread messages
+                {t("unreadMessages", { count: unreadCount })}
               </Typography>
             ) : null}
           </div>
@@ -136,7 +140,7 @@ function NotificationsContent({
             >
               <span className="flex items-center gap-1">
                 <Typography variant="label-3" color={activeTab === "all" ? "electric-violet-500" : "neutral-500"}>
-                  All
+                  {t("all")}
                 </Typography>
                 {isMobile ? (
                   <span className="rounded-[8px] bg-electric-violet-50 px-2 py-[2px]">
@@ -158,7 +162,7 @@ function NotificationsContent({
             >
               <span className="flex items-center gap-1">
                 <Typography variant="label-3" color={activeTab === "unread" ? "electric-violet-500" : "neutral-500"}>
-                  Unread
+                  {t("unread")}
                 </Typography>
                 {isMobile ? (
                   <span className="rounded-[8px] bg-neutral-25 px-2 py-[2px]">
@@ -179,18 +183,24 @@ function NotificationsContent({
       {/* Notification groups */}
       <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 pb-3">
         {groups.length === 0 ? (
-          <p className="py-4 text-center text-body-3 text-neutral-300">No notifications</p>
+          <p className="py-4 text-center text-body-3 text-neutral-300">{t("noNotifications")}</p>
         ) : (
           groups.map((group) => (
             <div key={group.label} className="flex flex-col gap-2">
               <Typography
                 variant="label-3"
-                color={group.label === "Today" ? "neutral-900" : "neutral-300"}
+                color={group.label === t("period.today") ? "neutral-900" : "neutral-300"}
               >
                 {group.label}
               </Typography>
               {group.items.map((item) => (
-                <div key={item.id} onClick={() => { if (!item.read) onMarkRead(item.id) }}>
+                <div
+                  key={item.id}
+                  onClick={() => handleNotificationInteract(item)}
+                  onMouseEnter={() => {
+                    if (!isMobile) handleNotificationInteract(item)
+                  }}
+                >
                   <NotificationCard
                     name=""
                     title={item.title}
@@ -213,7 +223,7 @@ function NotificationsContent({
       >
         <CheckCheck className="h-5 w-5 text-neutral-900 transition-colors group-hover:text-electric-violet-500" />
         <span className="text-label-2 text-neutral-900 transition-colors group-hover:text-electric-violet-500">
-          Mark all as read
+          {t("markAllRead")}
         </span>
       </div>
     </>
@@ -224,15 +234,16 @@ export default function NotificationsPopover({ iconButtonClass }: NotificationsP
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<NotificationTab>("all")
   const isMobile = useMediaQuery("(max-width: 1023px)")
+  const t = useTranslations("notifications")
 
   const { data } = useMyNotifications()
   const { mutate: markRead } = useMarkNotificationRead()
   const { mutate: markAllRead } = useMarkAllNotificationsRead()
 
-  const allItems = (data?.notifications ?? []).map(adaptNotification)
+  const allItems = (data?.notifications ?? []).map((n) => adaptNotification(n, t))
   const unreadCount = data?.unreadCount ?? 0
   const filtered = activeTab === "unread" ? allItems.filter((n) => !n.read) : allItems
-  const groups = groupByPeriod(filtered)
+  const groups = groupByPeriod(filtered, t)
 
   const handleMarkAllRead = () => {
     const unreadIds = allItems.filter((n) => !n.read).map((n) => n.id)

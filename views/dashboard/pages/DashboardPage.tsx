@@ -40,7 +40,10 @@ interface DashboardPageProps {
     completedLessons: number
     scheduledLessons: number
     skippedLessons: number
-    goal: number
+    extra: {
+      label: "Saved Tutors" | "Goal"
+      value: number
+    }
   }
   onViewAll?: () => void
   onShowMore?: () => void
@@ -61,7 +64,7 @@ export default function DashboardPage({
     { label: "Completed Lessons" as const, value: stats.completedLessons },
     { label: "Scheduled Lessons" as const, value: stats.scheduledLessons },
     { label: "Skipped Lessons" as const, value: stats.skippedLessons },
-    { label: "Goal" as const, value: stats.goal },
+    { label: stats.extra.label, value: stats.extra.value },
   ]
 
   const dashboardSections =

@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useMyProfile, useMyTutorProfile } from "@/hooks/settings/queries";
 import { resolveUserAvatarUrl } from "@/lib/avatar";
 import { normalizeTutorRanking } from "@/lib/tutorRanking";
@@ -12,6 +13,7 @@ import TutorProfileContainer from "./TutorProfileContainer";
 import type { TutorMenuLink } from "./types";
 
 export default function TutorDashboardOverlay() {
+  const t = useTranslations();
   const pathname = usePathname();
   const { data } = useSession();
   const { data: profileData } = useMyProfile();
@@ -22,16 +24,16 @@ export default function TutorDashboardOverlay() {
   const localePrefix = currentLocale ? `/${currentLocale}` : "";
 
   const generalLinks: TutorMenuLink[] = [
-    { id: "home", label: "Home", href: `${localePrefix}/tutor/dashboard` },
-    { id: "students", label: "Students", href: `${localePrefix}/tutor/students/active` },
-    { id: "schedule", label: "Schedule", href: `${localePrefix}/tutor/schedule` },
-    { id: "earnings", label: "Earnings & Withdrawals", href: `${localePrefix}/tutor/earnings-and-withdrawals` },
+    { id: "home", label: t("nav.tutor.home"), href: `${localePrefix}/tutor/dashboard` },
+    { id: "students", label: t("nav.tutor.students"), href: `${localePrefix}/tutor/students/active` },
+    { id: "schedule", label: t("nav.tutor.schedule"), href: `${localePrefix}/tutor/schedule` },
+    { id: "earnings", label: t("nav.tutor.earnings"), href: `${localePrefix}/tutor/earnings-and-withdrawals` },
   ];
 
   const accountLinks: TutorMenuLink[] = [
-    { id: "my-wallet", label: "Earnings & Withdrawals", href: `${localePrefix}/tutor/earnings-and-withdrawals` },
-    { id: "my-profile", label: "My Profile", href: `${localePrefix}/settings/tutor/general` },
-    { id: "account-settings", label: "Account settings", href: `${localePrefix}/settings/tutor` },
+    { id: "my-wallet", label: t("profile.tutor.earnings"), href: `${localePrefix}/tutor/earnings-and-withdrawals` },
+    { id: "my-profile", label: t("profile.tutor.myProfile"), href: `${localePrefix}/settings/tutor/general` },
+    { id: "account-settings", label: t("profile.tutor.accountSettings"), href: `${localePrefix}/settings/tutor` },
     { id: "safety-trust", label: "Safety & Trust", href: `${localePrefix}/settings/tutor/general` },
     { id: "helps", label: "Helps", href: `${localePrefix}/settings/tutor/general` },
   ];
@@ -49,9 +51,9 @@ export default function TutorDashboardOverlay() {
         lessonsCount={tutorProfileData?.lessonsCount}
       />
 
-      <GeneralNavLinksContainer links={generalLinks} />
+      <GeneralNavLinksContainer links={generalLinks} title={t("common.general")} />
 
-      <AccountNavLinksContainer links={accountLinks} />
+      <AccountNavLinksContainer links={accountLinks} title={t("common.account")} />
     </div>
   );
 }

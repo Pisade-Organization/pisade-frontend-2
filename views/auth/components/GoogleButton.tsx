@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import Script from "next/script";
 import { getSession, signIn, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { GoogleIcon } from "@/components/icons";
 import BaseButton from "@/components/base/BaseButton";
 import Typography from "@/components/base/Typography";
@@ -39,6 +40,7 @@ interface GoogleButtonProps {
 }
 
 export default function GoogleButton({ authType = AUTH_TYPES.SIGNIN }: GoogleButtonProps) {
+  const t = useTranslations("auth.google");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -51,12 +53,12 @@ export default function GoogleButton({ authType = AUTH_TYPES.SIGNIN }: GoogleBut
 
     if (!clientId) {
       console.error("Google login is not configured: missing NEXT_PUBLIC_GOOGLE_CLIENT_ID");
-      setErrorMessage("Google login is not configured.");
+      setErrorMessage(t("errors.notConfigured"));
       return;
     }
     if (!window.google?.accounts?.oauth2) {
       console.error("Google login script is not ready");
-      setErrorMessage("Google login is not ready yet. Please try again.");
+      setErrorMessage(t("errors.notReady"));
       return;
     }
 
@@ -90,9 +92,7 @@ export default function GoogleButton({ authType = AUTH_TYPES.SIGNIN }: GoogleBut
           const session = await getSession();
 
           if (isTutorSignup && session?.user?.role === Role.STUDENT) {
-            setErrorMessage(
-              "Tutor signup failed due to role mismatch. Please try again later or contact support.",
-            );
+            setErrorMessage(t("errors.roleMismatch"));
             await signOut({ redirect: false });
             return;
           }
@@ -105,11 +105,9 @@ export default function GoogleButton({ authType = AUTH_TYPES.SIGNIN }: GoogleBut
 
           const message = error instanceof Error ? error.message : "Google sign-in failed";
           if (message.includes("ROLE_CONFLICT_STUDENT_EXISTS")) {
-            setErrorMessage(
-              "This Google account is already registered as a student. Please use another Google account to sign up as tutor.",
-            );
+            setErrorMessage(t("errors.roleConflict"));
           } else {
-            setErrorMessage("Unable to continue with Google. Please try again.");
+            setErrorMessage(t("errors.unable"));
           }
 
           console.error("[GoogleButton] Google sign-in context", {
@@ -142,7 +140,7 @@ export default function GoogleButton({ authType = AUTH_TYPES.SIGNIN }: GoogleBut
         onError={() => {
           console.error("Failed to load Google Identity Services script");
           setScriptLoadFailed();
-          setErrorMessage("Failed to load Google login. Please refresh and try again.");
+          setErrorMessage(t("errors.notReady"));
         }}
       />
 
@@ -155,7 +153,7 @@ export default function GoogleButton({ authType = AUTH_TYPES.SIGNIN }: GoogleBut
         iconLeft={<GoogleIcon width={20} height={20} />}
         className="w-full"
       >
-        {isLoading ? "Connecting..." : "Continue with Google"}
+        {isLoading ? t("connecting") : t("continueWith")}
       </BaseButton>
 
       {errorMessage ? (

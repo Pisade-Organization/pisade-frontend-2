@@ -34,6 +34,11 @@ export interface StudentLesson {
         avatarUrl: string | null;
       } | null;
     };
+    subjects: Array<{
+      subject: {
+        name: string;
+      };
+    }>;
   };
 }
 

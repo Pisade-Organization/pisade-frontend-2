@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import BaseButton from "@/components/base/BaseButton";
 
 interface BookingFooterProps {
@@ -13,13 +14,14 @@ export default function BookingFooter({
   disabled = false,
   isLoading = false,
 }: BookingFooterProps) {
+  const t = useTranslations("booking");
   return (
-    <BaseButton 
+    <BaseButton
       className="w-full"
       onClick={onContinue}
       disabled={disabled || isLoading}
     >
-      {isLoading ? "Continuing..." : "Continue"}
+      {isLoading ? t("continuing") : t("continue")}
     </BaseButton>
   );
 }

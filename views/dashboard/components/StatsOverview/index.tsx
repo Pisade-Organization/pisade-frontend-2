@@ -8,7 +8,7 @@ export default function StatsOverview({
     stats
 }: {
     stats: {
-        label: "Completed Lessons" | "Scheduled Lessons" | "Skipped Lessons" | "Goal"
+        label: "Completed Lessons" | "Scheduled Lessons" | "Skipped Lessons" | "Saved Tutors" | "Goal"
         value: number
     }[]
 }) {

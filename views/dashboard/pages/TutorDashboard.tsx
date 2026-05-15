@@ -1,7 +1,7 @@
 "use client"
 import { Role } from "@/types/role.enum"
 import { useMemo } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import type { Transaction } from "../components/TransactionHistory/types"
 import { TransactionStatus } from "../components/TransactionHistory/badges/TransactionStatusBadge/types"
 import { PaymentMethod } from "../components/TransactionHistory/badges/PaymentMethodBadge/types"
@@ -27,6 +27,7 @@ function mapTutorPaymentMethod(reference: string | null): PaymentMethod {
 
 export default function TutorDashboardPage() {
   const router = useRouter()
+  const pathname = usePathname()
   const { data: profile } = useMyProfile()
   const { data: tutorWalletSummary } = useTutorWalletSummary()
   const { data: tutorTransactions = [] } = useTutorTransactions()
@@ -63,13 +64,15 @@ export default function TutorDashboardPage() {
   }))
 
   const upcomingBooking = upcoming?.data?.[0]
+  const locale = pathname?.split("/")[1]
+  const localePrefix = locale === "en" || locale === "th" ? `/${locale}` : "/en"
 
   const handleViewAll = () => {
-    router.push("/tutor/earnings-and-withdrawals")
+    router.push(`${localePrefix}/tutor/earnings-and-withdrawals`)
   }
 
   const handleShowMore = () => {
-    router.push("/tutor/earnings-and-withdrawals")
+    router.push(`${localePrefix}/tutor/earnings-and-withdrawals`)
   }
 
   return (
@@ -81,7 +84,10 @@ export default function TutorDashboardPage() {
         completedLessons: completed?.data?.length ?? 0,
         scheduledLessons: upcoming?.data?.length ?? 0,
         skippedLessons: cancelled?.data?.length ?? 0,
-        goal: Math.round(tutorWalletSummary?.totalEarnings ?? 0),
+        extra: {
+          label: "Goal",
+          value: Math.round(tutorWalletSummary?.totalEarnings ?? 0),
+        },
       }}
       onViewAll={handleViewAll}
       onShowMore={handleShowMore}

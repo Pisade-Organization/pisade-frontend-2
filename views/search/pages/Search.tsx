@@ -1,5 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import SearchHero from "../components/SearchHero"
 import FilterPanel from "../components/filters/FilterPanel"
@@ -47,6 +48,7 @@ function TutorGridSkeleton() {
 }
 
 export default function SearchPage() {
+    const t = useTranslations("search")
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -168,16 +170,16 @@ export default function SearchPage() {
             {/* TUTOR CARDS */}
             <div className="w-full lg:block px-4 lg:px-20 lg:py-11 pb-24 lg:pb-0">
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold mb-2">Available Tutors</h1>
+                    <h1 className="text-2xl font-bold mb-2">{t("availableTutors")}</h1>
                     <p className="text-gray-600">
                         {loading
-                            ? `Loading tutors...`
-                            : `Showing ${tutors.length} of ${totalTutors} tutors`}
+                            ? t("loadingTutors")
+                            : t("showingTutors", { count: tutors.length, total: totalTutors })}
                     </p>
                 </div>
                 {loadError && (
                     <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
-                        We could not load tutors right now. Please retry in a moment.
+                        {t("loadError")}
                     </div>
                 )}
                 <div className={`grid gap-6 ${mode === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
@@ -217,10 +219,10 @@ export default function SearchPage() {
                             {loadingMore ? (
                                 <div className="flex items-center gap-2">
                                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    Loading more tutors...
+                                    {t("loadingMore")}
                                 </div>
                             ) : (
-                                `Load More Tutors (${totalTutors - tutors.length} remaining)`
+                                t("loadMore", { remaining: totalTutors - tutors.length })
                             )}
                         </button>
                     </div>

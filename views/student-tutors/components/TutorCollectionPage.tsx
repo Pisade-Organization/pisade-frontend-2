@@ -2,7 +2,9 @@
 
 import { useMemo, useState } from "react"
 import { useSession } from "next-auth/react"
+import { useTranslations } from "next-intl"
 import { useQuery } from "@tanstack/react-query"
+import { usePathname, useRouter } from "next/navigation"
 import BaseButton from "@/components/base/BaseButton"
 import { EmptyBoxIcon } from "@/components/icons"
 import Footer from "@/components/footer/Footer"
@@ -10,9 +12,9 @@ import ViewModeToggle from "@/views/search/components/filters/ViewModeToggle"
 import TutorListCard from "@/views/search/components/TutorCard/TutorListCard"
 import TutorGridCard from "@/views/search/components/TutorCard/TutorGridCard"
 import { TUTOR_RANKING } from "@/types/tutorRanking.enum"
-import type { DashboardTutorCardItem } from "@/services/dashboard/types"
+import type { DashboardTutorCardItem, FavoriteTutor } from "@/services/dashboard/types"
 import type { TutorCardProps } from "@/views/search/types"
-import { useCurrentTutorCards, useFavoriteTutorCards } from "@/hooks/dashboard/queries"
+import { useCurrentTutorCards, useFavoriteTutorCards, useFavoriteTutors } from "@/hooks/dashboard/queries"
 import { BookingsService } from "@/services/bookings"
 import type { BookingListItem } from "@/services/bookings/types"
 
@@ -66,6 +68,28 @@ function toTutorCard(item: DashboardTutorCardItem): TutorCardProps {
   }
 }
 
+function toFavoriteTutorCard(item: FavoriteTutor): TutorCardProps {
+  return {
+    id: item.id,
+    fullName: item.user.profile?.fullName ?? "Tutor",
+    isActive: true,
+    avatarUrl: item.user.profile?.avatarUrl ?? "/images/avatars/default-avatar.svg",
+    flagUrl: "/images/flags/default-th.svg",
+    bio: "",
+    baseRate: 0,
+    specialties: item.subjects.map((subject) => subject.subject.name),
+    subject: item.subjects.map((subject) => subject.subject.name).join(", "),
+    languages: item.languages.map((language) => `${language.language.name} (${language.level})`),
+    avgRating: 0,
+    tutorRanking: TUTOR_RANKING.STARTER,
+    studentsCount: 0,
+    lessonsCount: 0,
+    availability: {},
+    videoUrl: "",
+    videoThumbnailUrl: "",
+  }
+}
+
 interface TutorCollectionPageProps {
   variant: TutorCollectionVariant
 }
@@ -110,6 +134,39 @@ function uniqueStudentsFromBookings(bookings: BookingListItem[]): TutorCardProps
   return Array.from(map.values())
 }
 
+function uniqueTutorsFromBookings(bookings: BookingListItem[]): TutorCardProps[] {
+  const map = new Map<string, TutorCardProps>()
+
+  bookings.forEach((booking) => {
+    const tutor = booking.tutor
+    if (!tutor?.id || map.has(tutor.id)) {
+      return
+    }
+
+    map.set(tutor.id, {
+      id: tutor.id,
+      fullName: tutor.name ?? "Tutor",
+      isActive: true,
+      avatarUrl: tutor.avatarUrl ?? "/images/avatars/default-avatar.svg",
+      flagUrl: "/images/flags/default-th.svg",
+      bio: "",
+      baseRate: 0,
+      specialties: [],
+      subject: "Tutor",
+      languages: [],
+      avgRating: 0,
+      tutorRanking: TUTOR_RANKING.STARTER,
+      studentsCount: 0,
+      lessonsCount: 0,
+      availability: {},
+      videoUrl: "",
+      videoThumbnailUrl: "",
+    })
+  })
+
+  return Array.from(map.values())
+}
+
 async function fetchAllTutorBookingsByView(
   view: "upcoming" | "past",
   maxPages = 20,
@@ -138,14 +195,34 @@ async function fetchAllTutorBookingsByView(
 
 export default function TutorCollectionPage({ variant }: TutorCollectionPageProps) {
   const [mode, setMode] = useState<"list" | "grid">("list")
+  const t = useTranslations("tutorCollection")
   const { data: session } = useSession()
+  const router = useRouter()
+  const pathname = usePathname()
   const isStudent = session?.user?.role === "STUDENT"
   const isTutor = session?.user?.role === "TUTOR"
   const isTutorStudentsVariant = variant === "active" || variant === "past"
+  const locale = pathname?.split("/")[1]
+  const localePrefix = locale === "en" || locale === "th" ? `/${locale}` : "/en"
 
   const favoriteQuery = useFavoriteTutorCards(12, isStudent && variant === "favorite")
   const currentQuery = useCurrentTutorCards(12, isStudent && variant === "current")
+  const favoriteFallbackQuery = useFavoriteTutors(isStudent && variant === "favorite")
   const query = variant === "favorite" ? favoriteQuery : currentQuery
+
+  const currentFallbackQuery = useQuery({
+    queryKey: ["student-tutors", "current-bookings"],
+    queryFn: async () => {
+      const [upcomingBookings, pastBookings] = await Promise.all([
+        fetchAllTutorBookingsByView("upcoming"),
+        fetchAllTutorBookingsByView("past"),
+      ])
+
+      return [...upcomingBookings, ...pastBookings]
+    },
+    enabled: isStudent && variant === "current",
+    retry: 1,
+  })
 
   const activeBookingsQuery = useQuery({
     queryKey: ["tutor-students", "active-bookings"],
@@ -183,44 +260,72 @@ export default function TutorCollectionPage({ variant }: TutorCollectionPageProp
     return (query.data?.pages ?? []).flatMap((page) => page.data).map(toTutorCard)
   }, [query.data?.pages])
 
+  const favoriteFallbackTutors = useMemo(() => {
+    return (favoriteFallbackQuery.data ?? []).map(toFavoriteTutorCard)
+  }, [favoriteFallbackQuery.data])
+
+  const currentFallbackTutors = useMemo(() => {
+    return uniqueTutorsFromBookings(currentFallbackQuery.data ?? [])
+  }, [currentFallbackQuery.data])
+
+  const usingFavoriteFallback = variant === "favorite" && favoriteQuery.isError && favoriteFallbackTutors.length > 0
+  const usingCurrentFallback = variant === "current" && currentQuery.isError && currentFallbackTutors.length > 0
+  const usingFallback = usingFavoriteFallback || usingCurrentFallback
+
   const tutorStudents = variant === "active" ? activeStudents : pastStudents
-  const tutorsToRender = isTutorStudentsVariant ? tutorStudents : tutors
+  const tutorsToRender = isTutorStudentsVariant
+    ? tutorStudents
+    : usingFavoriteFallback
+      ? favoriteFallbackTutors
+      : usingCurrentFallback
+        ? currentFallbackTutors
+        : tutors
 
   const firstPage = query.data?.pages?.[0]
-  const total = isTutorStudentsVariant ? tutorStudents.length : firstPage?.total ?? 0
+  const total = isTutorStudentsVariant
+    ? tutorStudents.length
+    : usingFallback
+      ? tutorsToRender.length
+      : firstPage?.total ?? 0
   const displayTotal = total
   const isLoading =
     isTutorStudentsVariant && isTutor
       ? activeBookingsQuery.isLoading || pastBookingsQuery.isLoading
-      : query.isLoading
+      : variant === "favorite"
+        ? favoriteQuery.isLoading && favoriteFallbackQuery.isLoading
+        : currentQuery.isLoading && currentFallbackQuery.isLoading
   const isError =
     isTutorStudentsVariant && isTutor
       ? activeBookingsQuery.isError || pastBookingsQuery.isError
-      : query.isError
+      : variant === "favorite"
+        ? favoriteQuery.isError && favoriteFallbackQuery.isError
+        : currentQuery.isError && currentFallbackQuery.isError
 
   const title =
     variant === "favorite"
-      ? `${displayTotal} saved tutors`
+      ? t("savedTutors", { count: displayTotal })
       : variant === "current"
-        ? `You currently have ${displayTotal} tutor${displayTotal === 1 ? "" : "s"}`
-        : `${displayTotal} ${variant} student${displayTotal === 1 ? "" : "s"}`
+        ? t("currentTutors", { count: displayTotal })
+        : variant === "active"
+          ? t("activeStudents", { count: displayTotal })
+          : t("pastStudents", { count: displayTotal })
 
   const emptyTitle =
     variant === "favorite"
-      ? "No Favorite Tutor Yet?"
+      ? t("empty.favorite.title")
       : variant === "current"
-        ? "Time to Find Your Expert"
+        ? t("empty.current.title")
         : variant === "active"
-          ? "No Active Students Yet"
-          : "No Past Students Yet"
+          ? t("empty.active.title")
+          : t("empty.past.title")
   const emptyDescription =
     variant === "favorite"
-      ? "Your perfect match is waiting! Start exploring our tutors and find the expert you love today."
+      ? t("empty.favorite.description")
       : variant === "current"
-        ? "We see you haven't secured a tutor. Explore our available tutors and connect with the right one for you today!"
+        ? t("empty.current.description")
         : variant === "active"
-          ? "Once students book upcoming classes with you, they will appear here."
-          : "Students with only past classes and no upcoming booking will appear here."
+          ? t("empty.active.description")
+          : t("empty.past.description")
 
   return (
     <>
@@ -234,13 +339,13 @@ export default function TutorCollectionPage({ variant }: TutorCollectionPageProp
 
         {isError ? (
           <div className="rounded-lg border border-red-100 bg-red-25 p-4 text-red-normal">
-            Unable to load tutors right now. Please try again.
+            {t("loadError")}
           </div>
         ) : null}
 
         {isLoading ? (
           <div className="flex flex-1 items-center justify-center py-12 text-neutral-400">
-            Loading tutors...
+            {t("loading")}
           </div>
         ) : null}
 
@@ -254,7 +359,12 @@ export default function TutorCollectionPage({ variant }: TutorCollectionPageProp
             </div>
 
             {!isTutorStudentsVariant ? (
-              <BaseButton typeStyle={{ base: "outline", lg: "default" }}>Find my tutor</BaseButton>
+              <BaseButton
+                typeStyle={{ base: "outline", lg: "default" }}
+                onClick={() => router.push(localePrefix)}
+              >
+                {t("findMyTutor")}
+              </BaseButton>
             ) : null}
           </div>
         ) : null}
@@ -277,13 +387,13 @@ export default function TutorCollectionPage({ variant }: TutorCollectionPageProp
               )}
             </div>
 
-            {!isTutorStudentsVariant && query.hasNextPage ? (
+            {!isTutorStudentsVariant && !usingFallback && query.hasNextPage ? (
               <div className="mt-6 flex justify-center">
                 <BaseButton
                   onClick={() => query.fetchNextPage()}
                   disabled={query.isFetchingNextPage}
                 >
-                  {query.isFetchingNextPage ? "Loading..." : "Load more"}
+                  {query.isFetchingNextPage ? t("loadingMore") : t("loadMore")}
                 </BaseButton>
               </div>
             ) : null}

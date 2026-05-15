@@ -1,46 +1,48 @@
 import type { DashboardNavItem } from "./types"
 
-export const getStudentDashboardNavItems = (localePrefix: string): DashboardNavItem[] => [
+type GetNavItemsFn = (key: string) => string
+
+export const getStudentDashboardNavItems = (localePrefix: string, t: GetNavItemsFn): DashboardNavItem[] => [
   {
-    label: "Home",
+    label: t("student.home"),
     path: `${localePrefix}/student/dashboard`,
     isActive: (pathname) => pathname?.endsWith("/student/dashboard") ?? false,
   },
   {
-    label: "Tutors",
+    label: t("student.tutors"),
     path: `${localePrefix}/student/tutors`,
     isActive: (pathname) => pathname?.includes("/student/tutors") ?? false,
   },
   {
-    label: "Class",
+    label: t("student.class"),
     path: `${localePrefix}/class-management`,
     isActive: (pathname) => pathname?.includes("/class-management") ?? false,
   },
   {
-    label: "Schedule",
+    label: t("student.schedule"),
     path: `${localePrefix}/student/schedule`,
     isActive: (pathname) => pathname?.includes("/student/schedule") ?? false,
   },
 ]
 
-export const getTutorDashboardNavItems = (localePrefix: string): DashboardNavItem[] => [
+export const getTutorDashboardNavItems = (localePrefix: string, t: GetNavItemsFn): DashboardNavItem[] => [
   {
-    label: "Home",
+    label: t("tutor.home"),
     path: `${localePrefix}/tutor/dashboard`,
     isActive: (pathname) => pathname?.endsWith("/tutor/dashboard") ?? false,
   },
   {
-    label: "Students",
+    label: t("tutor.students"),
     path: `${localePrefix}/tutor/students/active`,
     isActive: (pathname) => pathname?.includes("/tutor/students") ?? false,
   },
   {
-    label: "Schedule",
+    label: t("tutor.schedule"),
     path: `${localePrefix}/tutor/schedule`,
     isActive: (pathname) => pathname?.includes("/tutor/schedule") ?? false,
   },
   {
-    label: "Earnings & Withdrawals",
+    label: t("tutor.earnings"),
     path: `${localePrefix}/tutor/earnings-and-withdrawals`,
     isActive: (pathname) =>
       Boolean(pathname?.includes("/tutor/earnings-and-withdrawals")) ||

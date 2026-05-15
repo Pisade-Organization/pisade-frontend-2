@@ -75,65 +75,6 @@ function getStatusColor(status: TransactionHistoryRow["status"]) {
   return "neutral-300"
 }
 
-const MOCK_ROWS: TransactionHistoryRow[] = [
-  {
-    id: "TXN-10291",
-    transaction: "English TEFL Lesson - Sep 2025",
-    amount: "฿3000",
-    paymentMethod: "Mastercard ****3761",
-    date: "24 Sep 2025, 10:00",
-    status: "Completed",
-  },
-  {
-    id: "TXN-10292",
-    transaction: "Deposit",
-    amount: "฿1200",
-    paymentMethod: "PromptPay",
-    date: "25 Sep 2025, 11:30",
-    status: "Completed",
-  },
-  {
-    id: "TXN-10293",
-    transaction: "English TEFL Lesson - Sep 2025",
-    amount: "฿3000",
-    paymentMethod: "Wallet",
-    date: "26 Sep 2025, 09:00",
-    status: "Processing",
-  },
-  {
-    id: "TXN-10294",
-    transaction: "Withdrawal",
-    amount: "฿2000",
-    paymentMethod: "Bank transfer",
-    date: "27 Sep 2025, 14:15",
-    status: "Cancel",
-  },
-  {
-    id: "TXN-10295",
-    transaction: "Deposit",
-    amount: "฿1500",
-    paymentMethod: "Mastercard ****3761",
-    date: "28 Sep 2025, 16:45",
-    status: "Completed",
-  },
-  {
-    id: "TXN-10296",
-    transaction: "English TEFL Lesson - Sep 2025",
-    amount: "฿3000",
-    paymentMethod: "Wallet",
-    date: "29 Sep 2025, 08:30",
-    status: "Processing",
-  },
-  {
-    id: "TXN-10297",
-    transaction: "Withdrawal",
-    amount: "฿1800",
-    paymentMethod: "Bank transfer",
-    date: "30 Sep 2025, 12:00",
-    status: "Cancel",
-  },
-]
-
 function startOfWeekMonday(date: Date) {
   const result = new Date(date)
   const day = result.getDay()
@@ -168,16 +109,32 @@ export default function TransactionHistorySection({
   onRequestMobileViewAll,
 }: TransactionHistorySectionProps) {
   const isDesktop = useMediaQuery("(min-width: 1024px)")
-  const { data, isLoading, isError } = useMyWalletTransactions({ page: 1, limit: 50 })
+  const { data, isLoading, isError } = useMyWalletTransactions({ page: 1, limit: 100 })
   const [currentWeekStart, setCurrentWeekStart] = useState(() => startOfWeekMonday(new Date()))
   const [showAllRows, setShowAllRows] = useState(false)
 
-  const rows = useMemo(() => (data?.transactions ?? []).map(toRow), [data?.transactions])
+  const currentWeekEndExclusive = useMemo(() => addDays(currentWeekStart, 7), [currentWeekStart])
+  const currentWeekEnd = useMemo(() => addDays(currentWeekStart, 6), [currentWeekStart])
+
+  const rows = useMemo(
+    () =>
+      (data?.transactions ?? [])
+        .filter((transaction) => {
+          if (!transaction.createdAt) {
+            return false
+          }
+
+          const createdAt = new Date(transaction.createdAt)
+
+          return createdAt >= currentWeekStart && createdAt < currentWeekEndExclusive
+        })
+        .map(toRow),
+    [currentWeekEndExclusive, currentWeekStart, data?.transactions],
+  )
 
   const weekRangeLabel = useMemo(() => {
-    const weekEnd = addDays(currentWeekStart, 6)
-    return formatWeekRange(currentWeekStart, weekEnd)
-  }, [currentWeekStart])
+    return formatWeekRange(currentWeekStart, currentWeekEnd)
+  }, [currentWeekEnd, currentWeekStart])
 
   const isMobileDetailMode = !isDesktop && isMobileDetailView
   const visibleRows = isMobileDetailMode ? rows : showAllRows ? rows : rows.slice(0, 5)

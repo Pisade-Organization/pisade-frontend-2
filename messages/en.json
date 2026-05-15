@@ -1,5 +1,238 @@
 {
-    "HomePage": {
-      "title": "Hello world!"
+  "common": {
+    "email": "Email",
+    "back": "Back",
+    "or": "or",
+    "loading": "Loading...",
+    "logOut": "Log out",
+    "general": "General",
+    "account": "Account",
+    "continue": "Continue",
+    "continuing": "Continuing...",
+    "other": "Other",
+    "termsOfUse": "Terms of Use",
+    "privacyPolicy": "Privacy Policy"
+  },
+  "auth": {
+    "signIn": {
+      "title": "Log In",
+      "wantToTeach": "Want to teach on Pisade?",
+      "signUpAsTutor": "Sign up as a tutor",
+      "tutorSignupTitle": "Sign up as a tutor",
+      "alreadyHaveAccount": "Already have an account?",
+      "logIn": "Log in"
+    },
+    "form": {
+      "emailPlaceholder": "Enter your email",
+      "sendingButton": "Sending...",
+      "signUpButton": "Sign up as a tutor",
+      "loginButton": "Log In",
+      "errors": {
+        "tooManyAttempts": "Too many attempts, please try again shortly.",
+        "invalidEmail": "Invalid email.",
+        "somethingWentWrong": "Something went wrong, please try again.",
+        "failedToSendMagicLink": "Failed to send magic link."
+      }
+    },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "description": "We have sent you an email to <email/> that contains a link to continue.",
+      "dontReceive": "Don't receive the email? Please check your spam or",
+      "resendLink": "Resend link",
+      "backToTutorSignUp": "Back to Tutor Sign Up",
+      "backToSignIn": "Back to Sign In",
+      "errors": {
+        "tooManyAttempts": "Too many attempts, please wait before trying again.",
+        "invalidEmail": "Invalid email.",
+        "somethingWentWrong": "Something went wrong, please try again."
+      }
+    },
+    "google": {
+      "continueWith": "Continue with Google",
+      "connecting": "Connecting...",
+      "errors": {
+        "notConfigured": "Google login is not configured.",
+        "notReady": "Google login is not ready yet. Please try again.",
+        "roleMismatch": "Tutor signup failed due to role mismatch. Please try again later or contact support.",
+        "roleConflict": "This Google account is already registered as a student. Please use another Google account to sign up as tutor.",
+        "unable": "Unable to continue with Google. Please try again."
+      }
+    },
+    "terms": {
+      "notice": "By clicking Log in or Continue with, you agree to",
+      "pisadeTerms": "Pisade Terms of Use",
+      "and": "and",
+      "privacyPolicy": "Privacy Policy"
     }
+  },
+  "nav": {
+    "becomeTutor": "Become a tutor",
+    "signIn": "Sign In",
+    "student": {
+      "home": "Home",
+      "tutors": "Tutors",
+      "class": "Class",
+      "schedule": "Schedule"
+    },
+    "tutor": {
+      "home": "Home",
+      "students": "Students",
+      "schedule": "Schedule",
+      "earnings": "Earnings & Withdrawals"
+    }
+  },
+  "profile": {
+    "student": {
+      "totalBalance": "Total balance",
+      "topUpWallet": "Top Up Wallet",
+      "myWallet": "My Wallet",
+      "savedTutor": "Saved Tutor",
+      "transactions": "Transactions",
+      "accountSettings": "Account Settings",
+      "logOut": "Log Out"
+    },
+    "tutor": {
+      "earnings": "Earnings & Withdrawals",
+      "myProfile": "My Profile",
+      "accountSettings": "Account Settings",
+      "logOut": "Log out"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "unreadMessages": "You have {count} unread messages",
+    "all": "All",
+    "unread": "Unread",
+    "noNotifications": "No notifications",
+    "markAllRead": "Mark all as read",
+    "types": {
+      "CLASS_REMINDER": { "title": "Class starts soon!", "status": "Upcoming class" },
+      "PAYMENT_CONFIRMATION": { "title": "Payment confirmed", "status": "Payment" },
+      "NEW_MESSAGE": { "title": "New message received", "status": "Message" },
+      "RESCHEDULE": { "title": "Lesson rescheduled", "status": "Reschedule" },
+      "CANCEL": { "title": "Lesson cancelled", "status": "Cancelled" }
+    },
+    "time": {
+      "justNow": "Just now",
+      "minuteAgo": "{count} min ago",
+      "hourAgo": "{count} hour ago",
+      "hoursAgo": "{count} hours ago",
+      "yesterday": "Yesterday",
+      "daysAgo": "{count} days ago"
+    },
+    "period": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "daysAgo": "{count} days ago",
+      "lastWeek": "Last week"
+    }
+  },
+  "search": {
+    "hero": {
+      "firstText": "Find the perfect",
+      "secondText": "online tutor in seconds"
+    },
+    "availableTutors": "Available Tutors",
+    "loadingTutors": "Loading tutors...",
+    "showingTutors": "Showing {count} of {total} tutors",
+    "loadError": "We could not load tutors right now. Please retry in a moment.",
+    "loadingMore": "Loading more tutors...",
+    "loadMore": "Load More Tutors ({remaining} remaining)",
+    "filters": {
+      "title": "Filters",
+      "subject": "Subject",
+      "showAll": "Show All",
+      "tutorRanking": "Tutor Ranking",
+      "showAllRankings": "Show all in this ranking",
+      "starter": {
+        "name": "Starter",
+        "description": "Building hours and getting initial ratings."
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "High ratings, reliable. Lower commission and better visibility."
+      },
+      "master": {
+        "name": "Master",
+        "description": "Top ratings, high volume. Lowest commission and maximum search boost."
+      },
+      "language": "Language",
+      "showAllLanguages": "Show all languages",
+      "priceRange": "Price range"
+    }
+  },
+  "footer": {
+    "contact": "Contact",
+    "address": "3890 Poplar Dr. Memphis, TN 23293 | Harrison County",
+    "newsletter": {
+      "title": "Don't Miss Out! get the Latest on Pisade",
+      "description": "Sign up for our email list and get exclusive tips, news, and special offers delivered straight to your inbox.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Email address",
+      "button": "Let's talk"
+    }
+  },
+  "mobile": {
+    "personalizedLearning": "Personalized learning, made simple.",
+    "joinUs": "Join us and start your inspiring journey today.",
+    "becomeTutor": "Become a tutor",
+    "signIn": "Sign in",
+    "findTutors": "Find tutors",
+    "logOut": "Log out",
+    "other": {
+      "title": "Other",
+      "termsOfUse": "Terms of Use",
+      "privacyPolicy": "Privacy Policy"
+    }
+  },
+  "tutorProfile": {
+    "rankingLevel": "Ranking level",
+    "rating": "Rating",
+    "students": "Students",
+    "lessons": "Lessons"
+  },
+  "booking": {
+    "bookLesson": "Book Lesson",
+    "loading": "Loading...",
+    "tutorNotFound": "Tutor not found",
+    "continue": "Continue",
+    "continuing": "Continuing...",
+    "stats": {
+      "rating": "Rating",
+      "students": "Students",
+      "lessons": "Lessons"
+    }
+  },
+  "tutorCollection": {
+    "savedTutors": "{count} saved tutors",
+    "currentTutors": "You currently have {count, plural, one {# tutor} other {# tutors}}",
+    "activeStudents": "{count, plural, one {# active student} other {# active students}}",
+    "pastStudents": "{count, plural, one {# past student} other {# past students}}",
+    "loading": "Loading tutors...",
+    "loadError": "Unable to load tutors right now. Please try again.",
+    "loadMore": "Load more",
+    "loadingMore": "Loading...",
+    "findMyTutor": "Find my tutor",
+    "empty": {
+      "favorite": {
+        "title": "No Favorite Tutor Yet?",
+        "description": "Your perfect match is waiting! Start exploring our tutors and find the expert you love today."
+      },
+      "current": {
+        "title": "Time to Find Your Expert",
+        "description": "We see you haven't secured a tutor. Explore our available tutors and connect with the right one for you today!"
+      },
+      "active": {
+        "title": "No Active Students Yet",
+        "description": "Once students book upcoming classes with you, they will appear here."
+      },
+      "past": {
+        "title": "No Past Students Yet",
+        "description": "Students with only past classes and no upcoming booking will appear here."
+      }
+    }
+  },
+  "signout": {
+    "logOut": "Log out"
   }
+}

@@ -89,7 +89,9 @@ export default function PaymentMethod() {
         )}
       </div>
 
-      <PaymentHistory />
+      <div className="w-full">
+        <PaymentHistory />
+      </div>
 
       <DesktopAddBillingMethodDialog open={isAddOpen} onOpenChange={setIsAddOpen} />
 
