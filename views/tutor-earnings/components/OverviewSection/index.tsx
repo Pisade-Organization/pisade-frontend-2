@@ -5,11 +5,13 @@ import Typography from "@/components/base/Typography"
 interface OverviewSectionProps {
   currentBalance: number
   withdrawableAmount: number
+  onGetPaidClick?: () => void
 }
 
 export default function OverviewSection({
   currentBalance,
   withdrawableAmount,
+  onGetPaidClick,
 }: OverviewSectionProps) {
   return (
     <section className="flex flex-col gap-2 lg:gap-5">
@@ -21,7 +23,7 @@ export default function OverviewSection({
       </Typography>
 
       <div className="rounded-[12px] lg:border-none border border-neutral-50 p-2 gap-2 flex lg:items-stretch lg:p-0 lg:pb-3 lg:gap-10">
-        <CurrentBalanceCard amount={currentBalance} />
+        <CurrentBalanceCard amount={currentBalance} onGetPaidClick={onGetPaidClick} />
         <WithdrawMoneyCard amount={withdrawableAmount} />
       </div>
     </section>

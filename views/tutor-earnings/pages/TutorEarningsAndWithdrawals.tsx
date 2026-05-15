@@ -1,8 +1,9 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import OverviewSection from "@/views/tutor-earnings/components/OverviewSection"
 import RecentTransactionsSection from "@/views/tutor-earnings/components/RecentTransactionsSection"
+import TutorWithdrawSection from "@/views/wallet/components/TutorWithdrawSection"
 import { useTutorWalletSummary, useTutorWithdrawals } from "@/hooks/settings/queries"
 import type { EarningsTransaction } from "@/views/tutor-earnings/types"
 
@@ -20,6 +21,7 @@ function mapPaymentMethod(method?: string): string {
 }
 
 export default function TutorEarningsAndWithdrawalsPage() {
+  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const { data: summary } = useTutorWalletSummary()
   const {
     data: withdrawalsData,
@@ -47,12 +49,14 @@ export default function TutorEarningsAndWithdrawalsPage() {
       <OverviewSection
         currentBalance={currentBalance}
         withdrawableAmount={withdrawableAmount}
+        onGetPaidClick={() => setIsWithdrawOpen(true)}
       />
       <RecentTransactionsSection
         rows={rows}
         isLoading={withdrawalsLoading}
         isError={withdrawalsError}
       />
+      <TutorWithdrawSection open={isWithdrawOpen} onOpenChange={setIsWithdrawOpen} />
     </main>
   )
 }

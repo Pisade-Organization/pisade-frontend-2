@@ -27,9 +27,11 @@ export default function CurrentBalanceCard({ amount, onGetPaidClick }: CurrentBa
           {formatBaht(amount)}
         </Typography>
 
-        <BaseButton onClick={onGetPaidClick}>
-          Get Paid
-        </BaseButton>
+        {onGetPaidClick ? (
+          <BaseButton onClick={onGetPaidClick}>
+            Get Paid
+          </BaseButton>
+        ) : null}
       </div>
     </div>
   )
