@@ -244,9 +244,11 @@ export default function MessageThread({
         </div>
 
         <div className="flex shrink-0 items-center gap-5">
-          <BaseButton variant="primary" onClick={onBookLesson}>
-            Book lesson
-          </BaseButton>
+          {onBookLesson ? (
+            <BaseButton variant="primary" onClick={onBookLesson}>
+              Book lesson
+            </BaseButton>
+          ) : null}
           <Popover open={isActionsOpen} onOpenChange={setIsActionsOpen}>
             <PopoverTrigger asChild>
               <button

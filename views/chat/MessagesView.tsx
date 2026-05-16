@@ -6,6 +6,7 @@ import { ChevronLeft, X } from "lucide-react"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import useMediaQuery from "@/hooks/useMediaQuery"
 import { useChat } from "@/hooks/chat/useChat"
+import { shouldShowBookLessonButton } from "./bookLessonVisibility"
 import ConversationList from "./components/ConversationList"
 import MessageThread from "./components/MessageThread"
 import type { ChatConversation, ChatMessage, ChatAttachment } from "./mock"
@@ -211,6 +212,7 @@ export default function MessagesView() {
     : null
 
   const activeTutorId = activeConversationDto?.tutorId ?? tutorIdFromUrl ?? null
+  const showBookLessonButton = shouldShowBookLessonButton(userSession?.role, activeTutorId)
 
   const handleBookLesson = () => {
     if (!activeTutorId) return
@@ -280,7 +282,7 @@ export default function MessagesView() {
               myName={userSession?.fullName ?? undefined}
               onBack={handleBack}
               onSend={handleSend}
-              onBookLesson={handleBookLesson}
+              onBookLesson={showBookLessonButton ? handleBookLesson : undefined}
               onConversationPreference={handleConversationPreference}
               onTyping={(isTyping) => activePeerId && sendTyping(activePeerId, isTyping)}
               isPeerTyping={activePeerId ? (typingPeers[activePeerId] ?? false) : false}

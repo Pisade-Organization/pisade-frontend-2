@@ -80,7 +80,7 @@ export default function AuthRequiredModal({
 
       <DialogContent
         hideClose
-        className="w-[calc(100%-32px)] max-w-[343px] lg:max-w-[500px] rounded-2xl bg-white py-6 px-4 lg:p-8 flex flex-col gap-8"
+        className="inset-0 left-0 top-0 h-dvh w-screen max-w-none translate-x-0 translate-y-0 overflow-y-auto rounded-none border-0 bg-white px-4 py-6 flex flex-col gap-8 overscroll-contain lg:left-[50%] lg:top-[50%] lg:h-auto lg:w-[calc(100%-32px)] lg:max-w-[500px] lg:translate-x-[-50%] lg:translate-y-[-50%] lg:rounded-2xl lg:border lg:p-8"
       >
         <DialogTitle className="sr-only">Register now to meet your tutor</DialogTitle>
 

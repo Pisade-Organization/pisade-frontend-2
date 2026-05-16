@@ -34,8 +34,8 @@ export default function PriceRangeFilter({
     }
   }, [open]);
 
-  const ABS_MIN = 3;
-  const ABS_MAX = 50;
+  const ABS_MIN = 0;
+  const ABS_MAX = 3000;
 
   // Trigger button (mobile)
   const TriggerButton = (

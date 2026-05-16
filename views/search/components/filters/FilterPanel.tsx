@@ -24,6 +24,8 @@ interface FilterPanelProps {
     onSubjectChange: (value: string) => void;
     language: string[];
     onLanguageChange: (value: string[]) => void;
+    specialty: string[];
+    onSpecialtyChange: (value: string[]) => void;
     ranking: string;
     onRankingChange: (value: string) => void;
     subjectOptions: string[];
@@ -41,6 +43,8 @@ export default function FilterPanel({
     onSubjectChange,
     language,
     onLanguageChange,
+    specialty,
+    onSpecialtyChange,
     ranking,
     onRankingChange,
     subjectOptions,
@@ -59,7 +63,7 @@ export default function FilterPanel({
                 <SubjectDropdown options={subjectOptions} value={subject} onChange={onSubjectChange} />
                 <AvailabilityDropdown />
                 <RankingDropdown value={ranking} onChange={onRankingChange} />
-                <SpecialtyDropdown />
+                <SpecialtyDropdown value={specialty} onChange={onSpecialtyChange} />
                 <LanguageDropdown options={languageOptions} value={language} onChange={onLanguageChange} />
                 <EducationLevelDropdown />
                 <PriceRangeFilter

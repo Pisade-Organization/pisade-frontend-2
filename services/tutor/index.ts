@@ -235,9 +235,10 @@ export async function fetchTutorDetailData(tutorId: string): Promise<TutorDetail
 type SearchTutorFilters = {
   subject?: string;
   language?: string;
+  specialty?: string;
   minPrice?: number;
   maxPrice?: number;
-  sort?: "rating" | "ranking" | "price_low" | "price_high";
+  ranking?: "STARTER" | "PRO" | "MASTER";
 };
 
 export async function fetchTutorsPaginated(

@@ -17,29 +17,36 @@ const SPECIALTIES = [
   },
 ];
 
-export function SpecialtyDropdown() {
+const SHOW_ALL_SPECIALTIES = "Show all specialties";
+
+interface SpecialtyDropdownProps {
+  value: string[];
+  onChange: (value: string[]) => void;
+}
+
+export function SpecialtyDropdown({ value, onChange }: SpecialtyDropdownProps) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<string[]>(["Show all specialties"]);
+  const selected = value;
 
   const dropdownHeight = 280;
   const isShowAll =
-    selected.length === 1 && selected[0] === "Show all specialties";
+    selected.length === 1 && selected[0] === SHOW_ALL_SPECIALTIES;
 
   const toggleSelection = (item: string) => {
-    if (item === "Show all specialties") {
-      setSelected(["Show all specialties"]);
+    if (item === SHOW_ALL_SPECIALTIES) {
+      onChange([SHOW_ALL_SPECIALTIES]);
       return;
     }
 
-    setSelected((prev) => {
-      const filtered = prev.filter((s) => s !== "Show all specialties");
+    onChange(((prev) => {
+      const filtered = prev.filter((s) => s !== SHOW_ALL_SPECIALTIES);
       if (filtered.includes(item)) {
         const next = filtered.filter((s) => s !== item);
-        return next.length === 0 ? ["Show all specialties"] : next;
+        return next.length === 0 ? [SHOW_ALL_SPECIALTIES] : next;
       } else {
         return [...filtered, item];
       }
-    });
+    })(selected));
   };
 
 
@@ -119,7 +126,7 @@ export function SpecialtyDropdown() {
       )}
     >
       <button
-        onClick={() => toggleSelection("Show all specialties")}
+        onClick={() => toggleSelection(SHOW_ALL_SPECIALTIES)}
         className={cn(
           "flex justify-between items-center w-full px-4 py-3 border-b text-[15px] text-left transition hover:bg-neutral-50",
           isShowAll
@@ -127,7 +134,7 @@ export function SpecialtyDropdown() {
             : "text-neutral-700"
         )}
       >
-        Show all specialties
+        {SHOW_ALL_SPECIALTIES}
         <span
           className={cn(
             "w-4 h-4 rounded-[4px] border flex items-center justify-center transition",

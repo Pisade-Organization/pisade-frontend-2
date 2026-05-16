@@ -47,6 +47,11 @@ function TutorGridSkeleton() {
     )
 }
 
+const DEFAULT_SUBJECT = "Show All"
+const DEFAULT_LANGUAGE = "Show all languages"
+const DEFAULT_SPECIALTY = "Show all specialties"
+const DEFAULT_RANKING = "Show all in this ranking"
+
 export default function SearchPage() {
     const t = useTranslations("search")
     const router = useRouter()
@@ -55,11 +60,14 @@ export default function SearchPage() {
     const [mode, setMode] = useState<'list' | 'grid'>('list')
     const [minPrice, setMinPrice] = useState<number>(Number(searchParams.get("minPrice") ?? 0))
     const [maxPrice, setMaxPrice] = useState<number>(Number(searchParams.get("maxPrice") ?? 3000));
-    const [subject, setSubject] = useState<string>(searchParams.get("subject") || "Show All")
+    const [subject, setSubject] = useState<string>(searchParams.get("subject") || DEFAULT_SUBJECT)
     const [language, setLanguage] = useState<string[]>(
-        searchParams.get("language")?.split(",").filter(Boolean) ?? ["Show all languages"],
+        searchParams.get("language")?.split(",").filter(Boolean) ?? [DEFAULT_LANGUAGE],
     )
-    const [ranking, setRanking] = useState<string>(searchParams.get("ranking") || "Show all in this ranking")
+    const [specialty, setSpecialty] = useState<string[]>(
+        searchParams.get("specialty")?.split(",").filter(Boolean) ?? [DEFAULT_SPECIALTY],
+    )
+    const [ranking, setRanking] = useState<string>(searchParams.get("ranking") || DEFAULT_RANKING)
     const [subjectOptions, setSubjectOptions] = useState<string[]>([])
     const [languageOptions, setLanguageOptions] = useState<string[]>([])
     const [tutors, setTutors] = useState<TutorCardProps[]>([])
@@ -70,23 +78,28 @@ export default function SearchPage() {
     const [totalTutors, setTotalTutors] = useState(0)
     const [loadError, setLoadError] = useState(false)
     const TUTORS_PER_PAGE = 6
-    const sort = ranking === "Starter"
-      ? "ranking"
-      : ranking === "Pro"
-        ? "ranking"
-        : ranking === "Master"
-          ? "ranking"
-          : undefined
+    const rankingFilter =
+        ranking === "Starter"
+            ? "STARTER"
+            : ranking === "Pro"
+              ? "PRO"
+              : ranking === "Master"
+                ? "MASTER"
+                : undefined
 
     const activeFilters = {
         minPrice,
         maxPrice,
-        subject: subject === "Show All" ? undefined : subject,
+        subject: subject === DEFAULT_SUBJECT ? undefined : subject,
         language:
-            language.length === 1 && language[0] === "Show all languages"
+            language.length === 1 && language[0] === DEFAULT_LANGUAGE
                 ? undefined
-                : language[0],
-        sort: sort as "rating" | "ranking" | "price_low" | "price_high" | undefined,
+                : language.join(","),
+        specialty:
+            specialty.length === 1 && specialty[0] === DEFAULT_SPECIALTY
+                ? undefined
+                : specialty.join(","),
+        ranking: rankingFilter,
     }
 
     const syncUrl = () => {
@@ -95,7 +108,8 @@ export default function SearchPage() {
         if (activeFilters.maxPrice < 3000) params.set("maxPrice", String(activeFilters.maxPrice))
         if (activeFilters.subject) params.set("subject", activeFilters.subject)
         if (activeFilters.language) params.set("language", activeFilters.language)
-        if (ranking !== "Show all in this ranking") params.set("ranking", ranking)
+        if (activeFilters.specialty) params.set("specialty", activeFilters.specialty)
+        if (ranking !== DEFAULT_RANKING) params.set("ranking", ranking)
         const query = params.toString()
         router.replace(query ? `${pathname}?${query}` : pathname)
     }
@@ -109,7 +123,7 @@ export default function SearchPage() {
         syncUrl()
         setCurrentPage(1)
         setTutors([])
-    }, [minPrice, maxPrice, subject, language, ranking])
+    }, [minPrice, maxPrice, subject, language, specialty, ranking])
 
     useEffect(() => {
         const fetchTutors = async () => {
@@ -128,7 +142,7 @@ export default function SearchPage() {
         }
 
         fetchTutors()
-    }, [minPrice, maxPrice, subject, language, ranking])
+    }, [minPrice, maxPrice, subject, language, specialty, ranking])
 
     const loadMoreTutors = async () => {
         if (loadingMore || !hasMore) return
@@ -161,6 +175,8 @@ export default function SearchPage() {
                 onSubjectChange={setSubject}
                 language={language}
                 onLanguageChange={setLanguage}
+                specialty={specialty}
+                onSpecialtyChange={setSpecialty}
                 ranking={ranking}
                 onRankingChange={setRanking}
                 subjectOptions={subjectOptions}
