@@ -78,7 +78,7 @@ export default function SearchPage() {
     const [totalTutors, setTotalTutors] = useState(0)
     const [loadError, setLoadError] = useState(false)
     const TUTORS_PER_PAGE = 6
-    const rankingFilter =
+    const rankingFilter: "STARTER" | "PRO" | "MASTER" | undefined =
         ranking === "Starter"
             ? "STARTER"
             : ranking === "Pro"
