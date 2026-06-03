@@ -12,3 +12,7 @@ test("session provider watcher redirects unauthenticated users away from protect
 test("session provider watcher signs out fatal auth errors using a localized sign-in callback", () => {
   assert.match(source, /void signOut\(\{ callbackUrl: signInPath \}\)/)
 })
+
+test("session provider keeps auth state fresh with a periodic refetch interval", () => {
+  assert.match(source, /refetchInterval=\{5 \* 60\}/)
+})

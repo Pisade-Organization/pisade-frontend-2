@@ -9,6 +9,7 @@ interface HeroProps {
   tutorName: string
   avatarUrl: string
   lessonTime: Date
+  lessonEndTime: Date
   meetingUrl?: string | null
   canJoin?: boolean
   joinAvailableAt?: Date | null
@@ -25,6 +26,7 @@ export default function Hero({
   tutorName,
   avatarUrl,
   lessonTime,
+  lessonEndTime,
   meetingUrl,
   canJoin,
   joinAvailableAt,
@@ -57,6 +59,7 @@ export default function Hero({
               tutorName={tutorName}
               avatarUrl={avatarUrl}
               lessonTime={lessonTime}
+              lessonEndTime={lessonEndTime}
               meetingUrl={meetingUrl}
               canJoin={canJoin}
               joinAvailableAt={joinAvailableAt}

@@ -117,14 +117,20 @@ export default function OnboardingPage() {
 
   const requestedStep = Number(searchParams.get("step"))
   const hasRequestedStep = Number.isInteger(requestedStep) && requestedStep >= 1 && requestedStep <= 9
-  const initialStep = hasRequestedStep ? requestedStep : currentStepData?.currentStep || 1
+  const maxAccessibleStep = currentStepData?.currentStep || 1
+  const initialStep = hasRequestedStep
+    ? Math.min(requestedStep, maxAccessibleStep)
+    : maxAccessibleStep
 
   if (isLoadingCurrentStep) {
     return <LoadingPage />
   }
 
   return (
-    <OnboardingProvider initialStep={initialStep}>
+    <OnboardingProvider
+      initialStep={initialStep}
+      initialMaxAccessibleStep={maxAccessibleStep}
+    >
       <OnboardingContent />
     </OnboardingProvider>
   )

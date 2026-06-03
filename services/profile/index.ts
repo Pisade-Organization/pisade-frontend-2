@@ -6,6 +6,8 @@ import type {
   DeleteMyAccountResponse,
   LinkGoogleProviderDto,
   LinkGoogleProviderResponse,
+  GoogleCalendarAuthUrlResponse,
+  GoogleCalendarConnectResponse,
   LinkedProvider,
   NotificationPreferences,
   MyProfile,
@@ -110,6 +112,24 @@ export const ProfileService = {
     const response = await apiInstanceClient.get<
       ApiSuccessResponse<LinkedProvider[]> | LinkedProvider[]
     >(servicePath.profile.getMyProviders);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async createGoogleCalendarAuthUrl(): Promise<GoogleCalendarAuthUrlResponse> {
+    const response = await apiInstanceClient.post<
+      ApiSuccessResponse<GoogleCalendarAuthUrlResponse> | GoogleCalendarAuthUrlResponse
+    >(servicePath.profile.createGoogleCalendarAuthUrl);
+
+    return unwrapApiResponse(response.data);
+  },
+
+  async connectGoogleCalendar(payload: { code: string; state: string }): Promise<GoogleCalendarConnectResponse> {
+    const response = await apiInstanceClient.get<
+      ApiSuccessResponse<GoogleCalendarConnectResponse> | GoogleCalendarConnectResponse
+    >(servicePath.profile.googleCalendarCallback, {
+      params: payload,
+    });
 
     return unwrapApiResponse(response.data);
   },

@@ -239,6 +239,9 @@ type SearchTutorFilters = {
   minPrice?: number;
   maxPrice?: number;
   ranking?: "STARTER" | "PRO" | "MASTER";
+  availabilityDay?: string;
+  availabilityStart?: string;
+  educationLevel?: string;
 };
 
 export async function fetchTutorsPaginated(

@@ -100,6 +100,9 @@ export default function TutorDashboardPage() {
         lessonTime: upcomingBooking
           ? new Date(upcomingBooking.schedule.startTime)
           : new Date(),
+        lessonEndTime: upcomingBooking
+          ? new Date(upcomingBooking.schedule.endTime)
+          : new Date(),
         meetingUrl: upcomingBooking?.meeting?.url ?? null,
         canJoin: upcomingBooking?.meeting?.canJoin ?? false,
         joinAvailableAt: upcomingBooking?.meeting?.joinAvailableAt

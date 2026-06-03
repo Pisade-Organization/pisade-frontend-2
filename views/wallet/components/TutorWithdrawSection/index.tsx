@@ -20,12 +20,14 @@ interface TutorWithdrawSectionProps {
   onOpenChange: (open: boolean) => void
 }
 
+const MIN_TUTOR_WITHDRAWAL_AMOUNT = 100
+
 export default function TutorWithdrawSection({ open, onOpenChange }: TutorWithdrawSectionProps) {
   const [amount, setAmount] = useState("")
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const pathname = usePathname()
-  const quickAmounts = [50, 100, 200, 500, 1000, 2000]
+  const quickAmounts = [100, 200, 500, 1000, 2000, 5000]
   const queryClient = useQueryClient()
 
   const payoutAccountQuery = useTutorPayoutAccount(open)
@@ -63,7 +65,7 @@ export default function TutorWithdrawSection({ open, onOpenChange }: TutorWithdr
       return "Add a default bank account in Stripe before requesting a withdrawal."
     }
 
-    return `Your withdrawal will be reviewed against ${defaultAccount.bankName || "your default bank account"} ending in ${defaultAccount.last4 || "----"}.`
+    return `Minimum withdrawal is ฿${MIN_TUTOR_WITHDRAWAL_AMOUNT}. Your withdrawal will be reviewed against ${defaultAccount.bankName || "your default bank account"} ending in ${defaultAccount.last4 || "----"}.`
   }, [canWithdraw, payoutAccount, payoutAccountQuery.isLoading])
 
   const handleAmountChange = (value: string) => {
@@ -91,8 +93,8 @@ export default function TutorWithdrawSection({ open, onOpenChange }: TutorWithdr
       return
     }
 
-    if (!Number.isFinite(amountNumber) || amountNumber <= 0) {
-      setErrorMessage("Enter a valid withdrawal amount.")
+    if (!Number.isFinite(amountNumber) || amountNumber < MIN_TUTOR_WITHDRAWAL_AMOUNT) {
+      setErrorMessage(`Withdrawal amount must be at least ฿${MIN_TUTOR_WITHDRAWAL_AMOUNT}.`)
       return
     }
 
@@ -152,7 +154,7 @@ export default function TutorWithdrawSection({ open, onOpenChange }: TutorWithdr
               inputMode="numeric"
               value={amount}
               onChange={(event) => handleAmountChange(event.target.value)}
-              placeholder="Enter amount"
+              placeholder={`Enter amount (min ฿${MIN_TUTOR_WITHDRAWAL_AMOUNT})`}
               disabled={!canWithdraw}
               className="w-full rounded-[12px] border border-neutral-50 px-4 py-3 text-body-3 text-neutral-700 outline-none placeholder:text-neutral-300 disabled:bg-neutral-25"
             />

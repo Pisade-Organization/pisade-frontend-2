@@ -27,6 +27,7 @@ interface DashboardPageProps {
     tutorName: string
     avatarUrl: string
     lessonTime: Date
+    lessonEndTime: Date
     meetingUrl?: string | null
     canJoin?: boolean
     joinAvailableAt?: Date | null

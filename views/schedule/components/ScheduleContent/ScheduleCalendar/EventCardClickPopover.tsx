@@ -121,7 +121,7 @@ export default function EventCardClickPopover({
   const leftActionLabel = isCancelled ? "Request Refund" : "Cancel"
   const leftActionTextColor = isCancelled ? "deep-royal-indigo-700" : "red-normal"
   const isInProgress = normalizedStatus === "in-progress"
-  const showJoinClass = normalizedStatus === "upcoming" || isInProgress
+  const showJoinClass = canJoinClass || normalizedStatus === "upcoming" || isInProgress
   const isProcessing = normalizedStatus === "processing"
   const studentAvatarSrc = data.studentProfilePicture || DEFAULT_AVATAR_URL
   const tutorAvatarSrc = data.tutorProfilePicture || DEFAULT_AVATAR_URL

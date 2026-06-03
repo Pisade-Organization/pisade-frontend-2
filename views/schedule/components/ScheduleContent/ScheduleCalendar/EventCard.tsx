@@ -1,41 +1,58 @@
 "use client"
 
 import type { MouseEvent, PointerEvent } from "react"
-import { formatTimeRange, getStatusTone } from "../calendar.utils"
+import { formatTimeRange } from "../calendar.utils"
 import type { EventCardProps } from "./types"
 import { Ellipsis, EllipsisVertical } from "lucide-react"
 import Typography from "@/components/base/Typography"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { useRouter, useParams } from "next/navigation"
 import EventCardClickPopover from "./EventCardClickPopover"
+import { useNow } from "@/hooks/useNow"
+import { getLiveLessonStatus, isLessonJoinableNow } from "@/lib/lessonTiming"
+
+function formatStatusLabel(status: string) {
+  return status
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ")
+}
 
 export default function EventCard({ event, compact = false, view }: EventCardProps) {
   const router = useRouter()
   const params = useParams()
   const locale = typeof params?.locale === "string" ? params.locale : "en"
-  const tone = getStatusTone(event.status)
-  const isUpcoming = tone.label === "Upcoming" || event.status === "UPCOMING"
+  const now = useNow()
+  const liveStatus = getLiveLessonStatus({
+    status: event.status,
+    startTime: event.start,
+    endTime: event.end,
+    now,
+  })
+  const isUpcoming = liveStatus === "Upcoming" || event.status === "UPCOMING"
   const statusColorClassMap: Record<string, string> = {
-    UPCOMING: "text-electric-violet-400",
-    CONFIRMED: "text-blue-normal",
-    IN_PROGRESS: "text-green-normal",
-    PROCESSING: "text-orange-normal",
-    PENDING_PAYMENT: "text-orange-normal",
-    COMPLETED: "text-neutral-800",
-    CANCELLED: "text-red-normal",
+    Upcoming: "text-electric-violet-400",
+    Booked: "text-blue-normal",
+    "In-progress": "text-green-normal",
+    Processing: "text-orange-normal",
+    "Pending Payment": "text-orange-normal",
+    Completed: "text-neutral-800",
+    Cancelled: "text-red-normal",
   }
-  const statusColorClass = statusColorClassMap[event.status] ?? "text-neutral-500"
+  const statusColorClass =
+    statusColorClassMap[liveStatus] ?? statusColorClassMap[event.status] ?? "text-neutral-500"
   const statusLabel = isUpcoming
     ? "Upcoming"
-    : event.status === "CONFIRMED"
+    : liveStatus === "Booked"
       ? "Booked"
-      : event.status === "CANCELLED"
+      : liveStatus === "Cancelled"
         ? "Cancel"
-      : event.status === "IN_PROGRESS"
-        ? "In-progress"
-      : event.status === "PROCESSING"
-        ? "Processing"
-        : tone.label
+          : liveStatus === "In-progress"
+            ? "In-progress"
+            : liveStatus === "Processing"
+              ? "Processing"
+              : formatStatusLabel(liveStatus)
   const normalizedStatusLabel = statusLabel.toLowerCase()
   const popoverActionsByStatus: Record<string, string[]> = {
     upcoming: ["Join Class", "Reschedule", "Cancel"],
@@ -50,7 +67,16 @@ export default function EventCard({ event, compact = false, view }: EventCardPro
   const popoverActions = popoverActionsByStatus[normalizedStatusLabel] ?? []
 
   const actionEnabled: Record<string, boolean> = {
-    "Join Class": Boolean(event.allowedActions.join && event.meetingUrl && event.canJoin),
+    "Join Class": Boolean(
+      event.allowedActions.join &&
+        event.meetingUrl &&
+        isLessonJoinableNow({
+          meetingUrl: event.meetingUrl,
+          joinAvailableAt: event.joinAvailableAt,
+          endTime: event.end,
+          now,
+        }),
+    ),
     Reschedule: Boolean(event.allowedActions.reschedule),
     Cancel: Boolean(event.allowedActions.cancel),
     "Request Refund": true,

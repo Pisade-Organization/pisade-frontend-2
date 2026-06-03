@@ -94,7 +94,7 @@ export default function StartRecording({ onRecordingComplete, onRecordingStateCh
       }
       drawFrame()
       
-      streamRef.current = originalStream // Keep original for preview
+      streamRef.current = originalStream
       chunksRef.current = []
 
       const mediaRecorder = new MediaRecorder(flippedStream, {
@@ -117,7 +117,7 @@ export default function StartRecording({ onRecordingComplete, onRecordingStateCh
       mediaRecorder.start(1000) // Collect data every second
       setIsRecording(true)
       setRecordingTime(0)
-      onRecordingStateChange(flippedStream, true)
+      onRecordingStateChange(originalStream, true)
 
       // Start timer
       timeIntervalRef.current = setInterval(() => {

@@ -37,6 +37,9 @@ export default function VideoUploadPlaceholder({
   useEffect(() => {
     if (previewVideoRef.current && recordingStream) {
       previewVideoRef.current.srcObject = recordingStream
+      previewVideoRef.current.play().catch(() => {
+        // Autoplay can race with srcObject assignment; retry is not necessary for muted live preview.
+      })
     } else if (previewVideoRef.current) {
       previewVideoRef.current.srcObject = null
     }

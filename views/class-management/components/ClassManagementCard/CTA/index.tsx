@@ -1,8 +1,9 @@
 "use client"
 
-import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import BaseButton from "@/components/base/BaseButton"
+import { useNow } from "@/hooks/useNow"
+import { getJoinButtonLabel, isLessonJoinableNow } from "@/lib/lessonTiming"
 
 interface CTAProps {
   bookingId: string
@@ -11,6 +12,7 @@ interface CTAProps {
   meetingUrl: string | null
   canJoin: boolean
   joinAvailableAt: Date | null
+  endTime: Date
   joinLabel?: string
   showSecondaryActions?: boolean
 }
@@ -22,26 +24,43 @@ export default function CTA({
   meetingUrl,
   canJoin,
   joinAvailableAt,
+  endTime,
   joinLabel,
   showSecondaryActions,
 }: CTAProps) {
   const params = useParams()
   const router = useRouter()
   const locale = typeof params?.locale === "string" ? params.locale : "en"
-  const isJoinDisabled = !meetingUrl || !canJoin
+  const now = useNow()
+  const joinableNow = isLessonJoinableNow({
+    meetingUrl,
+    joinAvailableAt,
+    endTime,
+    now,
+  }) || canJoin
+  const isJoinDisabled = !joinableNow
   const joinText = joinLabel ?? "Join class"
-  const disabledLabel = joinAvailableAt
-    ? `Available at ${joinAvailableAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-    : "Join unavailable"
+  const disabledLabel = getJoinButtonLabel({
+    meetingUrl,
+    joinAvailableAt,
+    endTime,
+    now,
+    actionLabel: joinText,
+  })
+  const handleJoin = () => {
+    if (!joinableNow || !meetingUrl) {
+      return
+    }
+
+    window.open(meetingUrl, "_blank", "noopener,noreferrer")
+  }
 
   return (
     <div className="flex flex-col gap-2 lg:min-w-44">
       {meetingUrl ? (
-        <Link href={meetingUrl} target="_blank" rel="noreferrer">
-          <BaseButton className="w-full" disabled={isJoinDisabled}>
-            {isJoinDisabled ? disabledLabel : joinText}
-          </BaseButton>
-        </Link>
+        <BaseButton className="w-full" onClick={handleJoin} disabled={isJoinDisabled}>
+          {disabledLabel}
+        </BaseButton>
       ) : (
         <BaseButton className="w-full" disabled>
           {disabledLabel}

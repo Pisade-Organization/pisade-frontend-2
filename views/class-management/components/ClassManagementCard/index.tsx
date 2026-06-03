@@ -74,6 +74,7 @@ export default function ClassManagementCard({
           meetingUrl={meetingUrl}
           canJoin={canJoin}
           joinAvailableAt={joinAvailableAt}
+          endTime={endTime}
           joinLabel={joinLabel}
           showSecondaryActions={showSecondaryActions}
         />

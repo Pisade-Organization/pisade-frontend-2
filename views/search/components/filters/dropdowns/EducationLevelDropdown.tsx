@@ -17,31 +17,39 @@ const LEVELS = [
   "Teacher Leader",
 ];
 
-export function EducationLevelDropdown() {
+const SHOW_ALL_EDUCATIONAL_LEVELS = "Show all educational levels";
+
+interface EducationLevelDropdownProps {
+  value: string[];
+  onChange: (value: string[]) => void;
+}
+
+export function EducationLevelDropdown({ value, onChange }: EducationLevelDropdownProps) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<string[]>(["Show all educational levels"]);
+  const selected = value;
 
   const dropdownHeight = 280;
   const isShowAll =
-    selected.length === 1 && selected[0] === "Show all educational levels";
+    selected.length === 1 && selected[0] === SHOW_ALL_EDUCATIONAL_LEVELS;
 
   const toggleSelection = (item: string) => {
-    if (item === "Show all educational levels") {
-      setSelected(["Show all educational levels"]);
+    if (item === SHOW_ALL_EDUCATIONAL_LEVELS) {
+      onChange([SHOW_ALL_EDUCATIONAL_LEVELS]);
       return;
     }
 
-    setSelected((prev) => {
-      const filtered = prev.filter((s) => s !== "Show all educational levels");
-      if (filtered.includes(item)) {
-        const next = filtered.filter((s) => s !== item);
-        return next.length === 0 ? ["Show all educational levels"] : next;
-      } else {
-        return [...filtered, item];
-      }
-    });
-  };
+    onChange(
+      ((prev) => {
+        const filtered = prev.filter((s) => s !== SHOW_ALL_EDUCATIONAL_LEVELS);
+        if (filtered.includes(item)) {
+          const next = filtered.filter((s) => s !== item);
+          return next.length === 0 ? [SHOW_ALL_EDUCATIONAL_LEVELS] : next;
+        }
 
+        return [...filtered, item];
+      })(selected),
+    );
+  };
 
   return (
     <ResponsiveDropdown

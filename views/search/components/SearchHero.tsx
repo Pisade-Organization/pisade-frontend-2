@@ -34,7 +34,7 @@ export default function SearchHero() {
     return (
         <div className="py-14 w-full h-[350px] lg:h-[632px] relative overflow-hidden wallpaper-hero">
             <div
-                className="absolute w-full md:h-[100px] lg:h-[180px] bottom-0"
+                className="pointer-events-none absolute w-full md:h-[100px] lg:h-[180px] bottom-0"
                 style={{
                     background: "linear-gradient(360deg, #FFFFFF 0%, rgba(41, 6, 34, 0) 100%)"
                 }}
@@ -48,7 +48,7 @@ export default function SearchHero() {
             {/* lEFT */}
 
             {/* PEOPLE */}
-            <div className="hidden lg:absolute left-14 top-[43%]">
+            <div className="pointer-events-none hidden lg:absolute left-14 top-[43%]">
                 <PeopleIcon
                     width={80}
                     height={80}
@@ -57,7 +57,7 @@ export default function SearchHero() {
             </div>
 
             {/* CHART */}
-            <div className="hidden lg:absolute -left-[50px] -bottom-8">
+            <div className="pointer-events-none hidden lg:absolute -left-[50px] -bottom-8">
                 <ChartGrowthIcon
                     className="blur-sm"
                     width={140}
@@ -67,7 +67,7 @@ export default function SearchHero() {
             </div>
 
            {/* ELLIPSE */}
-            <div className="absolute -left-[20rem] -bottom-20 lg:-left-[45rem] lg:-bottom-28">
+            <div className="pointer-events-none absolute -left-[20rem] -bottom-20 lg:-left-[45rem] lg:-bottom-28">
                 {/* Make this relative + shrink-wrap to image size */}
                 <div className="relative inline-block">
                     <EclipseIcon
@@ -92,7 +92,7 @@ export default function SearchHero() {
             {/* RIGHT */}
 
             {/* ECLIPSE */}
-            <div className="absolute top-20 lg:top-28 -right-[20rem] lg:-right-[50rem]">
+            <div className="pointer-events-none absolute top-20 lg:top-28 -right-[20rem] lg:-right-[50rem]">
                 {/* Make this relative + shrink-wrap to image size */}
                 <div className="relative inline-block">
                     <Eclipse2Icon
@@ -123,7 +123,7 @@ export default function SearchHero() {
             </div>
 
             {/* STAR */}
-            <div className="absolute -bottom-8 right-5 lg:right-24 lg:-bottom-9">
+            <div className="pointer-events-none absolute -bottom-8 right-5 lg:right-24 lg:-bottom-9">
                 <StarIcon
                     width={212}
                     height={212}
@@ -133,7 +133,7 @@ export default function SearchHero() {
             </div>
 
             {/* MOBILE STAR 1 */}
-            <div className="lg:hidden absolute top-32 left-1/2 translate-x-1/4">
+            <div className="pointer-events-none lg:hidden absolute top-32 left-1/2 translate-x-1/4">
                 <StarIcon
                     width={20}
                     height={20}
@@ -142,7 +142,7 @@ export default function SearchHero() {
             </div>
 
             {/* MOBILE STAR 2 */}
-            <div className="lg:hidden absolute top-24 left-1/3">
+            <div className="pointer-events-none lg:hidden absolute top-24 left-1/3">
                 <StarIcon
                     width={15}
                     height={15}
@@ -151,7 +151,7 @@ export default function SearchHero() {
             </div>
 
 
-            <div className="w-full flex flex-col justify-center items-center py-20 lg:py-14 gap-y-8">
+            <div className="relative z-10 pointer-events-auto w-full flex flex-col justify-center items-center py-20 lg:py-14 gap-y-8">
 
                 {/* TITLE */}
                 <div className="w-full flex justify-center items-center flex-col leading-[1.4] text-headline-2 lg:text-headline-1">

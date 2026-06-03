@@ -8,6 +8,8 @@ export function useNextLesson() {
   return useQuery<StudentLesson | null, AxiosError>({
     queryKey: dashboardQueryKeys.nextLesson(),
     queryFn: () => DashboardService.getNextLesson(),
+    refetchInterval: 30_000,
+    refetchIntervalInBackground: true,
     retry: 1,
   });
 }

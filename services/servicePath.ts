@@ -17,6 +17,8 @@ export const servicePath = {
       getMyNotificationPreferences: "/v1/me/notification-preferences", // GET
       updateMyNotificationPreferences: "/v1/me/notification-preferences", // PATCH
       getMyProviders: "/v1/me/providers", // GET
+      createGoogleCalendarAuthUrl: "/v1/me/providers/google-calendar/authorize", // POST
+      googleCalendarCallback: "/v1/me/providers/google-calendar/callback", // GET
       linkGoogleProvider: "/v1/me/providers/link-google", // POST
       unlinkProvider: "/v1/me/providers/:providerId", // DELETE
       deleteMyAccount: "/v1/me", // DELETE

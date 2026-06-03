@@ -5,6 +5,7 @@ export function useOnboardingNavigation() {
   const {
     step,
     totalSteps,
+    maxAccessibleStep,
     setStep,
     next,
     back,
@@ -26,6 +27,7 @@ export function useOnboardingNavigation() {
   return {
     step,
     totalSteps,
+    maxAccessibleStep,
     setStep,
     next,
     back,
@@ -43,5 +45,4 @@ export function useOnboardingNavigation() {
     setCanContinue,
   }
 }
-
 

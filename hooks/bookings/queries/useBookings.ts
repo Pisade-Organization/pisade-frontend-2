@@ -8,6 +8,8 @@ export function useBookings(params: GetBookingsParams = {}) {
   return useQuery<GetBookingsResponse, AxiosError>({
     queryKey: bookingsQueryKeys.list(params),
     queryFn: () => BookingsService.getAll(params),
+    refetchInterval: 30_000,
+    refetchIntervalInBackground: true,
     retry: 1,
   });
 }

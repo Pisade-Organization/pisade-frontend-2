@@ -13,6 +13,8 @@ import { ClassStatus } from "../components/ClassStatusTabs/types"
 import EmptyState from "../components/EmptyState"
 import TutorStudentCard from "../components/TutorStudentCard"
 import { LessonStatusType } from "../components/ClassManagementCard/LessonStatus/types"
+import { useNow } from "@/hooks/useNow"
+import { getLiveLessonStatus, isLessonJoinableNow } from "@/lib/lessonTiming"
 
 type ClassManagementRole = "student" | "tutor"
 
@@ -22,12 +24,22 @@ type ClassManagementPageProps = {
 
 const DEFAULT_AVATAR_URL = "/images/avatars/default-avatar.svg"
 
-function mapBookingStatusToLessonStatus(status: string): LessonStatusType {
+function mapBookingStatusToLessonStatus(
+  status: string,
+  startTime: Date,
+  endTime: Date,
+  now: Date,
+): LessonStatusType {
   if (status === "COMPLETED") return LessonStatusType.Completed
   if (status === "CANCELLED" || status === "EXPIRED") return LessonStatusType.Cancelled
   if (status === "IN_PROGRESS") return LessonStatusType.InProgress
   if (status === "PROCESSING") return LessonStatusType.Processing
-  if (status === "CONFIRMED") return LessonStatusType.Booked
+  if (status === "CONFIRMED") {
+    const liveStatus = getLiveLessonStatus({ status, startTime, endTime, now })
+    if (liveStatus === "Booked") return LessonStatusType.Booked
+    if (liveStatus === "In-progress") return LessonStatusType.InProgress
+    if (liveStatus === "Completed") return LessonStatusType.Completed
+  }
   return LessonStatusType.Upcoming
 }
 
@@ -50,6 +62,7 @@ function sortBookings(bookings: BookingListItem[], currentStatus: ClassStatus) {
 
 export default function ClassManagementPage({ role }: ClassManagementPageProps) {
   const [currentStatus, setCurrentStatus] = useState<ClassStatus>(ClassStatus.UPCOMING)
+  const now = useNow()
   const upcomingQuery = useBookings({ view: "upcoming", limit: 100 })
   const completedQuery = useBookings({ view: "past", limit: 100 })
 
@@ -128,8 +141,28 @@ export default function ClassManagementPage({ role }: ClassManagementPageProps) 
                             avatarUrl: booking.student?.avatarUrl ?? DEFAULT_AVATAR_URL,
                           }
 
-                    const status = mapBookingStatusToLessonStatus(booking.status)
-                    const statusLabel = formatStatusLabel(booking.status)
+                    const status = mapBookingStatusToLessonStatus(
+                      booking.status,
+                      startTime,
+                      endTime,
+                      now,
+                    )
+                    const statusLabel = formatStatusLabel(
+                      getLiveLessonStatus({
+                        status: booking.status,
+                        startTime,
+                        endTime,
+                        now,
+                      }),
+                    )
+                    const liveCanJoin = isLessonJoinableNow({
+                      meetingUrl: booking.meeting?.url ?? null,
+                      joinAvailableAt: booking.meeting?.joinAvailableAt
+                        ? new Date(booking.meeting.joinAvailableAt)
+                        : null,
+                      endTime,
+                      now,
+                    })
 
                     if (role === "student") {
                       return (
@@ -146,7 +179,7 @@ export default function ClassManagementPage({ role }: ClassManagementPageProps) 
                           tutorFullName={participant.fullName}
                           tutorAvatarUrl={participant.avatarUrl}
                           meetingUrl={booking.meeting?.url ?? null}
-                          canJoin={booking.meeting?.canJoin ?? false}
+                          canJoin={liveCanJoin}
                           joinAvailableAt={booking.meeting?.joinAvailableAt ? new Date(booking.meeting.joinAvailableAt) : null}
                           canRescheduleOverride={booking.allowedActions.reschedule}
                           canCancelOverride={booking.allowedActions.cancel}

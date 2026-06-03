@@ -12,22 +12,120 @@ import { cn } from "@/lib/utils";
 import ShowResultsBtn from "../ShowResultsBtn";
 import useMediaQuery from "@/hooks/useMediaQuery";
 
-import Times from "./Times";
-import Days from "./Days";
-import Calendar from "./Calendar";
+const DAYS = [
+  { short: "Mon", value: "Monday" },
+  { short: "Tue", value: "Tuesday" },
+  { short: "Wed", value: "Wednesday" },
+  { short: "Thu", value: "Thursday" },
+  { short: "Fri", value: "Friday" },
+  { short: "Sat", value: "Saturday" },
+  { short: "Sun", value: "Sunday" },
+] as const;
 
-export function AvailabilityDropdown() {
+const TIME_SLOTS = [
+  { label: "00:00 - 03:00", start: "00:00" },
+  { label: "03:00 - 06:00", start: "03:00" },
+  { label: "06:00 - 09:00", start: "06:00" },
+  { label: "09:00 - 12:00", start: "09:00" },
+  { label: "13:00 - 15:00", start: "13:00" },
+  { label: "15:00 - 18:00", start: "15:00" },
+  { label: "18:00 - 21:00", start: "18:00" },
+  { label: "21:00 - 24:00", start: "21:00" },
+] as const;
+
+export type AvailabilityFilterValue = {
+  day: string;
+  start: string;
+} | null;
+
+interface AvailabilityDropdownProps {
+  value: AvailabilityFilterValue;
+  onChange: (value: AvailabilityFilterValue) => void;
+}
+
+export function AvailabilityDropdown({ value, onChange }: AvailabilityDropdownProps) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("Any availability");
   const isDesktop = useMediaQuery("(min-width: 1024px)")
   const isMobile = !isDesktop
+
+  const selectedLabel = value
+    ? `${DAYS.find((day) => day.value === value.day)?.short ?? value.day} ${TIME_SLOTS.find((slot) => slot.start === value.start)?.label ?? value.start}`
+    : "Any availability";
+
+  const toggleDay = (day: string) => {
+    if (value?.day === day) {
+      onChange(null);
+      return;
+    }
+
+    onChange({
+      day,
+      start: value?.start ?? TIME_SLOTS[2].start,
+    });
+  };
+
+  const toggleTime = (start: string) => {
+    if (value?.start === start) {
+      onChange(null);
+      return;
+    }
+
+    onChange({
+      day: value?.day ?? DAYS[0].value,
+      start,
+    });
+  };
+
+  const Content = (
+    <div className="flex flex-col gap-4 p-4">
+      <div className="flex flex-col gap-2">
+        <div className="text-neutral-900 text-label-2">Days</div>
+        <div className="grid grid-cols-4 gap-2 lg:grid-cols-7">
+          {DAYS.map((day) => (
+            <button
+              key={day.value}
+              onClick={() => toggleDay(day.value)}
+              className={cn(
+                "rounded-[12px] border px-3 py-2 text-label-3 transition",
+                value?.day === day.value
+                  ? "border-electric-violet-500 bg-electric-violet-50 text-electric-violet-600"
+                  : "border-neutral-100 text-neutral-500 hover:border-neutral-300",
+              )}
+            >
+              {day.short}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <div className="text-neutral-900 text-label-2">Times</div>
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
+          {TIME_SLOTS.map((slot) => (
+            <button
+              key={slot.start}
+              onClick={() => toggleTime(slot.start)}
+              className={cn(
+                "rounded-[12px] border px-3 py-2 text-left text-label-3 transition",
+                value?.start === slot.start
+                  ? "border-electric-violet-500 bg-electric-violet-50 text-electric-violet-600"
+                  : "border-neutral-100 text-neutral-500 hover:border-neutral-300",
+              )}
+            >
+              {slot.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   const TriggerButton = (
     <button
       onClick={() => isMobile && setOpen(true)}
       className={cn(
         "flex w-full items-center justify-between rounded-[12px] border px-4 py-2 text-left shadow-sm hover:border-neutral-300 transition-all focus:outline-none h-[44px] lg:h-[56px]",
-        selected !== "Any availability"
+        value
           ? "border-electric-violet-200 bg-electric-violet-50"
           : "border-electric-violet-50 bg-white"
       )}
@@ -35,9 +133,9 @@ export function AvailabilityDropdown() {
       <div className="flex flex-col text-start w-full">
         {isMobile ? (
           <span className="text-[15px] text-neutral-800 font-normal truncate">
-            {selected === "Any availability" ? "Availability" : selected}
+            {value ? selectedLabel : "Availability"}
           </span>
-        ) : selected === "Any availability" ? (
+        ) : !value ? (
           <span className="text-[15px] text-neutral-800 font-normal">
             Availability
           </span>
@@ -47,7 +145,7 @@ export function AvailabilityDropdown() {
               Availability
             </span>
             <span className="text-[15px] text-neutral-800 font-normal truncate">
-              {selected}
+              {selectedLabel}
             </span>
           </div>
         )}
@@ -56,7 +154,6 @@ export function AvailabilityDropdown() {
     </button>
   );
 
-  // ✅ MOBILE MODE → full-screen sheet
   if (isMobile) {
     return (
       <>
@@ -64,7 +161,6 @@ export function AvailabilityDropdown() {
         <AnimatePresence>
           {open && (
             <>
-              {/* Overlay */}
               <motion.div
                 className="fixed inset-0 bg-black/40 z-40"
                 onClick={() => setOpen(false)}
@@ -73,16 +169,13 @@ export function AvailabilityDropdown() {
                 exit={{ opacity: 0 }}
               />
 
-              {/* Fullscreen Sheet */}
               <motion.div
                 className="fixed inset-0 bg-white z-50 flex flex-col h-screen"
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
-    
               >
-                {/* Header */}
                 <div className="flex justify-between items-center px-4 py-3 border-b">
                   <h2 className="text-neutral-900 text-title-1">Availability</h2>
                   <button onClick={() => setOpen(false)}>
@@ -90,12 +183,9 @@ export function AvailabilityDropdown() {
                   </button>
                 </div>
 
-                {/* Scrollable content */}
                 <div className="flex-1 overflow-y-auto p-4 dropdown-scroll">
-                  <Times />
-                  <Days />
-                  <Calendar />
-                  <ShowResultsBtn onClick={() => setOpen(false)}/>
+                  {Content}
+                  <ShowResultsBtn onClick={() => setOpen(false)} />
                 </div>
               </motion.div>
             </>
@@ -105,9 +195,7 @@ export function AvailabilityDropdown() {
     );
   }
 
-  // 💻 DESKTOP MODE
-  // 💻 DESKTOP MODE
-return (
+  return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>{TriggerButton}</DropdownMenuTrigger>
       <AnimatePresence>
@@ -125,17 +213,8 @@ return (
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.15 }}
             >
-              <div
-                className="border border-neutral-50 rounded-[12px] bg-white shadow-md overflow-hidden inline-flex"
-              >
-                {/* Left Column */}
-                <div className="flex flex-col border-r border-neutral-50 p-4">
-                  <Times />
-                  <Days />
-                </div>
-  
-                {/* Right Column (Calendar) */}
-                  <Calendar />
+              <div className="border border-neutral-50 rounded-[12px] bg-white shadow-md overflow-hidden max-w-[520px]">
+                {Content}
               </div>
             </motion.div>
           </DropdownMenuContent>
@@ -143,5 +222,4 @@ return (
       </AnimatePresence>
     </DropdownMenu>
   );
-  
 }

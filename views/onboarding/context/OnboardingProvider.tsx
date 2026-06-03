@@ -7,6 +7,7 @@ type OnboardingContextValue = {
   step: number
   direction: Direction
   totalSteps: number
+  maxAccessibleStep: number
   setStep: (step: number) => void
   next: () => void
   back: () => void
@@ -30,51 +31,70 @@ export type StepActions = {
   submit?: () => Promise<void> | void
 }
 
-export function OnboardingProvider({ children, initialStep = 1, totalSteps = 9 }: { children: ReactNode, initialStep?: number, totalSteps?: number }) {
-  const [step, setStepState] = useState<number>(initialStep)
+export function OnboardingProvider({
+  children,
+  initialStep = 1,
+  totalSteps = 9,
+  initialMaxAccessibleStep,
+}: {
+  children: ReactNode
+  initialStep?: number
+  totalSteps?: number
+  initialMaxAccessibleStep?: number
+}) {
+  const clampStep = useCallback((value: number, maxStep = totalSteps) => {
+    return Math.max(1, Math.min(value, maxStep, totalSteps))
+  }, [totalSteps])
+
+  const resolvedInitialMaxAccessibleStep = clampStep(initialMaxAccessibleStep ?? initialStep)
+  const [step, setStepState] = useState<number>(clampStep(initialStep, resolvedInitialMaxAccessibleStep))
   const [direction, setDirection] = useState<Direction>("increasing")
   const [isBusy, setIsBusy] = useState<boolean>(false)
   const [canContinue, setCanContinue] = useState<boolean>(true)
   const [hasInitialized, setHasInitialized] = useState<boolean>(false)
+  const [maxAccessibleStep, setMaxAccessibleStep] = useState<number>(resolvedInitialMaxAccessibleStep)
   const actionsRegistryRef = useRef<Map<number, StepActions>>(new Map())
 
   // Update step when initialStep changes (e.g., when API data loads)
   useEffect(() => {
     if (!hasInitialized && initialStep) {
-      setStepState(initialStep)
+      const clampedMaxAccessibleStep = clampStep(initialMaxAccessibleStep ?? initialStep)
+      setMaxAccessibleStep(clampedMaxAccessibleStep)
+      setStepState(clampStep(initialStep, clampedMaxAccessibleStep))
       setHasInitialized(true)
     }
-  }, [initialStep, hasInitialized])
+  }, [initialMaxAccessibleStep, initialStep, hasInitialized, clampStep])
 
   const setStep = useCallback((newStep: number) => {
     setStepState((currentStep) => {
       setDirection(newStep > currentStep ? "increasing" : "decreasing")
-      const clamped = Math.max(1, Math.min(newStep, totalSteps))
+      const clamped = clampStep(newStep, maxAccessibleStep)
       // Reset canContinue when step changes (each step will set its own value)
       setCanContinue(true)
       return clamped
     })
-  }, [totalSteps])
+  }, [clampStep, maxAccessibleStep])
 
   const next = useCallback(() => {
     setStepState((currentStep) => {
       const newStep = currentStep + 1
       setDirection("increasing")
-      const clamped = Math.max(1, Math.min(newStep, totalSteps))
+      const clamped = clampStep(newStep)
+      setMaxAccessibleStep((currentMaxAccessibleStep) => Math.max(currentMaxAccessibleStep, clamped))
       setCanContinue(true)
       return clamped
     })
-  }, [totalSteps])
+  }, [clampStep])
 
   const back = useCallback(() => {
     setStepState((currentStep) => {
       const newStep = currentStep - 1
       setDirection("decreasing")
-      const clamped = Math.max(1, Math.min(newStep, totalSteps))
+      const clamped = clampStep(newStep)
       setCanContinue(true)
       return clamped
     })
-  }, [totalSteps])
+  }, [clampStep])
 
   const registerStepActions = useCallback((s: number, actions: StepActions) => {
     actionsRegistryRef.current.set(s, actions)
@@ -119,6 +139,7 @@ export function OnboardingProvider({ children, initialStep = 1, totalSteps = 9 }
     step,
     direction,
     totalSteps,
+    maxAccessibleStep,
     setStep,
     next,
     back,
@@ -135,6 +156,7 @@ export function OnboardingProvider({ children, initialStep = 1, totalSteps = 9 }
     step,
     direction,
     totalSteps,
+    maxAccessibleStep,
     setStep,
     next,
     back,
@@ -162,4 +184,3 @@ export function useOnboardingContext(): OnboardingContextValue {
   }
   return ctx
 }
-

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import type { AxiosError } from "axios";
@@ -18,6 +19,7 @@ import DateNavigator from "@/components/dialogs/BookLessonDialog/DateNavigator";
 import AvailabilityGrid from "@/components/dialogs/BookLessonDialog/AvailabilityGrid";
 import BookingFooter from "@/components/dialogs/BookLessonDialog/BookingFooter";
 import TopToast from "@/components/shared/TopToast";
+import { canOpenBookingPage } from "@/lib/bookingAccess";
 import { buildBookingAvailabilityFromTutor } from "@/lib/bookingAvailability";
 import { useCreateBooking } from "@/hooks/bookings/mutations";
 
@@ -46,8 +48,6 @@ function getBookingErrorMessage(error: unknown): string {
   switch (code) {
     case "START_TIME_IN_PAST":
       return "This lesson time has already passed. Please choose a later slot.";
-    case "BOOKING_TOO_SOON":
-      return "Lessons must be booked at least 2 hours in advance.";
     case "SLOT_UNAVAILABLE":
       return "This slot is no longer available. Please choose another time.";
     case "END_TIME_BEFORE_START_TIME":
@@ -72,6 +72,7 @@ function getBookingErrorMessage(error: unknown): string {
 export default function Booking() {
   const params = useParams();
   const router = useRouter();
+  const { data: session, status } = useSession();
   const tutorId = params?.tutorId as string;
   const locale = (params?.locale as string) || "en";
   const [tutorData, setTutorData] = useState<TutorDetailData | null>(null);
@@ -79,6 +80,16 @@ export default function Booking() {
   const [isMobile, setIsMobile] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const createBookingMutation = useCreateBooking();
+
+  useEffect(() => {
+    if (status !== "authenticated") {
+      return;
+    }
+
+    if (!canOpenBookingPage(session?.user?.role)) {
+      router.replace(`/${locale}`);
+    }
+  }, [locale, router, session?.user?.role, status]);
 
   useEffect(() => {
     if (!toastMessage) {

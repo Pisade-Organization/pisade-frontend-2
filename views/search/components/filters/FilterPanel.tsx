@@ -8,28 +8,32 @@ import { RankingDropdown } from "./dropdowns/RankingDropdown"
 import { SpecialtyDropdown } from "./dropdowns/SpecialtyDropdown"
 import { LanguageDropdown } from "./dropdowns/LanguageDropdown"
 import { EducationLevelDropdown } from "./dropdowns/EducationLevelDropdown"
-import { AvailabilityDropdown } from "./dropdowns/AvailabilityDropdown/AvailabilityDropdown"
+import { AvailabilityDropdown, type AvailabilityFilterValue } from "./dropdowns/AvailabilityDropdown/AvailabilityDropdown"
 import PriceRangeFilter from "./PriceRangeFilter"
 
-type Mode = 'list' | 'grid';
+type Mode = "list" | "grid"
 
 interface FilterPanelProps {
-    mode: Mode;
-    setMode: React.Dispatch<React.SetStateAction<Mode>>;
-    minPrice: number;
-    setMinPrice: React.Dispatch<React.SetStateAction<number>>;
-    maxPrice: number;
-    setMaxPrice: React.Dispatch<React.SetStateAction<number>>;
-    subject: string;
-    onSubjectChange: (value: string) => void;
-    language: string[];
-    onLanguageChange: (value: string[]) => void;
-    specialty: string[];
-    onSpecialtyChange: (value: string[]) => void;
-    ranking: string;
-    onRankingChange: (value: string) => void;
-    subjectOptions: string[];
-    languageOptions: string[];
+    mode: Mode
+    setMode: React.Dispatch<React.SetStateAction<Mode>>
+    minPrice: number
+    setMinPrice: React.Dispatch<React.SetStateAction<number>>
+    maxPrice: number
+    setMaxPrice: React.Dispatch<React.SetStateAction<number>>
+    subject: string
+    onSubjectChange: (value: string) => void
+    language: string[]
+    onLanguageChange: (value: string[]) => void
+    specialty: string[]
+    onSpecialtyChange: (value: string[]) => void
+    ranking: string
+    onRankingChange: (value: string) => void
+    availability: AvailabilityFilterValue
+    onAvailabilityChange: (value: AvailabilityFilterValue) => void
+    educationLevel: string[]
+    onEducationLevelChange: (value: string[]) => void
+    subjectOptions: string[]
+    languageOptions: string[]
 }
 
 export default function FilterPanel({
@@ -47,30 +51,34 @@ export default function FilterPanel({
     onSpecialtyChange,
     ranking,
     onRankingChange,
+    availability,
+    onAvailabilityChange,
+    educationLevel,
+    onEducationLevelChange,
     subjectOptions,
     languageOptions,
 }: FilterPanelProps) {
     return (
-        <div className="w-full pt-8 pb-5 lg:pb-10 px-4 lg:px-20
-            flex flex-col justify-center items-center gap-y-4
-        ">
+        <div className="w-full pt-8 pb-5 lg:pb-10 px-4 lg:px-20 flex flex-col justify-center items-center gap-y-4">
             <div className="hidden lg:flex w-full justify-between items-center">
-                <FilterHeader />    
+                <FilterHeader />
                 <ViewModeToggle mode={mode} setMode={setMode} />
             </div>
 
             <FilterGrid>
                 <SubjectDropdown options={subjectOptions} value={subject} onChange={onSubjectChange} />
-                <AvailabilityDropdown />
+                <AvailabilityDropdown value={availability} onChange={onAvailabilityChange} />
                 <RankingDropdown value={ranking} onChange={onRankingChange} />
                 <SpecialtyDropdown value={specialty} onChange={onSpecialtyChange} />
                 <LanguageDropdown options={languageOptions} value={language} onChange={onLanguageChange} />
-                <EducationLevelDropdown />
+                <EducationLevelDropdown value={educationLevel} onChange={onEducationLevelChange} />
                 <PriceRangeFilter
-                    minPrice={minPrice} setMinPrice={setMinPrice}
-                    maxPrice={maxPrice} setMaxPrice={setMaxPrice}
+                    minPrice={minPrice}
+                    setMinPrice={setMinPrice}
+                    maxPrice={maxPrice}
+                    setMaxPrice={setMaxPrice}
                 />
             </FilterGrid>
         </div>
-    );
+    )
 }

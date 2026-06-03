@@ -93,6 +93,9 @@ export interface LinkedProvider {
   provider: "GOOGLE" | "LOCAL" | "FACEBOOK" | string;
   providerId?: string | null;
   email?: string | null;
+  calendarRefreshToken?: string | null;
+  calendarScopes?: string[];
+  calendarConnected?: boolean;
   createdAt?: string;
 }
 
@@ -107,4 +110,13 @@ export interface LinkGoogleProviderResponse {
 
 export interface UnlinkProviderResponse {
   message: string;
+}
+
+export interface GoogleCalendarAuthUrlResponse {
+  authUrl: string;
+}
+
+export interface GoogleCalendarConnectResponse {
+  message: string;
+  provider: LinkedProvider;
 }

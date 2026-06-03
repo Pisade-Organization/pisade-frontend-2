@@ -6,6 +6,7 @@ export default function NextLessonCard({
     tutorName,
     avatarUrl,
     lessonTime,
+    lessonEndTime,
     meetingUrl,
     canJoin,
     joinAvailableAt,
@@ -17,6 +18,7 @@ export default function NextLessonCard({
     tutorName: string
     avatarUrl: string
     lessonTime: Date
+    lessonEndTime: Date
     meetingUrl?: string | null
     canJoin?: boolean
     joinAvailableAt?: Date | null
@@ -39,6 +41,7 @@ export default function NextLessonCard({
                     lessonTime={lessonTime}
                 />
                 <ActionButtons
+                    lessonEndTime={lessonEndTime}
                     meetingUrl={meetingUrl}
                     canJoin={canJoin}
                     joinAvailableAt={joinAvailableAt}

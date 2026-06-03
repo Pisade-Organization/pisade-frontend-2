@@ -1,37 +1,37 @@
 import BaseButton from "@/components/base/BaseButton"
 import { useRouter } from "next/navigation"
+import { useNow } from "@/hooks/useNow"
+import { getJoinButtonLabel, isLessonJoinableNow } from "@/lib/lessonTiming"
 
 interface ActionButtonsProps {
     meetingUrl?: string | null
     canJoin?: boolean
     joinAvailableAt?: Date | null
+    lessonEndTime: Date
     secondaryActionHref?: string | null
     actionLabel?: string
-}
-
-function getJoinLabel(actionLabel: string, joinAvailableAt?: Date | null) {
-    if (!joinAvailableAt) {
-        return actionLabel
-    }
-
-    return `Available ${joinAvailableAt.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-    })}`
 }
 
 export default function ActionButtons({
     meetingUrl,
     canJoin = false,
     joinAvailableAt,
+    lessonEndTime,
     secondaryActionHref,
     actionLabel = "Join class link",
 }: ActionButtonsProps) {
     const router = useRouter()
+    const now = useNow()
+    const joinableNow =
+        isLessonJoinableNow({
+            meetingUrl,
+            joinAvailableAt,
+            endTime: lessonEndTime,
+            now,
+        }) || canJoin
 
     const handleJoin = () => {
-        if (!canJoin || !meetingUrl) {
+        if (!meetingUrl || !joinableNow) {
             return
         }
 
@@ -46,12 +46,19 @@ export default function ActionButtons({
         router.push(secondaryActionHref)
     }
 
-    const joinDisabled = !canJoin || !meetingUrl
+    const joinDisabled = !joinableNow
+    const joinLabel = getJoinButtonLabel({
+        meetingUrl,
+        joinAvailableAt,
+        endTime: lessonEndTime,
+        now,
+        actionLabel,
+    })
 
     return (
         <div className="flex flex-col justify-center items-center gap-[10px] w-full">
             <BaseButton className="w-full" onClick={handleJoin} disabled={joinDisabled}>
-                {joinDisabled ? getJoinLabel(actionLabel, joinAvailableAt) : actionLabel}
+                {joinLabel}
             </BaseButton>
             {secondaryActionHref ? (
                 <BaseButton

@@ -36,13 +36,15 @@ export default function SearchNavbar({
   timezone,
   totalBalance,
 }: SearchNavbarProps) {
+  const showStudentDropdown = role === Role.STUDENT || role === Role.ADMIN
+
   return (
-    <nav className="w-full flex justify-between items-center py-4 px-4 lg:px-20 bg-transparent absolute top-0 z-50">
+    <nav className="absolute top-0 z-[999] w-full flex justify-between items-center py-4 px-4 lg:px-20 bg-transparent isolate">
       <Logo onClick={onLogoClick} />
 
-      <div className="hidden lg:flex items-center gap-2">
+      <div className="relative z-[1000] hidden lg:flex items-center gap-2 pointer-events-auto">
         {isAuth ? (
-          role === Role.STUDENT ? (
+          showStudentDropdown ? (
             <StudentProfileDropdown
               localePrefix={localePrefix}
               avatarUrl={avatarUrl ?? null}
@@ -69,7 +71,7 @@ export default function SearchNavbar({
       </div>
 
       <div className="lg:hidden flex items-center">
-        <button className="w-11 h-11 flex items-center justify-center">
+        <button className="relative z-[1000] w-11 h-11 flex items-center justify-center pointer-events-auto">
           <Search size={20} color="white" />
         </button>
         <MobileMenu variant="search" />

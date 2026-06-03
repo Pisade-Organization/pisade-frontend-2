@@ -10,6 +10,7 @@ import TutorGridCard from "../components/TutorCard/TutorGridCard"
 import Navbar from "@/components/Navbar"
 import { fetchLanguageOptions, fetchSubjectOptions, fetchTutorsPaginated } from "@/services/tutor"
 import Footer from "@/components/footer/Footer"
+import { AvailabilityFilterValue } from "../components/filters/dropdowns/AvailabilityDropdown/AvailabilityDropdown"
 
 function TutorListSkeleton() {
     return (
@@ -51,15 +52,16 @@ const DEFAULT_SUBJECT = "Show All"
 const DEFAULT_LANGUAGE = "Show all languages"
 const DEFAULT_SPECIALTY = "Show all specialties"
 const DEFAULT_RANKING = "Show all in this ranking"
+const DEFAULT_EDUCATION_LEVEL = "Show all educational levels"
 
 export default function SearchPage() {
     const t = useTranslations("search")
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
-    const [mode, setMode] = useState<'list' | 'grid'>('list')
+    const [mode, setMode] = useState<"list" | "grid">("list")
     const [minPrice, setMinPrice] = useState<number>(Number(searchParams.get("minPrice") ?? 0))
-    const [maxPrice, setMaxPrice] = useState<number>(Number(searchParams.get("maxPrice") ?? 3000));
+    const [maxPrice, setMaxPrice] = useState<number>(Number(searchParams.get("maxPrice") ?? 3000))
     const [subject, setSubject] = useState<string>(searchParams.get("subject") || DEFAULT_SUBJECT)
     const [language, setLanguage] = useState<string[]>(
         searchParams.get("language")?.split(",").filter(Boolean) ?? [DEFAULT_LANGUAGE],
@@ -68,6 +70,15 @@ export default function SearchPage() {
         searchParams.get("specialty")?.split(",").filter(Boolean) ?? [DEFAULT_SPECIALTY],
     )
     const [ranking, setRanking] = useState<string>(searchParams.get("ranking") || DEFAULT_RANKING)
+    const [availability, setAvailability] = useState<AvailabilityFilterValue>(() => {
+        const day = searchParams.get("availabilityDay")
+        const start = searchParams.get("availabilityStart")
+
+        return day && start ? { day, start } : null
+    })
+    const [educationLevel, setEducationLevel] = useState<string[]>(
+        searchParams.get("educationLevel")?.split(",").filter(Boolean) ?? [DEFAULT_EDUCATION_LEVEL],
+    )
     const [subjectOptions, setSubjectOptions] = useState<string[]>([])
     const [languageOptions, setLanguageOptions] = useState<string[]>([])
     const [tutors, setTutors] = useState<TutorCardProps[]>([])
@@ -78,6 +89,7 @@ export default function SearchPage() {
     const [totalTutors, setTotalTutors] = useState(0)
     const [loadError, setLoadError] = useState(false)
     const TUTORS_PER_PAGE = 6
+
     const rankingFilter: "STARTER" | "PRO" | "MASTER" | undefined =
         ranking === "Starter"
             ? "STARTER"
@@ -100,6 +112,12 @@ export default function SearchPage() {
                 ? undefined
                 : specialty.join(","),
         ranking: rankingFilter,
+        availabilityDay: availability?.day,
+        availabilityStart: availability?.start,
+        educationLevel:
+            educationLevel.length === 1 && educationLevel[0] === DEFAULT_EDUCATION_LEVEL
+                ? undefined
+                : educationLevel.join(","),
     }
 
     const syncUrl = () => {
@@ -110,6 +128,9 @@ export default function SearchPage() {
         if (activeFilters.language) params.set("language", activeFilters.language)
         if (activeFilters.specialty) params.set("specialty", activeFilters.specialty)
         if (ranking !== DEFAULT_RANKING) params.set("ranking", ranking)
+        if (activeFilters.availabilityDay) params.set("availabilityDay", activeFilters.availabilityDay)
+        if (activeFilters.availabilityStart) params.set("availabilityStart", activeFilters.availabilityStart)
+        if (activeFilters.educationLevel) params.set("educationLevel", activeFilters.educationLevel)
         const query = params.toString()
         router.replace(query ? `${pathname}?${query}` : pathname)
     }
@@ -123,54 +144,59 @@ export default function SearchPage() {
         syncUrl()
         setCurrentPage(1)
         setTutors([])
-    }, [minPrice, maxPrice, subject, language, specialty, ranking])
+    }, [minPrice, maxPrice, subject, language, specialty, ranking, availability, educationLevel])
 
     useEffect(() => {
         const fetchTutors = async () => {
+            setLoading(true)
+
             try {
                 const response = await fetchTutorsPaginated(1, TUTORS_PER_PAGE, activeFilters)
                 setTutors(response.tutors as TutorCardProps[])
                 setTotalTutors(response.total)
                 setHasMore(response.hasMore)
                 setLoadError(response.isError)
-                setLoading(false)
             } catch (error) {
-                console.error('Error fetching tutors:', error)
+                console.error("Error fetching tutors:", error)
                 setLoadError(true)
+            } finally {
                 setLoading(false)
             }
         }
 
-        fetchTutors()
-    }, [minPrice, maxPrice, subject, language, specialty, ranking])
+        void fetchTutors()
+    }, [minPrice, maxPrice, subject, language, specialty, ranking, availability, educationLevel])
 
     const loadMoreTutors = async () => {
         if (loadingMore || !hasMore) return
-        
+
         setLoadingMore(true)
-        
+
         try {
             const nextPage = currentPage + 1
             const response = await fetchTutorsPaginated(nextPage, TUTORS_PER_PAGE, activeFilters)
-            
-            setTutors(prev => [...prev, ...response.tutors as TutorCardProps[]])
+
+            setTutors((prev) => [...prev, ...(response.tutors as TutorCardProps[])])
             setCurrentPage(nextPage)
             setHasMore(response.hasMore)
         } catch (error) {
-            console.error('Error loading more tutors:', error)
+            console.error("Error loading more tutors:", error)
         } finally {
             setLoadingMore(false)
         }
     }
 
     return (
-        <div className="flex flex-col justify-center items-center">
+        <div className="relative isolate flex flex-col justify-center items-center">
             <Navbar variant="search" />
             <SearchHero />
-            <FilterPanel 
-                mode={mode} setMode={setMode} 
-                minPrice={minPrice} setMinPrice={setMinPrice}
-                maxPrice={maxPrice} setMaxPrice={setMaxPrice}
+            <FilterPanel
+                mode={mode}
+                setMode={setMode}
+                minPrice={minPrice}
+                setMinPrice={setMinPrice}
+                maxPrice={maxPrice}
+                setMaxPrice={setMaxPrice}
                 subject={subject}
                 onSubjectChange={setSubject}
                 language={language}
@@ -179,11 +205,14 @@ export default function SearchPage() {
                 onSpecialtyChange={setSpecialty}
                 ranking={ranking}
                 onRankingChange={setRanking}
+                availability={availability}
+                onAvailabilityChange={setAvailability}
+                educationLevel={educationLevel}
+                onEducationLevelChange={setEducationLevel}
                 subjectOptions={subjectOptions}
                 languageOptions={languageOptions}
             />
-            
-            {/* TUTOR CARDS */}
+
             <div className="w-full lg:block px-4 lg:px-20 lg:py-11 pb-24 lg:pb-0">
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold mb-2">{t("availableTutors")}</h1>
@@ -198,9 +227,9 @@ export default function SearchPage() {
                         {t("loadError")}
                     </div>
                 )}
-                <div className={`grid gap-6 ${mode === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                <div className={`grid gap-6 ${mode === "grid" ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"}`}>
                     {loading && Array.from({ length: TUTORS_PER_PAGE }).map((_, index) => (
-                        mode === 'grid' ? (
+                        mode === "grid" ? (
                             <TutorGridSkeleton key={`skeleton-grid-${index}`} />
                         ) : (
                             <TutorListSkeleton key={`skeleton-list-${index}`} />
@@ -208,7 +237,7 @@ export default function SearchPage() {
                     ))}
 
                     {tutors.map((tutor) =>
-                        mode === 'grid' ? (
+                        mode === "grid" ? (
                             <TutorGridCard
                                 key={tutor.id}
                                 view={mode}
@@ -223,8 +252,7 @@ export default function SearchPage() {
                         )
                     )}
                 </div>
-                
-                {/* LOAD MORE BUTTON */}
+
                 {hasMore && !loading && (
                     <div className="flex justify-center mt-8">
                         <button
@@ -243,7 +271,6 @@ export default function SearchPage() {
                         </button>
                     </div>
                 )}
-                
             </div>
             <Footer />
         </div>
