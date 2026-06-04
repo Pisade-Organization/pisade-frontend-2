@@ -5,6 +5,7 @@ import axiosBase, { AxiosError } from "axios";
 import dayjs from "dayjs";
 import { jwtDecode } from "jwt-decode";
 import { unwrapApiResponse, type ApiSuccessResponse } from "@/services/apiResponse";
+import { getApiErrorCode, getApiErrorMessage } from "@/lib/apiErrorMessage";
 import { resolveMediaUrl } from "@/lib/media";
 
 declare module "next-auth" {
@@ -418,13 +419,14 @@ export const authOptions: NextAuthOptions = {
           return { ...data.user, _access_token: data.access_token, _refresh_token: data.refresh_token } as any;
         } catch (err) {
           const ax = err as AxiosError;
-          const payload = ax.response?.data as any;
-          const backendCode = payload?.error?.code ?? payload?.code;
-          const backendMessage = payload?.error?.message ?? payload?.message;
+          const backendCode = getApiErrorCode(err);
+          const backendMessage = getApiErrorMessage(err, "Google authorization failed");
 
           logAuth("error", "Google authorization failed", {
             status: ax.response?.status,
+            hasResponse: !!ax.response,
             code: backendCode,
+            message: backendMessage,
             error: ax.response?.data || ax.message,
           });
 
@@ -433,9 +435,9 @@ export const authOptions: NextAuthOptions = {
           }
 
           throw new Error(
-            backendCode
-              ? `${backendCode}${backendMessage ? `: ${backendMessage}` : ""}`
-              : backendMessage || "Google authorization failed"
+            backendCode && backendMessage !== backendCode
+              ? `${backendCode}: ${backendMessage}`
+              : backendCode || backendMessage
           );
         }
       },
