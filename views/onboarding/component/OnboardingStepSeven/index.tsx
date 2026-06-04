@@ -61,6 +61,7 @@ export default function OnboardingStepSeven() {
   const timezoneRef = useRef(timezone)
   const selectedSlotsRef = useRef(selectedSlots)
   const providersRef = useRef(providers)
+  const googleCalendarPopupOriginRef = useRef<string | null>(null)
 
   useEffect(() => {
     saveStepSevenRef.current = saveStepSeven
@@ -102,11 +103,13 @@ export default function OnboardingStepSeven() {
 
   useEffect(() => {
     const handleMessage = async (event: MessageEvent) => {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || window.location.origin
-      const expectedOrigin = new URL(apiUrl).origin
-
-      if (event.origin !== expectedOrigin) return
       if (event.data?.source !== "pisade-google-calendar") return
+      if (
+        googleCalendarPopupOriginRef.current &&
+        event.origin !== googleCalendarPopupOriginRef.current
+      ) {
+        return
+      }
 
       if (event.data.success) {
         setConnectionError("")
@@ -127,6 +130,7 @@ export default function OnboardingStepSeven() {
   const handleConnectGoogleCalendar = async () => {
     setConnectionError("")
     setConnectionState("connecting")
+    googleCalendarPopupOriginRef.current = null
 
     try {
       const popup = window.open("about:blank", "_blank", "width=520,height=720")
@@ -136,6 +140,7 @@ export default function OnboardingStepSeven() {
       }
 
       const { authUrl } = await ProfileService.createGoogleCalendarAuthUrl()
+      googleCalendarPopupOriginRef.current = new URL(authUrl).origin
       popup.location.href = authUrl
       popup.focus()
     } catch (error) {

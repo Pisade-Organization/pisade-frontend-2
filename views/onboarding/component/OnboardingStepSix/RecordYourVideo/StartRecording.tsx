@@ -20,9 +20,6 @@ export default function StartRecording({ onRecordingComplete, onRecordingStateCh
   const chunksRef = useRef<Blob[]>([])
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const timeIntervalRef = useRef<NodeJS.Timeout | null>(null)
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const videoElementRef = useRef<HTMLVideoElement | null>(null)
-  const animationFrameRef = useRef<number | null>(null)
 
   const MAX_RECORDING_TIME = 120 // 2 minutes in seconds
 
@@ -46,58 +43,10 @@ export default function StartRecording({ onRecordingComplete, onRecordingStateCh
         audio: true 
       })
       
-      // Create a canvas to flip the video horizontally
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-      if (!ctx) {
-        throw new Error("Could not get canvas context")
-      }
-
-      const videoTrack = originalStream.getVideoTracks()[0]
-      const videoSettings = videoTrack.getSettings()
-      canvas.width = videoSettings.width || 640
-      canvas.height = videoSettings.height || 480
-      canvasRef.current = canvas
-
-      // Create a video element to process the stream
-      const videoElement = document.createElement('video')
-      videoElement.srcObject = originalStream
-      videoElement.autoplay = true
-      videoElement.muted = true
-      videoElement.playsInline = true
-      videoElementRef.current = videoElement
-
-      await new Promise((resolve) => {
-        videoElement.onloadedmetadata = () => {
-          videoElement.play().then(resolve).catch(resolve)
-        }
-      })
-
-      // Create a new stream from the flipped canvas
-      const flippedStream = canvas.captureStream(30)
-      const audioTrack = originalStream.getAudioTracks()[0]
-      if (audioTrack) {
-        flippedStream.addTrack(audioTrack)
-      }
-
-      // Draw flipped video to canvas
-      const drawFrame = () => {
-        if (videoElement.readyState >= 2 && canvas && ctx) {
-          ctx.save()
-          ctx.scale(-1, 1)
-          ctx.drawImage(videoElement, -canvas.width, 0, canvas.width, canvas.height)
-          ctx.restore()
-        }
-        if (mediaRecorderRef.current?.state === 'recording') {
-          animationFrameRef.current = requestAnimationFrame(drawFrame)
-        }
-      }
-      drawFrame()
-      
       streamRef.current = originalStream
       chunksRef.current = []
 
-      const mediaRecorder = new MediaRecorder(flippedStream, {
+      const mediaRecorder = new MediaRecorder(originalStream, {
         mimeType: 'video/webm;codecs=vp8,opus'
       })
 
@@ -147,24 +96,6 @@ export default function StartRecording({ onRecordingComplete, onRecordingStateCh
   const stopRecording = () => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop()
-    }
-    
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current)
-      animationFrameRef.current = null
-    }
-
-    if (videoElementRef.current) {
-      videoElementRef.current.srcObject = null
-      videoElementRef.current = null
-    }
-
-    if (canvasRef.current) {
-      const ctx = canvasRef.current.getContext('2d')
-      if (ctx) {
-        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height)
-      }
-      canvasRef.current = null
     }
     
     if (streamRef.current) {
